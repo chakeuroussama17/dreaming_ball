@@ -1,0 +1,438 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/providers/admin_providers.dart';
+import '../../../../core/services/admin_service.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/player_avatar.dart';
+
+class AgentManagementScreen extends ConsumerStatefulWidget {
+  const AgentManagementScreen({super.key});
+
+  @override
+  ConsumerState<AgentManagementScreen> createState() =>
+      _AgentManagementScreenState();
+}
+
+class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tab;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab = TabController(length: 3, vsync: this);
+    _tab.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _tab.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
+    final primary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final secondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
+    final agents = ref.watch(adminAgentsProvider);
+    final pending =
+        agents.where((a) => a.status == AdminAgentStatus.pending).toList();
+    final approved = agents
+        .where((a) =>
+            a.status == AdminAgentStatus.approved ||
+            a.status == AdminAgentStatus.suspended)
+        .toList();
+    final rejected =
+        agents.where((a) => a.status == AdminAgentStatus.rejected).toList();
+
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: bg,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
+          onPressed: () => context.goNamed('admin-dashboard'),
+        ),
+        title: Text('Agent Verification',
+            style: GoogleFonts.spaceGrotesk(
+                fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
+        centerTitle: true,
+        bottom: TabBar(
+          controller: _tab,
+          indicatorColor: AppColors.orange,
+          labelColor: primary,
+          unselectedLabelColor: secondary,
+          labelStyle:
+              GoogleFonts.spaceGrotesk(fontSize: 13, fontWeight: FontWeight.w700),
+          tabs: [
+            Tab(text: 'Pending (${pending.length})'),
+            Tab(text: 'Approved (${approved.length})'),
+            Tab(text: 'Rejected (${rejected.length})'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tab,
+        children: [
+          _list(pending, primary, secondary, isDark),
+          _list(approved, primary, secondary, isDark),
+          _list(rejected, primary, secondary, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _list(
+      List<AgentRecord> items, Color primary, Color secondary, bool isDark) {
+    if (items.isEmpty) {
+      return Center(
+        child: Text('Nothing here',
+            style: GoogleFonts.inter(fontSize: 14, color: secondary)),
+      );
+    }
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      itemCount: items.length,
+      itemBuilder: (ctx, i) =>
+          _card(items[i], primary, secondary, border, surface),
+    );
+  }
+
+  Widget _card(AgentRecord a, Color primary, Color secondary, Color border,
+      Color surface) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: surface,
+        border: Border.all(color: border),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              PlayerAvatar(fallbackInitials: a.name.substring(0, 1), radius: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(a.name,
+                        style: GoogleFonts.spaceGrotesk(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: primary)),
+                    Text(a.email,
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: secondary)),
+                  ],
+                ),
+              ),
+              _statusPill(a.status),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _kv('Phone', a.phone, secondary, primary),
+          _kv('Registered', a.registeredAt, secondary, primary),
+          _kv('Bank', '${a.bankName} · ${_mask(a.accountNumber)}', secondary,
+              primary),
+          if (a.rejectionReason != null)
+            _kv('Reason', a.rejectionReason!, secondary, AppColors.tierElite),
+          const SizedBox(height: 12),
+
+          OutlinedButton.icon(
+            onPressed: () => _showDocs(a, primary, secondary, border, surface),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: border),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            icon: Icon(Icons.badge_outlined, size: 16, color: primary),
+            label: Text('View Documents',
+                style: GoogleFonts.inter(
+                    fontSize: 13, fontWeight: FontWeight.w600, color: primary)),
+          ),
+          const SizedBox(height: 8),
+
+          // Actions
+          if (a.status == AdminAgentStatus.pending)
+            Row(
+              children: [
+                Expanded(
+                  child: _gradientBtn('Approve', () {
+                    ref.read(adminAgentsProvider.notifier).approve(a.id);
+                    _snack('${a.name} approved');
+                  }),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _rejectDialog(a, primary, secondary),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                          color: AppColors.tierElite.withValues(alpha: 0.6)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      minimumSize: const Size.fromHeight(44),
+                    ),
+                    child: Text('Reject',
+                        style: GoogleFonts.spaceGrotesk(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.tierElite)),
+                  ),
+                ),
+              ],
+            )
+          else if (a.status == AdminAgentStatus.approved)
+            OutlinedButton(
+              onPressed: () {
+                ref.read(adminAgentsProvider.notifier).suspend(a.id);
+                _snack('${a.name} suspended');
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                minimumSize: const Size.fromHeight(44),
+              ),
+              child: Text('Suspend',
+                  style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w700, color: AppColors.orange)),
+            )
+          else if (a.status == AdminAgentStatus.suspended)
+            _gradientBtn('Reinstate', () {
+              ref.read(adminAgentsProvider.notifier).approve(a.id);
+              _snack('${a.name} reinstated');
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _gradientBtn(String label, VoidCallback onTap) {
+    return SizedBox(
+      height: 44,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+              colors: [AppColors.pink, AppColors.orange]),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+            minimumSize: const Size.fromHeight(44),
+          ),
+          onPressed: onTap,
+          child: Text(label,
+              style: GoogleFonts.spaceGrotesk(
+                  fontWeight: FontWeight.w700, color: Colors.white)),
+        ),
+      ),
+    );
+  }
+
+  Widget _kv(String k, String v, Color secondary, Color valueColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+              width: 80,
+              child: Text(k,
+                  style: GoogleFonts.inter(fontSize: 12, color: secondary))),
+          Expanded(
+            child: Text(v,
+                style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: valueColor)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusPill(AdminAgentStatus s) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: s.color.withValues(alpha: 0.15),
+        border: Border.all(color: s.color.withValues(alpha: 0.35)),
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Text(s.label,
+          style: GoogleFonts.inter(
+              fontSize: 11, fontWeight: FontWeight.w600, color: s.color)),
+    );
+  }
+
+  String _mask(String acc) =>
+      acc.length <= 4 ? acc : '••••${acc.substring(acc.length - 4)}';
+
+  void _snack(String msg) => ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: AppColors.orange));
+
+  void _showDocs(AgentRecord a, Color primary, Color secondary, Color border,
+      Color surface) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${a.name} — Documents',
+                style: GoogleFonts.spaceGrotesk(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: primary)),
+            const SizedBox(height: 4),
+            Text('${a.idType ?? 'ID'} documents',
+                style: GoogleFonts.inter(fontSize: 12, color: secondary)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                    child: _docBox('${a.idType ?? 'ID'} Front', a.idFrontPath,
+                        border, secondary)),
+                const SizedBox(width: 12),
+                Expanded(
+                    child: _docBox('${a.idType ?? 'ID'} Back', a.idBackPath,
+                        border, secondary)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text('Bank: ${a.bankName}',
+                style: GoogleFonts.inter(fontSize: 13, color: secondary)),
+            Text('Account: ${a.accountNumber}',
+                style: GoogleFonts.inter(fontSize: 13, color: secondary)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _docBox(String label, String? path, Color border, Color secondary) {
+    return Column(
+      children: [
+        Container(
+          height: 120,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            border: Border.all(color: border),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: path == null
+              ? Center(
+                  child: Icon(Icons.image_not_supported_outlined,
+                      color: secondary, size: 28))
+              // Private bucket → fetch a short-lived signed URL, then show it.
+              : FutureBuilder<String?>(
+                  future: AdminService.kycSignedUrl(path),
+                  builder: (ctx, snap) {
+                    if (snap.connectionState != ConnectionState.done) {
+                      return const Center(
+                          child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: AppColors.orange)));
+                    }
+                    final url = snap.data;
+                    if (url == null) {
+                      return Center(
+                          child: Icon(Icons.broken_image_outlined,
+                              color: secondary, size: 28));
+                    }
+                    return Image.network(url,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        errorBuilder: (_, _, _) => Center(
+                            child: Icon(Icons.broken_image_outlined,
+                                color: secondary, size: 28)));
+                  },
+                ),
+        ),
+        const SizedBox(height: 6),
+        Text(label, style: GoogleFonts.inter(fontSize: 11, color: secondary)),
+      ],
+    );
+  }
+
+  void _rejectDialog(AgentRecord a, Color primary, Color secondary) {
+    final ctrl = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text('Reject ${a.name}?',
+            style: GoogleFonts.spaceGrotesk(
+                fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 2,
+          style: GoogleFonts.inter(fontSize: 14, color: primary),
+          decoration: InputDecoration(
+            hintText: 'Reason (e.g. blurry MyKad)',
+            hintStyle: GoogleFonts.inter(fontSize: 13, color: secondary),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.orange),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600, color: secondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.tierElite,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              ref.read(adminAgentsProvider.notifier).reject(
+                  a.id,
+                  ctrl.text.trim().isEmpty
+                      ? 'Not specified'
+                      : ctrl.text.trim());
+              Navigator.pop(ctx);
+              _snack('${a.name} rejected');
+            },
+            child: const Text('Reject', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+}
