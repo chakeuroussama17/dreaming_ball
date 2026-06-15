@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "799107460593",
+    "project_id": "dreaming-ball",
+    "storage_bucket": "dreaming-ball.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799107460593:android:f1b95ebe67100987a86850",
+        "android_client_info": {
+          "package_name": "com.example.dreaming_ball"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgSQmDLB7Qs1Pzu8ZIm5xQYsugUjQMoF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

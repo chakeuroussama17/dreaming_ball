@@ -47,8 +47,9 @@ app.*.map.json
 # Secrets — Supabase keys live here; never commit. Use .env.example as the template.
 .env
 
-# Firebase / FCM secrets — never commit.
-android/app/google-services.json
+# Firebase / FCM real secrets — never commit. (google-services.json is client
+# config that ships inside the APK anyway, so it IS committed so remote build
+# machines get it from git. The service-account private key stays in Supabase.)
 ios/Runner/GoogleService-Info.plist
 **/*service-account*.json
 
