@@ -251,6 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final games = ref.watch(gamesProvider);
     final gamesStatus = ref.watch(gamesStatusProvider);
     final topPlayersAsync = ref.watch(topPlayersProvider);
+    final myProfile = ref.watch(myProfileProvider).valueOrNull;
     final canCreate = ref.watch(canCreateGamesProvider);
     final isAgent = ref.watch(userRoleProvider) == UserRole.agent;
     // Live section: only games this user is part of. Players see a game here
@@ -304,7 +305,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 16, 12, 12),
                 child: Row(
                   children: [
-                    const PlayerAvatar(fallbackInitials: 'ME', radius: 20),
+                    PlayerAvatar(
+                      imageUrl: myProfile?.avatarUrl,
+                      fallbackInitials: (myProfile?.fullName.isNotEmpty ?? false)
+                          ? myProfile!.fullName.substring(0, 1)
+                          : 'ME',
+                      radius: 20,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: ShaderMask(
@@ -324,7 +331,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         IconButton(
                           icon: Icon(Icons.notifications_outlined, color: primary),
-                          onPressed: () => context.goNamed('notifications'),
+                          onPressed: () => context.pushNamed('notifications'),
                         ),
                         // Live unread badge (realtime on notifications table).
                         if (ref.watch(unreadNotificationsProvider) > 0)
@@ -479,7 +486,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => context.goNamed('live-match',
+                                onTap: () => context.pushNamed('live-match',
                                     pathParameters: {'id': g.id}),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -620,7 +627,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     primary: primary,
                                     secondary: secondary,
                                     border: border,
-                                    onTap: () => context.goNamed(
+                                    onTap: () => context.pushNamed(
                                       g.live ? 'live-match' : 'game-detail',
                                       pathParameters: {'id': g.id},
                                     ),
@@ -695,7 +702,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               primary: primary,
                               secondary: secondary,
                               border: border,
-                              onTap: () => context.goNamed('profile-view',
+                              onTap: () => context.pushNamed('profile-view',
                                   pathParameters: {'id': p.id}),
                             );
                           },
@@ -754,7 +761,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   onPressed: () => canCreate
-                      ? context.goNamed('create-game')
+                      ? context.pushNamed('create-game')
                       : _showLockedSheet(context),
                   child: Icon(
                     canCreate ? Icons.add : Icons.lock_outline,
@@ -1107,33 +1114,58 @@ class _HomeGameCard extends StatelessWidget {
                           color: AppColors.orange,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: (isFull && !data.live)
-                              ? null
-                              : LinearGradient(
-                                  colors: data.live
-                                      ? [AppColors.tierElite, AppColors.pink]
-                                      : [AppColors.pink, AppColors.orange],
-                                ),
-                          color: (isFull && !data.live)
-                              ? secondary.withValues(alpha: 0.12)
-                              : null,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          data.live ? 'Watch Live' : (isFull ? 'Full' : 'Join'),
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: (isFull && !data.live) ? secondary : Colors.white,
+                      Builder(builder: (_) {
+                        // Already-joined upcoming game → green "Joined ✓" chip.
+                        final joined =
+                            data.joined && !data.live && !data.ended;
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
                           ),
-                        ),
-                      ),
+                          decoration: BoxDecoration(
+                            gradient: (joined || (isFull && !data.live))
+                                ? null
+                                : LinearGradient(
+                                    colors: data.live
+                                        ? [AppColors.tierElite, AppColors.pink]
+                                        : [AppColors.pink, AppColors.orange],
+                                  ),
+                            color: joined
+                                ? AppColors.cyan.withValues(alpha: 0.15)
+                                : (isFull && !data.live)
+                                    ? secondary.withValues(alpha: 0.12)
+                                    : null,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (joined) ...[
+                                const Icon(Icons.check_circle,
+                                    size: 13, color: AppColors.cyan),
+                                const SizedBox(width: 4),
+                              ],
+                              Text(
+                                joined
+                                    ? 'Joined'
+                                    : data.live
+                                        ? 'Watch Live'
+                                        : (isFull ? 'Full' : 'Join'),
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: joined
+                                      ? AppColors.cyan
+                                      : (isFull && !data.live)
+                                          ? secondary
+                                          : Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ],

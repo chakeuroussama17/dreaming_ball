@@ -47,6 +47,11 @@ app.*.map.json
 # Secrets — Supabase keys live here; never commit. Use .env.example as the template.
 .env
 
+# Firebase / FCM secrets — never commit.
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+**/*service-account*.json
+
 # Supabase Edge Function local env / build
 supabase/.temp/
 supabase/.branches/

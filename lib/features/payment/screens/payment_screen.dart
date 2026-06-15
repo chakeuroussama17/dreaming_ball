@@ -11,6 +11,7 @@ import '../../../../core/providers/games_provider.dart';
 import '../../../../core/services/game_service.dart';
 import '../../../../core/services/payment_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String id;
@@ -198,7 +199,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
           onPressed: () {
             if (_step == 0 || _done) {
-              context.pop();
+              context.safePop();
             } else if (_step == 1) {
               setState(() => _step = 0);
             }
@@ -533,7 +534,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               _gradientButton("I've completed payment", _checkBillplzNow),
               const SizedBox(height: 10),
               TextButton(
-                onPressed: () => context.pop(),
+                onPressed: () => context.safePop(),
                 child: Text('Pay later',
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600, color: secondary)),

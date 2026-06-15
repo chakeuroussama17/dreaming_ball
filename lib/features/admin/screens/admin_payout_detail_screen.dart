@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/services/admin_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 
 /// Full payout detail for one game: where to send the agent, who paid,
 /// and the match stats.
@@ -40,7 +40,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('admin-payouts'),
+          onPressed: () => context.safePop('admin-payouts'),
         ),
         title: Text('Game details',
             style: GoogleFonts.spaceGrotesk(

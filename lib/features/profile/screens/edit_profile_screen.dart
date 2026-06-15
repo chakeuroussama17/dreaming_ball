@@ -1,14 +1,15 @@
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/providers/content_providers.dart';
 import '../../../../core/providers/session_provider.dart';
 import '../../../../core/services/profile_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/custom_input.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -40,6 +41,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   // Read-only account info (filled from the fetched profile)
   String _email = '';
+  String? _currentAvatarUrl;
+  String _initials = 'P';
   String get _role =>
       ref.watch(userRoleProvider) == UserRole.agent ? 'Agent' : 'Player';
 
@@ -57,6 +60,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       _nameCtrl.text = profile.fullName;
       _phoneCtrl.text = profile.phone ?? '';
       _email = profile.email;
+      _currentAvatarUrl = profile.avatarUrl;
+      _initials = profile.fullName.isNotEmpty
+          ? profile.fullName.substring(0, 1).toUpperCase()
+          : 'P';
       if (_ageGroups.contains(profile.ageGroup)) {
         _selectedAge = profile.ageGroup;
       }
@@ -116,7 +123,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-    context.goNamed('profile');
+    context.safePop('profile');
   }
 
   Future<void> _confirmDelete() async {
@@ -194,7 +201,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('profile'),
+          onPressed: () => context.safePop('profile'),
         ),
         title: Text(
           'Edit Profile',
@@ -245,16 +252,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                   child: Image.memory(_avatarBytes!,
                                       fit: BoxFit.cover, width: 90, height: 90),
                                 )
-                              : const Center(
-                                  child: Text(
-                                    'OC',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
+                              : (_currentAvatarUrl != null &&
+                                      _currentAvatarUrl!.isNotEmpty)
+                                  ? ClipOval(
+                                      child: CachedNetworkImage(
+                                        imageUrl: _currentAvatarUrl!,
+                                        fit: BoxFit.cover,
+                                        width: 90,
+                                        height: 90,
+                                        errorWidget: (_, _, _) =>
+                                            _initialsAvatar(),
+                                      ),
+                                    )
+                                  : _initialsAvatar(),
                         ),
                         Positioned(
                           bottom: -2,
@@ -516,6 +526,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ).animate().fadeIn(duration: 350.ms),
     );
   }
+
+  Widget _initialsAvatar() => Center(
+        child: Text(
+          _initials,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      );
 
   Widget _sectionLabel(String text, Color secondary) => Text(
         text,

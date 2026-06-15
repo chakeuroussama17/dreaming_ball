@@ -113,7 +113,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           await storage.uploadBinary(path, _photoBytes!,
               fileOptions:
                   const FileOptions(upsert: true, contentType: 'image/jpeg'));
-          final url = storage.getPublicUrl(path);
+          // Cache-bust so the avatar always loads fresh (same path is reused
+          // on re-upload, and CachedNetworkImage keys by URL).
+          final url =
+              '${storage.getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
           await SupabaseService.supabase
               .from('users')
               .update({'avatar_url': url}).eq('id', user.id);

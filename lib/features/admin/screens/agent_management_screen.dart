@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/services/admin_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 
 class AgentManagementScreen extends ConsumerStatefulWidget {
@@ -56,7 +56,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('admin-dashboard'),
+          onPressed: () => context.safePop('admin-dashboard'),
         ),
         title: Text('Agent Verification',
             style: GoogleFonts.spaceGrotesk(

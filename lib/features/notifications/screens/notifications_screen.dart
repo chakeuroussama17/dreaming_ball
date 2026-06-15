@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/content_providers.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -51,7 +51,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.pop(),
+          onPressed: () => context.safePop(),
         ),
         title: Text('Notifications',
             style: GoogleFonts.spaceGrotesk(

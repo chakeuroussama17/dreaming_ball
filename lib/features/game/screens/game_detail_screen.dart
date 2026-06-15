@@ -9,6 +9,7 @@ import '../../../../core/providers/games_provider.dart';
 import '../../../../core/services/game_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -208,7 +209,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _circleBtn(Icons.arrow_back_ios_new, () => context.pop()),
+                            _circleBtn(Icons.arrow_back_ios_new, () => context.safePop()),
                             _circleBtn(Icons.ios_share_outlined, () {}),
                           ],
                         ),
@@ -472,9 +473,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                           onPressed: (game?.joined ?? false) && !live
                               ? null
                               : () => live
-                                  ? context.goNamed('live-match',
+                                  ? context.pushNamed('live-match',
                                       pathParameters: {'id': id})
-                                  : context.goNamed('payment',
+                                  : context.pushNamed('payment',
                                       pathParameters: {'id': id}),
                           child: Text(
                               live

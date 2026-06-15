@@ -10,6 +10,7 @@ import '../../../../core/services/game_service.dart';
 import '../../../../core/services/live_match_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -412,7 +413,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           alignment: Alignment.centerLeft,
           child: IconButton(
             icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-            onPressed: () => context.pop(),
+            onPressed: () => context.safePop(),
           ),
         ),
         Expanded(
@@ -450,7 +451,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
         children: [
           IconButton(
             icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-            onPressed: () => context.pop(),
+            onPressed: () => context.safePop(),
           ),
           Expanded(
             child: Column(
@@ -1164,7 +1165,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                   style: GoogleFonts.inter(fontSize: 13, height: 1.5, color: secondary)),
               const SizedBox(height: 24),
               _gradientButton('Back to Dashboard',
-                  () => context.goNamed('agent-dashboard')),
+                  () => context.safePop('agent-dashboard')),
             ],
           ),
         ),
@@ -1368,7 +1369,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                 SizedBox(
                   height: 44,
                   child: OutlinedButton.icon(
-                    onPressed: () => context.goNamed('dispute',
+                    onPressed: () => context.pushNamed('dispute',
                         pathParameters: {'id': widget.id}),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(

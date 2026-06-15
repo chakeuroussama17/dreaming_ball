@@ -7,6 +7,7 @@ import '../../../core/providers/content_providers.dart';
 import '../../../core/providers/session_provider.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/nav.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -28,7 +29,7 @@ class SettingsScreen extends ConsumerWidget {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('profile'),
+          onPressed: () => context.safePop('profile'),
         ),
         title: Text('Settings',
             style: GoogleFonts.spaceGrotesk(
@@ -60,11 +61,11 @@ class SettingsScreen extends ConsumerWidget {
           _sectionLabel('Account', secondary),
           const SizedBox(height: 10),
           _tile(Icons.person_outline, 'Edit Profile', primary, secondary,
-              border, surface, () => context.goNamed('edit-profile')),
+              border, surface, () => context.pushNamed('edit-profile')),
           _tile(Icons.notifications_outlined, 'Notifications', primary,
-              secondary, border, surface, () => context.goNamed('notifications')),
+              secondary, border, surface, () => context.pushNamed('notifications')),
           _tile(Icons.lock_reset, 'Change Password', primary, secondary, border,
-              surface, () => context.goNamed('forgot-password')),
+              surface, () => context.pushNamed('forgot-password')),
 
           const SizedBox(height: 24),
           _sectionLabel('About', secondary),
@@ -109,7 +110,7 @@ class SettingsScreen extends ConsumerWidget {
     final active = value == current;
     return Expanded(
       child: GestureDetector(
-        onTap: () => ref.read(themeModeProvider.notifier).state = value,
+        onTap: () => ref.read(themeModeProvider.notifier).set(value),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(vertical: 10),

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -142,7 +142,7 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.pop(),
+          onPressed: () => context.safePop(),
         ),
         title: Column(
           children: [

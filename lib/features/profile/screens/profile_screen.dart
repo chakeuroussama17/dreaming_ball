@@ -14,6 +14,8 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/profile_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
+import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/player_stat_card.dart';
 import '../../../../core/widgets/tier_badge.dart';
@@ -73,6 +75,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       lower = threshold;
     }
     return (1, 1, 'Legend'); // max tier reached
+  }
+
+  void _sharePlayerCard() {
+    final card = '⚽ $_name — $_position · ${_tier.label}\n'
+        'Overall $_overall · $_goals goals · $_assists assists · '
+        '$_games games · $_xp XP\n'
+        'My Dreaming Ball player card 🔥';
+    ShareUtils.shareText(card, subject: 'My Dreaming Ball player card');
   }
 
   List<PlayerStat> get _stats => [
@@ -232,7 +242,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   if (isGuest)
                     IconButton(
                       icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-                      onPressed: () => context.pop(),
+                      onPressed: () => context.safePop(),
                     )
                   else
                     const SizedBox(width: 12),
@@ -249,7 +259,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   else
                     IconButton(
                       icon: Icon(Icons.settings_outlined, color: primary),
-                      onPressed: () => context.goNamed('settings'),
+                      onPressed: () => context.pushNamed('settings'),
                     ),
                 ],
               ),
@@ -261,7 +271,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               child: Row(
                 children: [
                   PlayerAvatar(
-                      fallbackInitials: _name.substring(0, 1), radius: 32),
+                      imageUrl: _profile?.avatarUrl,
+                      fallbackInitials: _name.substring(0, 1),
+                      radius: 32),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -418,14 +430,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           width: double.infinity,
           height: 50,
           child: OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: _sharePlayerCard,
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: AppColors.pink.withValues(alpha: 0.6)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            icon: const Icon(Icons.camera_alt_outlined,
+            icon: const Icon(Icons.share_outlined,
                 size: 18, color: AppColors.pink),
             label: Text(
               'Share Player Card',
@@ -687,7 +699,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           width: double.infinity,
           height: 50,
           child: OutlinedButton.icon(
-            onPressed: () => context.goNamed('agent-dashboard'),
+            onPressed: () => context.pushNamed('agent-dashboard'),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
               shape: RoundedRectangleBorder(

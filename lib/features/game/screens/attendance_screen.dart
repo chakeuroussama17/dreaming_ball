@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -113,7 +114,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 ),
                 onPressed: () {
                   Navigator.pop(ctx);
-                  context.goNamed('stats-entry', pathParameters: {'id': widget.id});
+                  context.pushNamed('stats-entry', pathParameters: {'id': widget.id});
                 },
                 child: const Text('Continue', style: TextStyle(color: Colors.white)),
               ),
@@ -123,7 +124,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       );
       return;
     }
-    context.goNamed('stats-entry', pathParameters: {'id': widget.id});
+    context.pushNamed('stats-entry', pathParameters: {'id': widget.id});
   }
 
   @override
@@ -143,7 +144,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.pop(),
+          onPressed: () => context.safePop(),
         ),
         title: Column(
           children: [

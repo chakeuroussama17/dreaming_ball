@@ -2,12 +2,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/custom_input.dart';
 import '../../../../core/widgets/custom_button.dart';
 
@@ -108,7 +108,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-    context.goNamed('home');
+    context.safePop('home');
   }
 
   @override
@@ -132,7 +132,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('home'),
+          onPressed: () => context.safePop('home'),
         ),
         title: Text('Create Game',
             style: GoogleFonts.spaceGrotesk(

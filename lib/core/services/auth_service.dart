@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'push_service.dart';
 import 'supabase_service.dart';
 
 /// Thrown by AuthService with a message that is safe to show in the UI.
@@ -120,6 +121,7 @@ class AuthService {
       // write the chosen one. (position/age_group live on player_profiles.)
       await _writeProfileExtras(user.id, position, ageGroup);
 
+      PushService.registerToken();
       return AppUser(
         id: user.id,
         email: email,
@@ -181,6 +183,7 @@ class AuthService {
       // Admin = a recognised admin email with a valid Supabase session.
       if (_adminEmails.contains(user.email?.toLowerCase())) {
         _adminSession = true;
+        PushService.registerToken();
         return _admin;
       }
 
@@ -189,6 +192,7 @@ class AuthService {
         await _sb.auth.signOut();
         throw AuthFailure('This account has been suspended');
       }
+      PushService.registerToken();
       return AppUser.fromRow(row);
     } on AuthFailure {
       rethrow;
@@ -264,6 +268,9 @@ class AuthService {
   static Future<void> signOut() async {
     _adminSession = false;
     try {
+      // Drop this device's push token first (while we still have a session),
+      // so a shared phone doesn't keep pushing to the signed-out account.
+      await PushService.unregisterToken();
       // Admin and regular users both have a real Supabase session now.
       await _sb.auth.signOut();
     } catch (_) {

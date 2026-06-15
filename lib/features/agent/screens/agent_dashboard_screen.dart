@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 
 class AgentDashboardScreen extends ConsumerStatefulWidget {
   const AgentDashboardScreen({super.key});
@@ -64,7 +65,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('profile'),
+          onPressed: () => context.safePop('profile'),
         ),
         title: Text('My Dashboard',
             style: GoogleFonts.spaceGrotesk(
@@ -324,7 +325,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
       // Ended games open the match report (review window: edit stats,
       // read player comments); upcoming/live games open the match panel.
       onTap: () =>
-          context.goNamed('live-match', pathParameters: {'id': g.id}),
+          context.pushNamed('live-match', pathParameters: {'id': g.id}),
       child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -409,7 +410,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                 child: SizedBox(
                   height: 42,
                   child: OutlinedButton(
-                    onPressed: () => context.goNamed('game-detail',
+                    onPressed: () => context.pushNamed('game-detail',
                         pathParameters: {'id': g.id}),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AppColors.orange),
@@ -457,7 +458,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                         ),
                         onPressed: locked
                             ? null
-                            : () => context.goNamed('live-match',
+                            : () => context.pushNamed('live-match',
                                 pathParameters: {'id': g.id}),
                         child: Text(
                             g.ended

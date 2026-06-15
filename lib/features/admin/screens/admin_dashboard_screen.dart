@@ -181,7 +181,7 @@ class AdminDashboardScreen extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: GestureDetector(
-        onTap: () => context.goNamed(route),
+        onTap: () => context.pushNamed(route),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(

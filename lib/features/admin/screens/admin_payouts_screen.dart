@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/services/admin_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 
 class AdminPayoutsScreen extends ConsumerWidget {
   const AdminPayoutsScreen({super.key});
@@ -29,7 +30,7 @@ class AdminPayoutsScreen extends ConsumerWidget {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('admin-dashboard'),
+          onPressed: () => context.safePop('admin-dashboard'),
         ),
         title: Text('Payouts',
             style: GoogleFonts.spaceGrotesk(
@@ -186,7 +187,7 @@ class _PayoutCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final kickoff = DateFormat('EEE, MMM d · h:mm a').format(row.kickoff);
     return GestureDetector(
-      onTap: () => context.goNamed('admin-payout-detail',
+      onTap: () => context.pushNamed('admin-payout-detail',
           pathParameters: {'id': row.gameId}),
       child: Container(
       margin: const EdgeInsets.only(bottom: 12),

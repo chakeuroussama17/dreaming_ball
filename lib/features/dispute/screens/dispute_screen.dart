@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/content_providers.dart';
 import '../../../../core/providers/session_provider.dart';
 import '../../../../core/services/dispute_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 
 class DisputeScreen extends ConsumerStatefulWidget {
@@ -51,7 +51,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.pop(),
+          onPressed: () => context.safePop(),
         ),
         title: Text(isAgent ? 'Review Disputes' : 'Your Stats',
             style: GoogleFonts.spaceGrotesk(

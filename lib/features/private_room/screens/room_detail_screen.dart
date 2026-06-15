@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/services/game_service.dart' show GameServiceException;
 import '../../../../core/services/room_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/nav.dart';
+import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -86,10 +87,19 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
     );
   }
 
+  void _shareCode() {
+    final code = _room?.code ?? '';
+    if (code.isEmpty) return;
+    ShareUtils.shareText(
+      'Join my Dreaming Ball private room! '
+      'Open the app, tap "Join Room" and enter code: $code',
+    );
+  }
+
   Future<void> _leave() async {
     try {
       await RoomService.leaveRoom(widget.id);
-      if (mounted) context.goNamed('private-room');
+      if (mounted) context.safePop('private-room');
     } on GameServiceException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -120,7 +130,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
         backgroundColor: bg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
-          onPressed: () => context.goNamed('private-room'),
+          onPressed: () => context.safePop('private-room'),
         ),
         title: ShaderMask(
           shaderCallback: (b) => AppColors.brandGradient.createShader(b),
@@ -332,7 +342,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14)),
                           ),
-                          onPressed: _copyCode,
+                          onPressed: _shareCode,
                           icon: const Icon(Icons.share,
                               size: 18, color: Colors.white),
                           label: Text(

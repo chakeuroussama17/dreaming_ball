@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/services/game_service.dart' show GameServiceException;
 import '../../../../core/services/room_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/custom_input.dart';
 import '../../../../core/widgets/custom_button.dart';
 
@@ -464,7 +465,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
       final room = await RoomService.joinRoomByCode(_codeCtrl.text);
       if (!mounted) return;
       setState(() => _finding = false);
-      context.goNamed('room-detail', pathParameters: {'id': room.id});
+      context.pushNamed('room-detail', pathParameters: {'id': room.id});
     } on GameServiceException catch (e) {
       if (!mounted) return;
       setState(() => _finding = false);
@@ -602,7 +603,9 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                   child: SizedBox(
                     height: 50,
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => ShareUtils.shareViaWhatsApp(
+                          'Join my Dreaming Ball private room! '
+                          'Open the app, tap "Join Room" and enter code: $code'),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFF25D366)),
                         shape: RoundedRectangleBorder(
@@ -645,7 +648,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
               label: 'Go to Room',
               onPressed: () {
                 Navigator.of(ctx).pop();
-                context.goNamed('room-detail', pathParameters: {'id': roomId});
+                context.pushNamed('room-detail', pathParameters: {'id': roomId});
               },
             ),
           ],
