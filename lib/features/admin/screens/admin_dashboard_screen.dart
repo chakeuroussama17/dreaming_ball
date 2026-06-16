@@ -7,6 +7,7 @@ import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../app/app.dart';
 
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
@@ -83,6 +84,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                     await AuthService.signOut();
                     if (!context.mounted) return;
                     ref.read(isAdminProvider.notifier).state = false;
+                    ref.read(themeModeProvider.notifier).applyFor(null);
                     context.goNamed('login');
                   },
                 ),

@@ -339,9 +339,6 @@ class AuthService {
         m.contains('network')) {
       return 'Check your connection and try again';
     }
-    // TEMP DIAGNOSTIC: surface the real error so we can see what's failing.
-    // Revert to the generic message once login is confirmed working.
-    final trimmed = raw.length > 160 ? raw.substring(0, 160) : raw;
-    return 'Login error: $trimmed';
+    return 'Something went wrong — please try again';
   }
 }

@@ -14,6 +14,7 @@ import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_input.dart';
+import '../../../../app/app.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -134,6 +135,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Fresh account — drop any cached per-user data left from a previous
       // session on this device (profile, bell, joined flags...).
       resetUserScopedProviders(ref);
+      ref.read(themeModeProvider.notifier).applyFor(SupabaseService.userId);
       ref.read(gamesProvider.notifier).load();
       // Agents are players too — but they start at profile so they see the
       // "verify to create games" path immediately.

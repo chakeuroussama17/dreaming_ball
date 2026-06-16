@@ -8,9 +8,11 @@ import '../../../../core/providers/content_providers.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_input.dart';
+import '../../../../app/app.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -49,6 +51,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Drop every cached per-user provider (profile, bell, games...) so
       // this session never shows the previous user's data.
       resetUserScopedProviders(ref);
+      // Load this user's own saved light/dark preference.
+      ref.read(themeModeProvider.notifier).applyFor(SupabaseService.userId);
       ref.read(gamesProvider.notifier).load();
 
       if (user.isAdmin) {

@@ -52,7 +52,14 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
         isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
-    return Scaffold(
+    // It's a root tab, so the system back button has nothing to pop and would
+    // exit the app — send it to Home instead.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) context.goNamed('home');
+      },
+      child: Scaffold(
       backgroundColor: bg,
       body: SafeArea(
         child: Column(
@@ -130,6 +137,29 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 2,
+        type: BottomNavigationBarType.fixed,
+        onTap: (i) {
+          switch (i) {
+            case 0:
+              context.goNamed('home');
+            case 1:
+              context.goNamed('leaderboard');
+            case 3:
+              context.goNamed('profile');
+            default:
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Rankings'),
+          BottomNavigationBarItem(icon: Icon(Icons.lock_outline), label: 'Private'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+        ],
+      ),
       ),
     );
   }

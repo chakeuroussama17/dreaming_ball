@@ -31,16 +31,18 @@ void main() async {
     debugPrint('Firebase/push init skipped: $e');
   }
 
-  // Load the saved theme before the first frame so there's no flash.
+  // Load the saved theme for the current session's user (per-user) before the
+  // first frame so there's no flash. Falls back to the 'guest' scope.
   final prefs = await SharedPreferences.getInstance();
-  final initialTheme =
-      ThemeModeNotifier.decode(prefs.getString(ThemeModeNotifier.prefsKey));
+  final scope = Supabase.instance.client.auth.currentUser?.id ?? 'guest';
+  final initialTheme = ThemeModeNotifier.decode(
+      prefs.getString(ThemeModeNotifier.keyFor(scope)));
 
   runApp(
     ProviderScope(
       overrides: [
         themeModeProvider
-            .overrideWith((ref) => ThemeModeNotifier(initialTheme)),
+            .overrideWith((ref) => ThemeModeNotifier(initialTheme, scope)),
       ],
       child: const DreamingBallApp(),
     ),

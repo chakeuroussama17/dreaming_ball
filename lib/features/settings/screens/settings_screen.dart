@@ -90,6 +90,9 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(agentVerificationProvider.notifier).state =
                     AgentVerification.notSubmitted;
                 resetUserScopedProviders(ref);
+                // Back to the guest theme so the next user doesn't inherit this
+                // account's light/dark choice.
+                ref.read(themeModeProvider.notifier).applyFor(null);
                 context.goNamed('login');
               },
               icon: const Icon(Icons.logout, size: 18, color: AppColors.tierElite),
