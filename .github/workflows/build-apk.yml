@@ -9,6 +9,11 @@ on:
     branches: [main]
   workflow_dispatch: # lets you trigger it manually from the Actions tab
 
+# Opt the JS-based actions into Node 24 (silences the Node 20 deprecation
+# warning). Harmless to the build either way.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
