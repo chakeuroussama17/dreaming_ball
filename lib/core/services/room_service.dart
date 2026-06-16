@@ -48,8 +48,51 @@ class RoomMember {
   });
 }
 
+/// A room in the "My Rooms" list, with how many have joined.
+class RoomSummary {
+  final Room room;
+  final int memberCount;
+  final bool isCreator;
+  const RoomSummary({
+    required this.room,
+    required this.memberCount,
+    required this.isCreator,
+  });
+}
+
 class RoomService {
   static final _sb = SupabaseService.supabase;
+
+  /// Every room the signed-in user created or joined, with member counts —
+  /// powers the "My Rooms" list so they can return to a room any time.
+  static Future<List<RoomSummary>> fetchMyRooms() async {
+    final uid = SupabaseService.userId;
+    if (uid == null) return const [];
+    try {
+      final rows = await _sb
+          .from('room_players')
+          .select('private_rooms!inner('
+              'id, creator_id, name, location, max_players, code)')
+          .eq('player_id', uid);
+
+      final result = <RoomSummary>[];
+      for (final r in rows) {
+        final rr = r['private_rooms'];
+        if (rr is! Map) continue;
+        final room = Room.fromRow(Map<String, dynamic>.from(rr));
+        final count =
+            await _sb.from('room_players').count().eq('room_id', room.id);
+        result.add(RoomSummary(
+          room: room,
+          memberCount: count,
+          isCreator: room.creatorId == uid,
+        ));
+      }
+      return result;
+    } catch (e) {
+      throw GameServiceException('Could not load your rooms');
+    }
+  }
 
   /// Creates a room with a server-generated unique 6-char code and adds the
   /// creator as the first member.

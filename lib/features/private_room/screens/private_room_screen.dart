@@ -18,7 +18,10 @@ class PrivateRoomScreen extends StatefulWidget {
 }
 
 class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
-  int _tab = 0; // 0 = create, 1 = join
+  int _tab = 0; // 0 = create, 1 = join, 2 = my rooms
+
+  // My Rooms tab — loaded lazily when the tab is opened.
+  Future<List<RoomSummary>>? _myRoomsFuture;
 
   // Create form
   final _createFormKey = GlobalKey<FormState>();
@@ -95,8 +98,9 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                 ),
                 child: Row(
                   children: [
-                    _tabPill('Create Room', 0, secondary),
-                    _tabPill('Join Room', 1, secondary),
+                    _tabPill('Create', 0, secondary),
+                    _tabPill('Join', 1, secondary),
+                    _tabPill('My Rooms', 2, secondary),
                   ],
                 ),
               ),
@@ -118,21 +122,29 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                     child: child,
                   ),
                 ),
-                child: _tab == 0
-                    ? _buildCreate(
-                        key: const ValueKey('create'),
-                        isDark: isDark,
-                        primary: primary,
-                        secondary: secondary,
-                        border: border,
-                      )
-                    : _buildJoin(
-                        key: const ValueKey('join'),
-                        isDark: isDark,
-                        primary: primary,
-                        secondary: secondary,
-                        border: border,
-                      ),
+                child: switch (_tab) {
+                  0 => _buildCreate(
+                      key: const ValueKey('create'),
+                      isDark: isDark,
+                      primary: primary,
+                      secondary: secondary,
+                      border: border,
+                    ),
+                  1 => _buildJoin(
+                      key: const ValueKey('join'),
+                      isDark: isDark,
+                      primary: primary,
+                      secondary: secondary,
+                      border: border,
+                    ),
+                  _ => _buildMyRooms(
+                      key: const ValueKey('myrooms'),
+                      isDark: isDark,
+                      primary: primary,
+                      secondary: secondary,
+                      border: border,
+                    ),
+                },
               ),
             ),
           ],
@@ -164,11 +176,20 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
     );
   }
 
+  void _selectTab(int index) {
+    setState(() {
+      _tab = index;
+      // (Re)load the list every time My Rooms is opened so it reflects the
+      // latest joins/leaves.
+      if (index == 2) _myRoomsFuture = RoomService.fetchMyRooms();
+    });
+  }
+
   Widget _tabPill(String label, int index, Color secondary) {
     final active = _tab == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _tab = index),
+        onTap: () => _selectTab(index),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 11),
@@ -186,6 +207,172 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // ── MY ROOMS TAB ────────────────────────────────────────────────────────
+
+  Widget _buildMyRooms({
+    required Key key,
+    required bool isDark,
+    required Color primary,
+    required Color secondary,
+    required Color border,
+  }) {
+    final surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    return RefreshIndicator(
+      key: key,
+      onRefresh: () async {
+        final f = RoomService.fetchMyRooms();
+        setState(() => _myRoomsFuture = f);
+        await f;
+      },
+      child: FutureBuilder<List<RoomSummary>>(
+        future: _myRoomsFuture,
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snap.hasError) {
+            return ListView(children: [
+              const SizedBox(height: 80),
+              Center(
+                child: Text('Could not load your rooms',
+                    style: GoogleFonts.inter(fontSize: 14, color: secondary)),
+              ),
+            ]);
+          }
+          final rooms = snap.data ?? const [];
+          if (rooms.isEmpty) {
+            return ListView(children: [
+              const SizedBox(height: 70),
+              Icon(Icons.groups_outlined,
+                  size: 48, color: secondary.withValues(alpha: 0.4)),
+              const SizedBox(height: 12),
+              Center(
+                child: Text('No rooms yet',
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: primary)),
+              ),
+              const SizedBox(height: 4),
+              Center(
+                child: Text('Create a room or join one with a code',
+                    style: GoogleFonts.inter(fontSize: 13, color: secondary)),
+              ),
+            ]);
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+            itemCount: rooms.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (_, i) {
+              final s = rooms[i];
+              return GestureDetector(
+                onTap: () async {
+                  await context.pushNamed('room-detail',
+                      pathParameters: {'id': s.room.id});
+                  // Coming back may have changed membership — refresh.
+                  if (mounted) {
+                    setState(() => _myRoomsFuture = RoomService.fetchMyRooms());
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: surface,
+                    border: Border.all(color: border),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.brandGradient,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.lock_outline,
+                            color: Colors.white, size: 22),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(s.room.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: primary)),
+                                ),
+                                if (s.isCreator) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 7, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          AppColors.orange.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(99),
+                                    ),
+                                    child: Text('Host',
+                                        style: GoogleFonts.inter(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.orange)),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 3),
+                            Row(children: [
+                              Icon(Icons.people_outline,
+                                  size: 13, color: secondary),
+                              const SizedBox(width: 4),
+                              Text('${s.memberCount}/${s.room.maxPlayers}',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12, color: secondary)),
+                              if ((s.room.location ?? '').isNotEmpty) ...[
+                                const SizedBox(width: 10),
+                                Icon(Icons.location_on_outlined,
+                                    size: 13, color: secondary),
+                                const SizedBox(width: 2),
+                                Flexible(
+                                  child: Text(s.room.location!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.inter(
+                                          fontSize: 12, color: secondary)),
+                                ),
+                              ],
+                            ]),
+                          ],
+                        ),
+                      ),
+                      Text(s.room.code,
+                          style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.5,
+                              color: AppColors.orange)),
+                      const SizedBox(width: 6),
+                      Icon(Icons.chevron_right, color: secondary),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
