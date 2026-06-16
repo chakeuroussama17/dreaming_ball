@@ -1,0 +1,48 @@
+name: Build Android APK
+
+# Builds a release APK in the cloud on every push to main (and on demand).
+# Download the finished APK from the run's "Artifacts" section — no local
+# Android SDK / Android Studio needed.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you trigger it manually from the Actions tab
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # .env is gitignored (it holds the Supabase key), so recreate it here
+      # from GitHub repository secrets. See README / setup notes.
+      - name: Create .env
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreaming-ball-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
