@@ -52,12 +52,13 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
         .where((g) => !g.agentPaidOut)
         .fold<double>(0, (s, g) => s + g.commission);
 
-    final stats = [
-      ('Games Created', '$gamesCreated'),
-      ('Players Managed', '$totalPlayers'),
-      ('Received', 'RM ${received.toStringAsFixed(0)}'),
-      ('Pending', 'RM ${pendingPay.toStringAsFixed(0)}'),
-    ];
+    // Group games by status so the agent sees what's happening at a glance.
+    final liveGames = myGames.where((g) => g.live).toList()
+      ..sort((a, b) => a.kickoff.compareTo(b.kickoff));
+    final upcomingGames = myGames.where((g) => !g.live && !g.ended).toList()
+      ..sort((a, b) => a.kickoff.compareTo(b.kickoff));
+    final pastGames = myGames.where((g) => g.ended).toList()
+      ..sort((a, b) => b.kickoff.compareTo(a.kickoff));
 
     return Scaffold(
       backgroundColor: bg,
@@ -85,43 +86,21 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
             ).animate().fadeIn(duration: 300.ms),
           if (!approved) const SizedBox(height: 16),
 
-          // Stats row
-          SizedBox(
-            height: 86,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: stats.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (ctx, i) => Container(
-                width: 140,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: surface,
-                  border: Border.all(color: border),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(stats[i].$1,
-                        style: GoogleFonts.inter(fontSize: 11, color: secondary)),
-                    Text(stats[i].$2,
-                        style: GoogleFonts.spaceGrotesk(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: primary)),
-                  ],
-                ),
-              ),
-            ),
+          // ── Earnings summary ──────────────────────────────────────────────
+          _earningsCard(received, pendingPay, primary, secondary, border),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                  child: _miniStat('Games created', '$gamesCreated',
+                      Icons.sports_soccer, primary, secondary, border, surface)),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: _miniStat('Players managed', '$totalPlayers',
+                      Icons.groups_outlined, primary, secondary, border, surface)),
+            ],
           ),
           const SizedBox(height: 24),
-
-          Text('My Games',
-              style: GoogleFonts.spaceGrotesk(
-                  fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
-          const SizedBox(height: 12),
 
           if (myGames.isEmpty)
             Container(
@@ -152,129 +131,150 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                 ],
               ),
             )
-          else
-            ...myGames.map((g) =>
-                _gameCard(context, g, primary, secondary, border, surface)),
+          else ...[
+            if (liveGames.isNotEmpty) ...[
+              _sectionHeader('Live now', liveGames.length, secondary,
+                  color: AppColors.tierElite),
+              ...liveGames.map((g) =>
+                  _gameCard(context, g, primary, secondary, border, surface)),
+              const SizedBox(height: 12),
+            ],
+            if (upcomingGames.isNotEmpty) ...[
+              _sectionHeader('Upcoming', upcomingGames.length, secondary),
+              ...upcomingGames.map((g) =>
+                  _gameCard(context, g, primary, secondary, border, surface)),
+              const SizedBox(height: 12),
+            ],
+            if (pastGames.isNotEmpty) ...[
+              _sectionHeader('Past games', pastGames.length, secondary),
+              ...pastGames.map((g) =>
+                  _gameCard(context, g, primary, secondary, border, surface)),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
 
-          // Upcoming payouts (next game's commission)
-          if (myGames.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            Text('Upcoming Payouts',
-                style: GoogleFonts.spaceGrotesk(
-                    fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  AppColors.pink.withValues(alpha: 0.06),
-                  AppColors.orange.withValues(alpha: 0.06),
-                ]),
-                border: Border.all(color: AppColors.orange.withValues(alpha: 0.2)),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${myGames.first.fieldName} · ${myGames.first.dateTime}',
-                      style: GoogleFonts.spaceGrotesk(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: primary)),
-                  const SizedBox(height: 6),
-                  Row(children: [
-                    Text('RM ${myGames.first.commission.toStringAsFixed(2)} ',
+  /// Big, clear money card: what's been paid to the agent vs still owed.
+  Widget _earningsCard(double received, double pending, Color primary,
+      Color secondary, Color border) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [
+          AppColors.pink.withValues(alpha: 0.10),
+          AppColors.orange.withValues(alpha: 0.10),
+        ]),
+        border: Border.all(color: AppColors.orange.withValues(alpha: 0.25)),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.account_balance_wallet_outlined,
+                  size: 16, color: AppColors.orange),
+              const SizedBox(width: 6),
+              Text('Your earnings',
+                  style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: secondary)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('RM ${received.toStringAsFixed(0)}',
                         style: GoogleFonts.spaceGrotesk(
-                            fontSize: 18,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF22C55E))),
+                    Text('Received',
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: secondary)),
+                  ],
+                ),
+              ),
+              Container(width: 1, height: 38, color: border),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('RM ${pending.toStringAsFixed(0)}',
+                        style: GoogleFonts.spaceGrotesk(
+                            fontSize: 26,
                             fontWeight: FontWeight.w800,
                             color: AppColors.orange)),
-                    Text('(your commission)',
-                        style: GoogleFonts.inter(fontSize: 12, color: secondary)),
-                  ]),
-                  const SizedBox(height: 8),
-                  Text('Released 1 hour before kick-off',
-                      style: GoogleFonts.inter(fontSize: 12, color: secondary)),
-                  const SizedBox(height: 10),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Stack(children: [
-                      Container(height: 6, color: border),
-                      FractionallySizedBox(
-                        widthFactor: 0.7,
-                        child: Container(
-                          height: 6,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [AppColors.orange, AppColors.cyan]),
-                          ),
-                        ),
-                      ),
-                    ]),
-                  ),
-                ],
+                    Text('Pending',
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: secondary)),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text('Admin sends your commission ~1 hour before each kick-off.',
+              style: GoogleFonts.inter(fontSize: 11, color: secondary)),
+        ],
+      ),
+    );
+  }
 
-          const SizedBox(height: 24),
-          Text('Recent Earnings',
+  Widget _miniStat(String label, String value, IconData icon, Color primary,
+      Color secondary, Color border, Color surface) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface,
+        border: Border.all(color: border),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: AppColors.orange),
+          const SizedBox(height: 8),
+          Text(value,
               style: GoogleFonts.spaceGrotesk(
-                  fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
-          const SizedBox(height: 12),
-          if (myGames.isEmpty)
-            Text('No earnings yet.',
-                style: GoogleFonts.inter(fontSize: 13, color: secondary))
-          else
-            ...myGames.map((g) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(g.fieldName,
-                                style: GoogleFonts.spaceGrotesk(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: primary)),
-                            Text(g.dateTime.split('·').first.trim(),
-                                style: GoogleFonts.inter(
-                                    fontSize: 11, color: secondary)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Has the admin sent this commission yet?
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: (g.agentPaidOut
-                                  ? const Color(0xFF22C55E)
-                                  : AppColors.orange)
-                              .withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(99),
-                        ),
-                        child: Text(g.agentPaidOut ? 'Paid' : 'Pending',
-                            style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: g.agentPaidOut
-                                    ? const Color(0xFF22C55E)
-                                    : AppColors.orange)),
-                      ),
-                      const SizedBox(width: 12),
-                      Text('+RM ${g.commission.toStringAsFixed(0)}',
-                          style: GoogleFonts.spaceGrotesk(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: g.agentPaidOut
-                                  ? const Color(0xFF22C55E)
-                                  : primary)),
-                    ],
-                  ),
-                )),
+                  fontSize: 20, fontWeight: FontWeight.w800, color: primary)),
+          Text(label,
+              style: GoogleFonts.inter(fontSize: 11, color: secondary)),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String text, int count, Color secondary,
+      {Color? color}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          if (color != null) ...[
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+          ],
+          Text(text,
+              style: GoogleFonts.spaceGrotesk(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: color ?? secondary)),
+          const SizedBox(width: 6),
+          Text('($count)',
+              style: GoogleFonts.inter(fontSize: 13, color: secondary)),
         ],
       ),
     );
@@ -396,12 +396,38 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            'RM ${(g.price * g.filledSlots).toStringAsFixed(0)} collected · RM ${g.commission.toStringAsFixed(0)} commission',
-            style: GoogleFonts.spaceGrotesk(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF22C55E)),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'RM ${(g.price * g.filledSlots).toStringAsFixed(0)} collected · RM ${g.commission.toStringAsFixed(0)} commission',
+                  style: GoogleFonts.spaceGrotesk(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF22C55E)),
+                ),
+              ),
+              // Once the game is over, show whether the admin has paid you.
+              if (g.ended)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: (g.agentPaidOut
+                            ? const Color(0xFF22C55E)
+                            : AppColors.orange)
+                        .withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(g.agentPaidOut ? 'Paid' : 'Pending',
+                      style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: g.agentPaidOut
+                              ? const Color(0xFF22C55E)
+                              : AppColors.orange)),
+                ),
+            ],
           ),
           const SizedBox(height: 12),
           Row(
