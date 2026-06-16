@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/services/game_service.dart' show GameServiceException;
 import '../../../../core/services/room_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -264,115 +265,170 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
               ),
             ]);
           }
-          return ListView.separated(
+          // Upcoming = not yet ended (soonest first); Past = ended (latest first).
+          final upcoming = rooms.where((s) => !s.room.isEnded).toList()
+            ..sort((a, b) => (a.room.scheduledAt ?? DateTime(2100))
+                .compareTo(b.room.scheduledAt ?? DateTime(2100)));
+          final past = rooms.where((s) => s.room.isEnded).toList()
+            ..sort((a, b) => (b.room.scheduledAt ?? DateTime(0))
+                .compareTo(a.room.scheduledAt ?? DateTime(0)));
+          return ListView(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-            itemCount: rooms.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            itemBuilder: (_, i) {
-              final s = rooms[i];
-              return GestureDetector(
-                onTap: () async {
-                  await context.pushNamed('room-detail',
-                      pathParameters: {'id': s.room.id});
-                  // Coming back may have changed membership — refresh.
-                  if (mounted) {
-                    setState(() => _myRoomsFuture = RoomService.fetchMyRooms());
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: surface,
-                    border: Border.all(color: border),
-                    borderRadius: BorderRadius.circular(16),
+            children: [
+              if (upcoming.isNotEmpty) ...[
+                _sectionHeader('Upcoming', secondary),
+                for (final s in upcoming)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _roomTile(s, primary, secondary, border, surface,
+                        ended: false),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.brandGradient,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.lock_outline,
-                            color: Colors.white, size: 22),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(s.room.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.spaceGrotesk(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: primary)),
-                                ),
-                                if (s.isCreator) ...[
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 7, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          AppColors.orange.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(99),
-                                    ),
-                                    child: Text('Host',
-                                        style: GoogleFonts.inter(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppColors.orange)),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            const SizedBox(height: 3),
-                            Row(children: [
-                              Icon(Icons.people_outline,
-                                  size: 13, color: secondary),
-                              const SizedBox(width: 4),
-                              Text('${s.memberCount}/${s.room.maxPlayers}',
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12, color: secondary)),
-                              if ((s.room.location ?? '').isNotEmpty) ...[
-                                const SizedBox(width: 10),
-                                Icon(Icons.location_on_outlined,
-                                    size: 13, color: secondary),
-                                const SizedBox(width: 2),
-                                Flexible(
-                                  child: Text(s.room.location!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.inter(
-                                          fontSize: 12, color: secondary)),
-                                ),
-                              ],
-                            ]),
-                          ],
-                        ),
-                      ),
-                      Text(s.room.code,
-                          style: GoogleFonts.spaceGrotesk(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.5,
-                              color: AppColors.orange)),
-                      const SizedBox(width: 6),
-                      Icon(Icons.chevron_right, color: secondary),
-                    ],
+              ],
+              if (past.isNotEmpty) ...[
+                if (upcoming.isNotEmpty) const SizedBox(height: 10),
+                _sectionHeader('Past games', secondary),
+                for (final s in past)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _roomTile(s, primary, secondary, border, surface,
+                        ended: true),
                   ),
-                ),
-              );
-            },
+              ],
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String text, Color secondary) => Padding(
+        padding: const EdgeInsets.only(bottom: 10, top: 2),
+        child: Text(text.toUpperCase(),
+            style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: secondary)),
+      );
+
+  Widget _roomTile(RoomSummary s, Color primary, Color secondary, Color border,
+      Color surface,
+      {required bool ended}) {
+    final dateLabel = s.room.scheduledAt == null
+        ? null
+        : DateFormat('EEE, MMM d · h:mm a').format(s.room.scheduledAt!);
+    return Opacity(
+      opacity: ended ? 0.65 : 1,
+      child: GestureDetector(
+        onTap: () async {
+          await context
+              .pushNamed('room-detail', pathParameters: {'id': s.room.id});
+          // Coming back may have changed membership — refresh.
+          if (mounted) {
+            setState(() => _myRoomsFuture = RoomService.fetchMyRooms());
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: surface,
+            border: Border.all(color: border),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  gradient: ended ? null : AppColors.brandGradient,
+                  color: ended ? secondary.withValues(alpha: 0.15) : null,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(ended ? Icons.history : Icons.lock_outline,
+                    color: ended ? secondary : Colors.white, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(s.room.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: primary)),
+                        ),
+                        if (s.isCreator) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.orange.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(99),
+                            ),
+                            child: Text('Host',
+                                style: GoogleFonts.inter(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.orange)),
+                          ),
+                        ],
+                      ],
+                    ),
+                    if (dateLabel != null) ...[
+                      const SizedBox(height: 3),
+                      Row(children: [
+                        Icon(Icons.schedule, size: 13, color: secondary),
+                        const SizedBox(width: 4),
+                        Text(dateLabel,
+                            style: GoogleFonts.inter(
+                                fontSize: 12, color: secondary)),
+                      ]),
+                    ],
+                    const SizedBox(height: 3),
+                    Row(children: [
+                      Icon(Icons.people_outline, size: 13, color: secondary),
+                      const SizedBox(width: 4),
+                      Text('${s.memberCount}/${s.room.maxPlayers}',
+                          style: GoogleFonts.inter(
+                              fontSize: 12, color: secondary)),
+                      if ((s.room.location ?? '').isNotEmpty) ...[
+                        const SizedBox(width: 10),
+                        Icon(Icons.location_on_outlined,
+                            size: 13, color: secondary),
+                        const SizedBox(width: 2),
+                        Flexible(
+                          child: Text(s.room.location!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                  fontSize: 12, color: secondary)),
+                        ),
+                      ],
+                    ]),
+                  ],
+                ),
+              ),
+              if (!ended) ...[
+                Text(s.room.code,
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
+                        color: AppColors.orange)),
+                const SizedBox(width: 6),
+              ],
+              Icon(Icons.chevron_right, color: secondary),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -515,12 +571,20 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
     if (!_createFormKey.currentState!.validate()) return;
     setState(() => _creating = true);
     try {
-      // Room schema has no date/time columns — the room is a persistent
-      // squad; date/time are collected for UX but not stored yet.
+      // Combine the picked date + time into the match start. A room counts as
+      // ended 2 hours after this (handled in Room.isEnded).
+      final start = DateTime(
+        _date!.year,
+        _date!.month,
+        _date!.day,
+        _time!.hour,
+        _time!.minute,
+      );
       final room = await RoomService.createRoom(
         name: _roomNameCtrl.text.trim(),
         location: _locationCtrl.text.trim(),
         maxPlayers: int.tryParse(_maxPlayersCtrl.text) ?? 10,
+        scheduledAt: start,
       );
       if (!mounted) return;
       setState(() => _creating = false);

@@ -9,6 +9,7 @@ class Room {
   final String? location;
   final int maxPlayers;
   final String code;
+  final DateTime? scheduledAt; // match start time (local)
 
   const Room({
     required this.id,
@@ -17,6 +18,7 @@ class Room {
     this.location,
     required this.maxPlayers,
     required this.code,
+    this.scheduledAt,
   });
 
   factory Room.fromRow(Map<String, dynamic> r) => Room(
@@ -26,7 +28,16 @@ class Room {
         location: r['location'] as String?,
         maxPlayers: (r['max_players'] ?? 10) as int,
         code: (r['code'] ?? '') as String,
+        scheduledAt: r['scheduled_at'] == null
+            ? null
+            : DateTime.parse(r['scheduled_at'] as String).toLocal(),
       );
+
+  /// A room is "ended" 2 hours after its scheduled start. Rooms with no date
+  /// set are treated as always upcoming (never ended).
+  bool get isEnded =>
+      scheduledAt != null &&
+      DateTime.now().isAfter(scheduledAt!.add(const Duration(hours: 2)));
 }
 
 /// A member of a room, with profile data for the roster list.
@@ -72,7 +83,7 @@ class RoomService {
       final rows = await _sb
           .from('room_players')
           .select('private_rooms!inner('
-              'id, creator_id, name, location, max_players, code)')
+              'id, creator_id, name, location, max_players, code, scheduled_at)')
           .eq('player_id', uid);
 
       final result = <RoomSummary>[];
@@ -102,6 +113,7 @@ class RoomService {
     required String name,
     String? location,
     required int maxPlayers,
+    DateTime? scheduledAt,
   }) async {
     final uid = SupabaseService.userId;
     if (uid == null) throw GameServiceException('You must be signed in');
@@ -116,6 +128,7 @@ class RoomService {
             'location': location,
             'max_players': maxPlayers,
             'code': code,
+            'scheduled_at': scheduledAt?.toUtc().toIso8601String(),
           })
           .select()
           .single();
