@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/admin_providers.dart';
@@ -291,41 +292,124 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: surface,
+      isScrollControlled: true, // allow the sheet to grow + scroll
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${a.name} — Documents',
-                style: GoogleFonts.spaceGrotesk(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: primary)),
-            const SizedBox(height: 4),
-            Text('${a.idType ?? 'ID'} documents',
-                style: GoogleFonts.inter(fontSize: 12, color: secondary)),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                    child: _docBox('${a.idType ?? 'ID'} Front', a.idFrontPath,
-                        border, secondary)),
-                const SizedBox(width: 12),
-                Expanded(
-                    child: _docBox('${a.idType ?? 'ID'} Back', a.idBackPath,
-                        border, secondary)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text('Bank: ${a.bankName}',
-                style: GoogleFonts.inter(fontSize: 13, color: secondary)),
-            Text('Account: ${a.accountNumber}',
-                style: GoogleFonts.inter(fontSize: 13, color: secondary)),
-          ],
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (ctx, scrollCtrl) => SingleChildScrollView(
+          controller: scrollCtrl,
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: secondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text('${a.name} — Verification',
+                  style: GoogleFonts.spaceGrotesk(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: primary)),
+              Text(a.email,
+                  style: GoogleFonts.inter(fontSize: 12, color: secondary)),
+              const SizedBox(height: 16),
+
+              // ── Identity ──────────────────────────────────────────────────
+              _docSectionTitle('Identity', secondary),
+              _docRow('ID Type', a.idType ?? '—', secondary, primary),
+              _docRow('ID Number', a.idNumber ?? '—', secondary, primary),
+              _docRow('Phone', a.phone, secondary, primary),
+              _docRow('Registered', a.registeredAt, secondary, primary),
+              const SizedBox(height: 16),
+
+              // ── Bank (for payouts) ────────────────────────────────────────
+              _docSectionTitle('Bank (DuitNow payout)', secondary),
+              _docRow('Bank', a.bankName, secondary, primary),
+              _docRow('Account No.', a.accountNumber.isEmpty ? '—' : a.accountNumber,
+                  secondary, primary, copyable: true),
+              _docRow('Account Holder', a.accountHolder ?? '—', secondary, primary),
+              const SizedBox(height: 18),
+
+              // ── Documents ─────────────────────────────────────────────────
+              Row(
+                children: [
+                  _docSectionTitle('Documents', secondary),
+                  const Spacer(),
+                  Icon(Icons.touch_app_outlined, size: 13, color: secondary),
+                  const SizedBox(width: 4),
+                  Text('Tap to zoom',
+                      style: GoogleFonts.inter(fontSize: 11, color: secondary)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: _docBox('${a.idType ?? 'ID'} Front', a.idFrontPath,
+                          border, secondary)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: _docBox('${a.idType ?? 'ID'} Back', a.idBackPath,
+                          border, secondary)),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _docSectionTitle(String text, Color secondary) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(text.toUpperCase(),
+            style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: secondary)),
+      );
+
+  Widget _docRow(String k, String v, Color secondary, Color valueColor,
+      {bool copyable = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+              width: 110,
+              child: Text(k,
+                  style: GoogleFonts.inter(fontSize: 13, color: secondary))),
+          Expanded(
+            child: Text(v,
+                style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: valueColor)),
+          ),
+          if (copyable && v != '—')
+            GestureDetector(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: v));
+                _snack('Copied');
+              },
+              child: Icon(Icons.copy, size: 15, color: secondary),
+            ),
+        ],
       ),
     );
   }
@@ -333,47 +417,97 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
   Widget _docBox(String label, String? path, Color border, Color secondary) {
     return Column(
       children: [
-        Container(
-          height: 120,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            border: Border.all(color: border),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: path == null
-              ? Center(
+        // Private bucket → fetch a short-lived signed URL, then show it.
+        FutureBuilder<String?>(
+          future: path == null ? Future.value(null) : AdminService.kycSignedUrl(path),
+          builder: (ctx, snap) {
+            Widget inner;
+            String? url;
+            if (path == null) {
+              inner = Center(
                   child: Icon(Icons.image_not_supported_outlined,
-                      color: secondary, size: 28))
-              // Private bucket → fetch a short-lived signed URL, then show it.
-              : FutureBuilder<String?>(
-                  future: AdminService.kycSignedUrl(path),
-                  builder: (ctx, snap) {
-                    if (snap.connectionState != ConnectionState.done) {
-                      return const Center(
-                          child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: AppColors.orange)));
-                    }
-                    final url = snap.data;
-                    if (url == null) {
-                      return Center(
-                          child: Icon(Icons.broken_image_outlined,
-                              color: secondary, size: 28));
-                    }
-                    return Image.network(url,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        errorBuilder: (_, _, _) => Center(
-                            child: Icon(Icons.broken_image_outlined,
-                                color: secondary, size: 28)));
-                  },
+                      color: secondary, size: 28));
+            } else if (snap.connectionState != ConnectionState.done) {
+              inner = const Center(
+                  child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: AppColors.orange)));
+            } else if ((url = snap.data) == null) {
+              inner = Center(
+                  child: Icon(Icons.broken_image_outlined,
+                      color: secondary, size: 28));
+            } else {
+              inner = Image.network(url!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 140,
+                  errorBuilder: (_, _, _) => Center(
+                      child: Icon(Icons.broken_image_outlined,
+                          color: secondary, size: 28)));
+            }
+            return GestureDetector(
+              onTap: url == null ? null : () => _openFullImage(url!, label),
+              child: Container(
+                height: 140,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  border: Border.all(color: border),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: inner,
+              ),
+            );
+          },
         ),
         const SizedBox(height: 6),
         Text(label, style: GoogleFonts.inter(fontSize: 11, color: secondary)),
       ],
+    );
+  }
+
+  /// Full-screen, pinch-to-zoom view of a document image.
+  void _openFullImage(String url, String label) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.92),
+      builder: (ctx) => Stack(
+        children: [
+          // Pinch / pan to zoom.
+          Positioned.fill(
+            child: InteractiveViewer(
+              minScale: 0.8,
+              maxScale: 5,
+              child: Center(
+                child: Image.network(url,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, _, _) => const Icon(
+                        Icons.broken_image_outlined,
+                        color: Colors.white54,
+                        size: 48)),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 16,
+            child: Text(label,
+                style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white)),
+          ),
+          Positioned(
+            top: 32,
+            right: 12,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 28),
+              onPressed: () => Navigator.pop(ctx),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

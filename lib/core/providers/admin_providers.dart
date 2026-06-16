@@ -215,6 +215,8 @@ class AgentRecord {
   final AdminAgentStatus status;
   final String? rejectionReason;
   final String? idType;
+  final String? idNumber;
+  final String? accountHolder;
   final String? idFrontPath; // path in private kyc-documents bucket
   final String? idBackPath;
 
@@ -229,6 +231,8 @@ class AgentRecord {
     required this.status,
     this.rejectionReason,
     this.idType,
+    this.idNumber,
+    this.accountHolder,
     this.idFrontPath,
     this.idBackPath,
   });
@@ -245,6 +249,8 @@ class AgentRecord {
         status: status ?? this.status,
         rejectionReason: rejectionReason ?? this.rejectionReason,
         idType: idType,
+        idNumber: idNumber,
+        accountHolder: accountHolder,
         idFrontPath: idFrontPath,
         idBackPath: idBackPath,
       );
@@ -280,6 +286,8 @@ class AgentsNotifier extends StateNotifier<List<AgentRecord>> {
               status: _agentStatusFromString(r['status'] as String?),
               rejectionReason: r['rejection_reason'] as String?,
               idType: r['id_type'] as String?,
+              idNumber: r['id_number'] as String?,
+              accountHolder: r['account_holder'] as String?,
               idFrontPath: r['id_front_url'] as String?,
               idBackPath: r['id_back_url'] as String?,
             );
