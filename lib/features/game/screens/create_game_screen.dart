@@ -362,33 +362,35 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             const SizedBox(height: 14),
             _priceBreakdown(primary, secondary),
 
-            // Payment QR — only relevant when players actually pay.
-            if (_playerPrice > 0) ...[
-              const SizedBox(height: 20),
-              _label('Payment QR (TNG / bank)', secondary),
-              const SizedBox(height: 4),
-              Text(
-                'Players scan this to pay you. You confirm each payment from the '
-                'game once the money arrives.',
-                style: GoogleFonts.inter(fontSize: 11, color: secondary),
+            // Payment QR — always shown so the agent never misses it. Required
+            // for paid games; for a free game (cost 0) it's simply optional.
+            const SizedBox(height: 20),
+            _label(
+                _playerPrice > 0
+                    ? 'Payment QR (TNG / bank)'
+                    : 'Payment QR (optional — free game)',
+                secondary),
+            const SizedBox(height: 4),
+            Text(
+              'Players scan this to pay you. You confirm each payment from the '
+              'game once the money arrives.',
+              style: GoogleFonts.inter(fontSize: 11, color: secondary),
+            ),
+            const SizedBox(height: 8),
+            _qrPicker(secondary, surface),
+            if (_prefilledQrUrl != null && _qr == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text('Reusing your last QR — tap to change',
+                    style: GoogleFonts.inter(fontSize: 11, color: secondary)),
               ),
-              const SizedBox(height: 8),
-              _qrPicker(secondary, surface),
-              if (_prefilledQrUrl != null && _qr == null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text('Reusing your last QR — tap to change',
-                      style:
-                          GoogleFonts.inter(fontSize: 11, color: secondary)),
-                ),
-              if (_qrError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text('Payment QR is required for paid games',
-                      style: GoogleFonts.inter(
-                          fontSize: 11, color: AppColors.tierElite)),
-                ),
-            ],
+            if (_qrError)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text('Payment QR is required for paid games',
+                    style: GoogleFonts.inter(
+                        fontSize: 11, color: AppColors.tierElite)),
+              ),
 
             const SizedBox(height: 24),
             CustomButton(

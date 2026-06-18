@@ -242,6 +242,16 @@ class GameService {
     }
   }
 
+  /// Removes abandoned games (scheduled, past kick-off, nobody joined) so they
+  /// don't linger in the feed. Best-effort — never throws to the caller.
+  static Future<void> cleanupEmptyGames() async {
+    try {
+      await _sb.rpc('cleanup_empty_games');
+    } catch (_) {
+      // Cleanup is opportunistic; ignore failures (offline, RPC not deployed).
+    }
+  }
+
   /// The QR image URL from this agent's most recent game, so the create form
   /// can pre-fill it (they rarely change their TNG/bank QR between games).
   static Future<String?> fetchLastQrUrl() async {

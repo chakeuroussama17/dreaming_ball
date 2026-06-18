@@ -193,6 +193,9 @@ class GamesNotifier extends StateNotifier<List<Game>> {
   Future<void> load() async {
     _ref.read(gamesStatusProvider.notifier).state = GamesStatus.loading;
     try {
+      // Sweep abandoned games (past kick-off, nobody joined) before fetching,
+      // so they never show up in the feed.
+      await GameService.cleanupEmptyGames();
       final results = await Future.wait([
         GameService.fetchPublicGames(),
         GameService.fetchMyGames(),
