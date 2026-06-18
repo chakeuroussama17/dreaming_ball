@@ -20,6 +20,11 @@ class AppUser {
   final String? phone;
   final String role; // 'player' | 'agent' | 'admin'
   final String? avatarUrl;
+  final String? gender;
+  final String? country; // country of origin
+  final String? state;
+  final String? city;
+  final DateTime? dateOfBirth;
 
   const AppUser({
     required this.id,
@@ -28,6 +33,11 @@ class AppUser {
     this.phone,
     required this.role,
     this.avatarUrl,
+    this.gender,
+    this.country,
+    this.state,
+    this.city,
+    this.dateOfBirth,
   });
 
   factory AppUser.fromRow(Map<String, dynamic> row) => AppUser(
@@ -37,10 +47,30 @@ class AppUser {
         phone: row['phone'] as String?,
         role: (row['role'] ?? 'player') as String,
         avatarUrl: row['avatar_url'] as String?,
+        gender: row['gender'] as String?,
+        country: row['country'] as String?,
+        state: row['state'] as String?,
+        city: row['city'] as String?,
+        dateOfBirth: row['date_of_birth'] == null
+            ? null
+            : DateTime.tryParse(row['date_of_birth'] as String),
       );
 
   bool get isAdmin => role == 'admin';
   bool get isAgent => role == 'agent';
+
+  /// Age in whole years from date of birth, or null if unknown.
+  int? get age {
+    final dob = dateOfBirth;
+    if (dob == null) return null;
+    final now = DateTime.now();
+    var a = now.year - dob.year;
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
+      a--;
+    }
+    return a;
+  }
 }
 
 class AuthService {
@@ -82,20 +112,35 @@ class AuthService {
     required String role, // 'player' | 'agent'
     String? position, // 'GK' | 'Defender' | 'Midfielder' | 'Striker'
     String? ageGroup,
+    String? gender,
+    String? country, // country of origin
+    String? state,
+    String? city,
+    DateTime? dateOfBirth,
   }) async {
+    final dob = dateOfBirth == null
+        ? null
+        : '${dateOfBirth.year.toString().padLeft(4, '0')}-'
+            '${dateOfBirth.month.toString().padLeft(2, '0')}-'
+            '${dateOfBirth.day.toString().padLeft(2, '0')}';
     try {
       final res = await _sb.auth.signUp(
         email: email,
         password: password,
-        // Keep position/age group/phone in auth metadata too, so they
-        // survive the email-confirmation backfill path (where the users row
-        // is written later, in signIn).
+        // Keep profile details in auth metadata too, so they survive the
+        // email-confirmation backfill path (where the users row is written
+        // later, in signIn).
         data: {
           'full_name': fullName,
           'role': role,
           'phone': phone,
           'position': ?position,
           'age_group': ?ageGroup,
+          'gender': ?gender,
+          'country': ?country,
+          'state': ?state,
+          'city': ?city,
+          'date_of_birth': ?dob,
         },
       );
       final user = res.user;
@@ -115,6 +160,11 @@ class AuthService {
         'full_name': fullName,
         'phone': phone,
         'role': role,
+        'gender': gender,
+        'country': country,
+        'state': state,
+        'city': city,
+        'date_of_birth': dob,
       });
 
       // The trigger created the player profile with a default position;
@@ -128,6 +178,11 @@ class AuthService {
         fullName: fullName,
         phone: phone,
         role: role,
+        gender: gender,
+        country: country,
+        state: state,
+        city: city,
+        dateOfBirth: dateOfBirth,
       );
     } on AuthFailure {
       rethrow;
@@ -256,6 +311,11 @@ class AuthService {
       'full_name': meta['full_name'] ?? 'Player',
       'phone': meta['phone'],
       'role': meta['role'] ?? 'player',
+      'gender': meta['gender'],
+      'country': meta['country'],
+      'state': meta['state'],
+      'city': meta['city'],
+      'date_of_birth': meta['date_of_birth'],
     };
     await _sb.from('users').insert(insert);
     // The trigger just created player_profiles with a default position;

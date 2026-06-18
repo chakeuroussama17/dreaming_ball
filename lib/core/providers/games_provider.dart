@@ -170,12 +170,11 @@ class Game {
   /// This is a free game — no payment / confirmation needed.
   bool get isFree => price <= 0;
 
-  /// Per-player price from a pitch rental cost: split across players + 30%.
-  static double priceFor(double fieldCost, int players) =>
-      players == 0 ? 0 : (fieldCost / players) * 1.30;
-
-  /// Agent commission from a pitch rental cost.
-  static double commissionFor(double fieldCost) => fieldCost * 0.20;
+  /// Per-player price: the pitch rental plus the agent's commission, split
+  /// evenly across players. The platform takes no cut — every ringgit goes
+  /// to the pitch owner (fieldCost) or the agent (commission).
+  static double priceFor(double fieldCost, double commission, int players) =>
+      players == 0 ? 0 : (fieldCost + commission) / players;
 }
 
 /// Where the games feed is in its load cycle (drives skeletons / retry).

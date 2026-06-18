@@ -43,6 +43,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   // Step 3 — Profile
   String? _position;
   String? _ageGroup;
+  // Demographics (for analytics / monetization)
+  DateTime? _dob;
+  String? _gender;
+  String? _state;
+  final _countryCtrl = TextEditingController(text: 'Malaysia');
+  final _cityCtrl = TextEditingController();
+
+  static const _genders = ['Male', 'Female', 'Other'];
+  static const _myStates = [
+    'Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang',
+    'Penang', 'Perak', 'Perlis', 'Sabah', 'Sarawak', 'Selangor',
+    'Terengganu', 'Kuala Lumpur', 'Putrajaya', 'Labuan',
+  ];
 
   // Step 4 — Photo
   Uint8List? _photoBytes;
@@ -56,6 +69,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _phoneCtrl.dispose();
     _passCtrl.dispose();
     _confirmCtrl.dispose();
+    _countryCtrl.dispose();
+    _cityCtrl.dispose();
     super.dispose();
   }
 
@@ -83,6 +98,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         _snack('Please select your position');
         return;
       }
+      if (_dob == null) {
+        _snack('Please select your date of birth');
+        return;
+      }
+      if (_gender == null) {
+        _snack('Please select your gender');
+        return;
+      }
+      if (_countryCtrl.text.trim().isEmpty) {
+        _snack('Please enter your country of origin');
+        return;
+      }
+      if (_state == null) {
+        _snack('Please select your state');
+        return;
+      }
+      if (_cityCtrl.text.trim().isEmpty) {
+        _snack('Please enter your city');
+        return;
+      }
       setState(() => _step = 4);
     } else {
       _submit();
@@ -105,6 +140,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         position: _position,
         // UI labels use en-dashes ('16–20'); schema check uses '16-20'.
         ageGroup: _ageGroup?.replaceAll('–', '-'),
+        gender: _gender,
+        country: _countryCtrl.text.trim(),
+        state: _state,
+        city: _cityCtrl.text.trim(),
+        dateOfBirth: _dob,
       );
 
       if (_photoBytes != null) {
@@ -571,10 +611,150 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             }).toList(),
           ),
 
+          const SizedBox(height: 24),
+          _aboutYouSection(isDark),
+
           const SizedBox(height: 28),
           CustomButton(label: 'Next', onPressed: _next),
         ],
       ),
+    );
+  }
+
+  // Demographics — collected once at signup for analytics / monetization.
+  Widget _aboutYouSection(bool isDark) {
+    final surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final primary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final secondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
+    final dobText = _dob == null
+        ? 'Select date of birth'
+        : '${_dob!.day.toString().padLeft(2, '0')}/'
+            '${_dob!.month.toString().padLeft(2, '0')}/${_dob!.year}';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionLabel('About You', isDark),
+        const SizedBox(height: 10),
+
+        // Date of birth
+        GestureDetector(
+          onTap: () async {
+            final now = DateTime.now();
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _dob ?? DateTime(now.year - 20, now.month, now.day),
+              firstDate: DateTime(now.year - 80),
+              lastDate: now,
+              helpText: 'Select your date of birth',
+            );
+            if (picked != null) setState(() => _dob = picked);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+            decoration: BoxDecoration(
+              color: surface,
+              border: Border.all(color: border),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.cake_outlined, size: 18, color: secondary),
+                const SizedBox(width: 10),
+                Text(dobText,
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: _dob == null ? secondary : primary)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // Gender
+        Text('Gender',
+            style: GoogleFonts.inter(
+                fontSize: 13, fontWeight: FontWeight.w500, color: secondary)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          children: _genders.map((g) {
+            final sel = _gender == g;
+            return GestureDetector(
+              onTap: () => setState(() => _gender = g),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                decoration: BoxDecoration(
+                  gradient: sel ? AppColors.brandGradient : null,
+                  color: sel ? null : surface,
+                  borderRadius: BorderRadius.circular(100),
+                  border:
+                      Border.all(color: sel ? Colors.transparent : border),
+                ),
+                child: Text(g,
+                    style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: sel ? Colors.white : secondary)),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 14),
+
+        CustomInput(
+          label: 'Country of Origin',
+          hint: 'e.g. Malaysia',
+          controller: _countryCtrl,
+        ),
+        const SizedBox(height: 14),
+
+        // State
+        Text('State',
+            style: GoogleFonts.inter(
+                fontSize: 13, fontWeight: FontWeight.w500, color: secondary)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          initialValue: _state,
+          isExpanded: true,
+          dropdownColor: surface,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: surface,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.orange),
+            ),
+          ),
+          hint: Text('Select state',
+              style: GoogleFonts.inter(fontSize: 14, color: secondary)),
+          style: GoogleFonts.inter(fontSize: 14, color: primary),
+          items: [
+            for (final s in _myStates)
+              DropdownMenuItem(value: s, child: Text(s)),
+          ],
+          onChanged: (v) => setState(() => _state = v),
+        ),
+        const SizedBox(height: 14),
+
+        CustomInput(
+          label: 'City / Area',
+          hint: 'e.g. Petaling Jaya',
+          controller: _cityCtrl,
+        ),
+      ],
     );
   }
 

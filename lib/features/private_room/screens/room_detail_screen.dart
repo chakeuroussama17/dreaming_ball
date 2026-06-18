@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/services/game_service.dart' show GameServiceException;
 import '../../../../core/services/room_service.dart';
 import '../../../../core/services/supabase_service.dart';
@@ -187,6 +188,65 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                   children: [
+                    // ── Date / time banner ───────────────────────────────
+                    if (room.scheduledAt != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            AppColors.orange.withValues(alpha: 0.10),
+                            AppColors.pink.withValues(alpha: 0.10),
+                          ]),
+                          border: Border.all(
+                              color: AppColors.orange.withValues(alpha: 0.3)),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.event,
+                                size: 20, color: AppColors.orange),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateFormat('EEEE, MMM d')
+                                        .format(room.scheduledAt!),
+                                    style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: primary),
+                                  ),
+                                  Text(
+                                    DateFormat('h:mm a')
+                                        .format(room.scheduledAt!),
+                                    style: GoogleFonts.inter(
+                                        fontSize: 13, color: secondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (room.isEnded)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: secondary.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(99),
+                                ),
+                                child: Text('Ended',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: secondary)),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
                     // ── Info card ─────────────────────────────────────────
                     Container(
                       decoration: BoxDecoration(

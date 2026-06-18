@@ -26,6 +26,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   final _detailsCtrl = TextEditingController();
   final _contactCtrl = TextEditingController();
   final _costCtrl = TextEditingController();
+  final _commissionCtrl = TextEditingController();
 
   final _picker = ImagePicker();
   Uint8List? _photo;
@@ -60,12 +61,13 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     _detailsCtrl.dispose();
     _contactCtrl.dispose();
     _costCtrl.dispose();
+    _commissionCtrl.dispose();
     super.dispose();
   }
 
   double get _cost => double.tryParse(_costCtrl.text) ?? 0;
-  double get _playerPrice => Game.priceFor(_cost, _players);
-  double get _commission => Game.commissionFor(_cost);
+  double get _commission => double.tryParse(_commissionCtrl.text) ?? 0;
+  double get _playerPrice => Game.priceFor(_cost, _commission, _players);
 
   Future<void> _pickPhoto() async {
     final file = await _picker.pickImage(source: ImageSource.gallery);
@@ -348,16 +350,26 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Field cost → auto price
+            // Field cost + commission → auto player price
             CustomInput(
-              label: 'Field Rental Cost (RM)',
+              label: 'Pitch Rental Cost (RM)',
               hint: 'What you pay for the pitch',
               controller: _costCtrl,
               keyboardType: TextInputType.number,
               onChanged: (_) => setState(() {}),
             ),
+            const SizedBox(height: 16),
+            CustomInput(
+              label: 'Your Commission (RM)',
+              hint: 'Your profit for organising (0 for none)',
+              controller: _commissionCtrl,
+              keyboardType: TextInputType.number,
+              onChanged: (_) => setState(() {}),
+            ),
             const SizedBox(height: 6),
-            Text('Player price is calculated automatically from this.',
+            Text(
+                'Players split the pitch cost + your commission evenly. The '
+                'platform takes nothing.',
                 style: GoogleFonts.inter(fontSize: 11, color: secondary)),
             const SizedBox(height: 14),
             _priceBreakdown(primary, secondary),
@@ -450,11 +462,13 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               style: GoogleFonts.spaceGrotesk(
                   fontSize: 15, fontWeight: FontWeight.w700, color: primary)),
           const SizedBox(height: 8),
-          row('Player pays:', 'RM ${_playerPrice.toStringAsFixed(2)}',
+          row('Each player pays:', 'RM ${_playerPrice.toStringAsFixed(2)}',
               color: AppColors.orange),
-          row('Your commission:', 'RM ${_commission.toStringAsFixed(2)}',
+          row('Total collected:',
+              'RM ${(_cost + _commission).toStringAsFixed(2)}'),
+          row('Pitch owner gets:', 'RM ${_cost.toStringAsFixed(2)}'),
+          row('You keep (commission):', 'RM ${_commission.toStringAsFixed(2)}',
               grad: true),
-          row('Field owner gets:', 'RM ${_cost.toStringAsFixed(2)}'),
         ],
       ),
     );
