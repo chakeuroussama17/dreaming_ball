@@ -404,7 +404,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       ),
       child: Row(
         children: [
-          PlayerAvatar(fallbackInitials: m.name.substring(0, 1), radius: 19),
+          PlayerAvatar(imageUrl: m.avatarUrl, fallbackInitials: m.name.substring(0, 1), radius: 19),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

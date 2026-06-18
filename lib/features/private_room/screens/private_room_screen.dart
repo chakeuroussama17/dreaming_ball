@@ -592,8 +592,11 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
     } on GameServiceException catch (e) {
       if (!mounted) return;
       setState(() => _creating = false);
+      final msg = e.message.contains('signed in')
+          ? 'Session expired — please sign in again'
+          : e.message;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+          .showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 

@@ -19,6 +19,7 @@ import '../../../../core/widgets/tier_badge.dart';
 class _LivePlayer {
   final String id, name, position;
   final PlayerTier tier;
+  final String? avatarUrl;
   bool isPresent = true;
   int goals = 0;
   int assists = 0;
@@ -29,6 +30,7 @@ class _LivePlayer {
     required this.name,
     required this.position,
     required this.tier,
+    this.avatarUrl,
   });
 
   /// XP estimate — mirrors the calculate_xp() function in the database
@@ -224,6 +226,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
               name: s.name,
               position: s.position,
               tier: playerTierFromLabel(s.tier),
+              avatarUrl: s.avatarUrl,
             )
         ];
         _applyStats(results[1] as List<LiveStatRow>);
@@ -654,6 +657,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                       Opacity(
                         opacity: p.isPresent ? 1 : 0.4,
                         child: PlayerAvatar(
+                            imageUrl: p.avatarUrl,
                             fallbackInitials: p.name.substring(0, 1), radius: 18),
                       ),
                       const SizedBox(width: 12),
@@ -842,7 +846,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           Expanded(
             child: Row(
               children: [
-                PlayerAvatar(fallbackInitials: p.name.substring(0, 1), radius: 16),
+                PlayerAvatar(imageUrl: p.avatarUrl, fallbackInitials: p.name.substring(0, 1), radius: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -1088,7 +1092,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           ),
           child: Row(
             children: [
-              PlayerAvatar(fallbackInitials: p.name.substring(0, 1), radius: 16),
+              PlayerAvatar(imageUrl: p.avatarUrl, fallbackInitials: p.name.substring(0, 1), radius: 16),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(p.name,
@@ -1198,7 +1202,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                 ),
                 child: Row(
                   children: [
-                    PlayerAvatar(fallbackInitials: p.name.substring(0, 1), radius: 18),
+                    PlayerAvatar(imageUrl: p.avatarUrl, fallbackInitials: p.name.substring(0, 1), radius: 18),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(

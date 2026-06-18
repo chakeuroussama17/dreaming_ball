@@ -34,6 +34,7 @@ class _PlayerData {
   final String id, name, position;
   final PlayerTier tier;
   final int xp, rank;
+  final String? avatarUrl;
   const _PlayerData({
     required this.id,
     required this.name,
@@ -41,6 +42,7 @@ class _PlayerData {
     required this.tier,
     required this.xp,
     required this.rank,
+    this.avatarUrl,
   });
 
   factory _PlayerData.fromTop(TopPlayer p, int rank) => _PlayerData(
@@ -50,6 +52,7 @@ class _PlayerData {
         tier: p.tier,
         xp: p.xp,
         rank: rank,
+        avatarUrl: p.avatarUrl,
       );
 }
 
@@ -1216,6 +1219,7 @@ class _PlayerCard extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 PlayerAvatar(
+                  imageUrl: data.avatarUrl,
                   fallbackInitials: data.name.substring(0, 1),
                   radius: 28,
                 ),

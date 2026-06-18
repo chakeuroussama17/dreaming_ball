@@ -1,6 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/providers/admin_providers.dart';
+import '../core/providers/session_provider.dart';
+import '../core/services/auth_service.dart';
 import '../core/theme/app_theme.dart';
 import 'router.dart';
 
@@ -42,11 +47,43 @@ final themeModeProvider =
   (ref) => ThemeModeNotifier(ThemeMode.dark),
 );
 
-class DreamingBallApp extends ConsumerWidget {
+class DreamingBallApp extends ConsumerStatefulWidget {
   const DreamingBallApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DreamingBallApp> createState() => _DreamingBallAppState();
+}
+
+class _DreamingBallAppState extends ConsumerState<DreamingBallApp> {
+  StreamSubscription<AuthState>? _authSub;
+
+  @override
+  void initState() {
+    super.initState();
+    // When Supabase signs the user out (session expired, revoked, or explicit
+    // logout), reset all local session state and bounce to the welcome screen.
+    // This keeps the UI honest: no screen ever shows stale "logged-in" state
+    // after the real session is gone.
+    _authSub = AuthService.onAuthStateChange.listen((state) {
+      if (state.event == AuthChangeEvent.signedOut) {
+        ref.read(userRoleProvider.notifier).state = UserRole.player;
+        ref.read(agentVerificationProvider.notifier).state =
+            AgentVerification.notSubmitted;
+        ref.read(isAdminProvider.notifier).state = false;
+        ref.read(themeModeProvider.notifier).applyFor(null);
+        ref.read(routerProvider).goNamed('welcome');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(

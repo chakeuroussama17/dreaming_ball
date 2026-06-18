@@ -15,6 +15,7 @@ class _Ranked {
   final PlayerTier tier;
   final int xp;
   final bool isYou;
+  final String? avatarUrl;
   const _Ranked({
     required this.rank,
     required this.name,
@@ -22,6 +23,7 @@ class _Ranked {
     required this.tier,
     required this.xp,
     this.isYou = false,
+    this.avatarUrl,
   });
 }
 
@@ -48,6 +50,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         tier: playerTierFromLabel(e.tier),
         xp: e.xp,
         isYou: e.isYou,
+        avatarUrl: e.avatarUrl,
       );
 
   @override
@@ -543,6 +546,7 @@ class _PodiumPlayer extends StatelessWidget {
           const SizedBox(height: 22),
         const SizedBox(height: 4),
         PlayerAvatar(
+          imageUrl: data.avatarUrl,
           fallbackInitials: data.name.substring(0, 1),
           radius: avatarRadius,
         ),
@@ -634,6 +638,7 @@ class _LeaderRow extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           PlayerAvatar(
+            imageUrl: data.avatarUrl,
             fallbackInitials: data.name.substring(0, 1),
             radius: 20,
           ),
@@ -754,6 +759,7 @@ class _PinnedYouRow extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               PlayerAvatar(
+                imageUrl: you.avatarUrl,
                 fallbackInitials: you.name.substring(0, 1),
                 radius: 16,
               ),
