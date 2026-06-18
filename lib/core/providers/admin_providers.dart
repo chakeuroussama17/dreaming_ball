@@ -13,6 +13,10 @@ final isAdminProvider = StateProvider<bool>((ref) => false);
 final adminPayoutsProvider = FutureProvider<List<PayoutRow>>(
     (ref) => AdminService.fetchPayouts());
 
+/// Per-agent leaderboard for the admin (games, collected, commission).
+final agentLeaderboardProvider = FutureProvider.autoDispose<List<AgentLeaderRow>>(
+    (ref) => AdminService.fetchAgentLeaderboard());
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ANNOUNCEMENTS (feed the home banners)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -354,6 +358,9 @@ class AppUserRecord {
   final bool banned;
   // Lifetime stats from player_profiles.
   final int games, goals, assists, xp;
+  // Profile / demographics (from users).
+  final String? phone, gender, country, state, city, registeredAt;
+  final int? age;
 
   const AppUserRecord({
     required this.id,
@@ -366,6 +373,13 @@ class AppUserRecord {
     this.goals = 0,
     this.assists = 0,
     this.xp = 0,
+    this.phone,
+    this.gender,
+    this.country,
+    this.state,
+    this.city,
+    this.registeredAt,
+    this.age,
   });
 
   AppUserRecord copyWith({bool? banned}) => AppUserRecord(
@@ -379,7 +393,28 @@ class AppUserRecord {
         goals: goals,
         assists: assists,
         xp: xp,
+        phone: phone,
+        gender: gender,
+        country: country,
+        state: state,
+        city: city,
+        registeredAt: registeredAt,
+        age: age,
       );
+}
+
+/// Age in whole years from an ISO date string, or null.
+int? _ageFromDob(String? iso) {
+  if (iso == null) return null;
+  final dob = DateTime.tryParse(iso);
+  if (dob == null) return null;
+  final now = DateTime.now();
+  var a = now.year - dob.year;
+  if (now.month < dob.month ||
+      (now.month == dob.month && now.day < dob.day)) {
+    a--;
+  }
+  return a < 0 || a > 120 ? null : a;
 }
 
 class UsersNotifier extends StateNotifier<List<AppUserRecord>> {
@@ -408,6 +443,13 @@ class UsersNotifier extends StateNotifier<List<AppUserRecord>> {
               goals: (profile['total_goals'] ?? 0) as int,
               assists: (profile['total_assists'] ?? 0) as int,
               xp: (profile['total_xp'] ?? 0) as int,
+              phone: r['phone'] as String?,
+              gender: r['gender'] as String?,
+              country: r['country'] as String?,
+              state: r['state'] as String?,
+              city: r['city'] as String?,
+              registeredAt: AdminService.dateLabel(r['created_at'] as String?),
+              age: _ageFromDob(r['date_of_birth'] as String?),
             );
           }()
       ];

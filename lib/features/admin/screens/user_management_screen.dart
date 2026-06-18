@@ -270,10 +270,47 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                   // tracked — XP shown instead).
                   _miniStat('Games', '${u.games}', primary, secondary),
                   _miniStat('Goals', '${u.goals}', primary, secondary),
+                  _miniStat('Assists', '${u.assists}', primary, secondary),
                   _miniStat('XP', '${u.xp}', primary, secondary),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+
+            // ── Profile & demographics ───────────────────────────────────
+            Text('Details',
+                style: GoogleFonts.spaceGrotesk(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: primary)),
+            const SizedBox(height: 8),
+            _detailRow('Joined', u.registeredAt ?? '—', secondary, primary),
+            _detailRow('Phone', (u.phone?.isNotEmpty ?? false) ? u.phone! : '—',
+                secondary, primary),
+            _detailRow('Age', u.age != null ? '${u.age}' : '—', secondary,
+                primary),
+            _detailRow(
+                'Gender',
+                (u.gender?.isNotEmpty ?? false) ? u.gender! : '—',
+                secondary,
+                primary),
+            _detailRow(
+                'Country',
+                (u.country?.isNotEmpty ?? false) ? u.country! : '—',
+                secondary,
+                primary),
+            _detailRow(
+                'Location',
+                [u.city, u.state]
+                        .where((e) => (e?.isNotEmpty ?? false))
+                        .join(', ')
+                        .isEmpty
+                    ? '—'
+                    : [u.city, u.state]
+                        .where((e) => (e?.isNotEmpty ?? false))
+                        .join(', '),
+                secondary,
+                primary),
             const SizedBox(height: 16),
             if (!u.banned)
               SizedBox(
@@ -350,6 +387,26 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 fontSize: 18, fontWeight: FontWeight.w800, color: primary)),
         Text(label, style: GoogleFonts.inter(fontSize: 11, color: secondary)),
       ],
+    );
+  }
+
+  Widget _detailRow(String label, String value, Color secondary, Color primary) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: GoogleFonts.inter(fontSize: 13, color: secondary)),
+          Flexible(
+            child: Text(value,
+                textAlign: TextAlign.right,
+                style: GoogleFonts.spaceGrotesk(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: primary)),
+          ),
+        ],
+      ),
     );
   }
 

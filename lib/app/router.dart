@@ -27,6 +27,7 @@ import '../features/dispute/screens/dispute_screen.dart';
 import '../features/agent/screens/agent_dashboard_screen.dart';
 import '../features/admin/screens/admin_dashboard_screen.dart';
 import '../features/admin/screens/agent_management_screen.dart';
+import '../features/admin/screens/admin_agent_stats_screen.dart';
 import '../features/admin/screens/announcements_screen.dart';
 import '../features/admin/screens/user_management_screen.dart';
 import '../features/admin/screens/admin_disputes_screen.dart';
@@ -90,6 +91,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/agent-dashboard', name: 'agent-dashboard', builder: (c, s) => const AgentDashboardScreen()),
       GoRoute(path: '/admin-dashboard', name: 'admin-dashboard', builder: (c, s) => const AdminDashboardScreen()),
       GoRoute(path: '/admin/agents', name: 'admin-agents', builder: (c, s) => const AgentManagementScreen()),
+      GoRoute(path: '/admin/agent-stats', name: 'admin-agent-stats', builder: (c, s) => const AdminAgentStatsScreen()),
       GoRoute(path: '/admin/announcements', name: 'admin-announcements', builder: (c, s) => const AnnouncementsScreen()),
       GoRoute(path: '/admin/users', name: 'admin-users', builder: (c, s) => const UserManagementScreen()),
       GoRoute(path: '/admin/disputes', name: 'admin-disputes', builder: (c, s) => const AdminDisputesScreen()),

@@ -123,6 +123,34 @@ class PayoutRow {
       );
 }
 
+/// One agent's line in the admin leaderboard (from agent_leaderboard()).
+class AgentLeaderRow {
+  final String agentId;
+  final String name;
+  final int gamesCreated;
+  final int playersConfirmed;
+  final double collected;
+  final double commission;
+
+  const AgentLeaderRow({
+    required this.agentId,
+    required this.name,
+    required this.gamesCreated,
+    required this.playersConfirmed,
+    required this.collected,
+    required this.commission,
+  });
+
+  factory AgentLeaderRow.fromRow(Map<String, dynamic> r) => AgentLeaderRow(
+        agentId: r['agent_id'] as String,
+        name: (r['full_name'] ?? 'Agent') as String,
+        gamesCreated: (r['games_created'] ?? 0) as int,
+        playersConfirmed: (r['players_confirmed'] ?? 0) as int,
+        collected: ((r['collected'] ?? 0) as num).toDouble(),
+        commission: ((r['commission'] ?? 0) as num).toDouble(),
+      );
+}
+
 /// Supabase queries + mutations for the admin panel. Every call here is
 /// authorized by the is_admin() RLS policies (the admin signs into a real
 /// Supabase session whose JWT email is chakeur@gmail.com).
@@ -163,12 +191,23 @@ class AdminService {
     }
   }
 
+  /// Per-agent performance leaderboard (games, confirmed players, money
+  /// collected, realized commission) — ranked by commission. Admin only.
+  static Future<List<AgentLeaderRow>> fetchAgentLeaderboard() async {
+    final rows = await _sb.rpc('agent_leaderboard');
+    return [
+      for (final r in (rows as List))
+        AgentLeaderRow.fromRow(Map<String, dynamic>.from(r))
+    ];
+  }
+
   // ── Users ───────────────────────────────────────────────────────────────
 
   static Future<List<Map<String, dynamic>>> fetchUsers() async {
     final rows = await _sb
         .from('users')
-        .select('id, full_name, email, role, is_banned, '
+        .select('id, full_name, email, role, is_banned, phone, created_at, '
+            'date_of_birth, gender, country, state, city, '
             'player_profiles(current_tier, total_games_played, total_goals, '
             'total_assists, total_xp)')
         .order('created_at', ascending: false);
