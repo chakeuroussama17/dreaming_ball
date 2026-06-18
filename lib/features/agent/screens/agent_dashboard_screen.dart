@@ -42,15 +42,23 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
         ref.watch(agentVerificationProvider) == AgentVerification.approved;
     final myGames = ref.watch(gamesProvider).where((g) => g.mine).toList();
 
+    // Confirmed-payment counts per game (paid players only) drive the money.
+    final paidCounts =
+        ref.watch(agentConfirmedCountsProvider).valueOrNull ?? const {};
+    int paidOf(Game g) => paidCounts[g.id] ?? 0;
+
     final gamesCreated = myGames.length;
-    final totalPlayers = myGames.fold<int>(0, (s, g) => s + g.filledSlots);
-    // Commission you've actually been paid vs still waiting for from admin.
-    final received = myGames
-        .where((g) => g.agentPaidOut)
-        .fold<double>(0, (s, g) => s + g.commission);
-    final pendingPay = myGames
-        .where((g) => !g.agentPaidOut)
-        .fold<double>(0, (s, g) => s + g.commission);
+    // Players confirmed (paid) across all the agent's games.
+    final totalPlayers =
+        myGames.fold<int>(0, (s, g) => s + paidOf(g));
+    // Money the agent has actually collected from players (paid × price).
+    final collected =
+        myGames.fold<double>(0, (s, g) => s + paidOf(g) * g.price);
+    // The agent's realized profit: each paid player carries commission/players.
+    final commissionEarned = myGames.fold<double>(
+        0,
+        (s, g) =>
+            s + (g.totalSlots == 0 ? 0 : paidOf(g) * g.commission / g.totalSlots));
 
     // Group games by status so the agent sees what's happening at a glance.
     final liveGames = myGames.where((g) => g.live).toList()
@@ -87,7 +95,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
           if (!approved) const SizedBox(height: 16),
 
           // ── Earnings summary ──────────────────────────────────────────────
-          _earningsCard(received, pendingPay, primary, secondary, border),
+          _earningsCard(collected, commissionEarned, primary, secondary, border),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -96,7 +104,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                       Icons.sports_soccer, primary, secondary, border, surface)),
               const SizedBox(width: 12),
               Expanded(
-                  child: _miniStat('Players managed', '$totalPlayers',
+                  child: _miniStat('Players confirmed', '$totalPlayers',
                       Icons.groups_outlined, primary, secondary, border, surface)),
             ],
           ),
@@ -135,20 +143,20 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
             if (liveGames.isNotEmpty) ...[
               _sectionHeader('Live now', liveGames.length, secondary,
                   color: AppColors.tierElite),
-              ...liveGames.map((g) =>
-                  _gameCard(context, g, primary, secondary, border, surface)),
+              ...liveGames.map((g) => _gameCard(context, g, paidOf(g), primary,
+                  secondary, border, surface)),
               const SizedBox(height: 12),
             ],
             if (upcomingGames.isNotEmpty) ...[
               _sectionHeader('Upcoming', upcomingGames.length, secondary),
-              ...upcomingGames.map((g) =>
-                  _gameCard(context, g, primary, secondary, border, surface)),
+              ...upcomingGames.map((g) => _gameCard(context, g, paidOf(g),
+                  primary, secondary, border, surface)),
               const SizedBox(height: 12),
             ],
             if (pastGames.isNotEmpty) ...[
               _sectionHeader('Past games', pastGames.length, secondary),
-              ...pastGames.map((g) =>
-                  _gameCard(context, g, primary, secondary, border, surface)),
+              ...pastGames.map((g) => _gameCard(context, g, paidOf(g), primary,
+                  secondary, border, surface)),
             ],
           ],
         ],
@@ -156,8 +164,9 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
     );
   }
 
-  /// Big, clear money card: what's been paid to the agent vs still owed.
-  Widget _earningsCard(double received, double pending, Color primary,
+  /// Big, clear money card: total collected from players vs the agent's own
+  /// commission (profit). Players pay the agent directly — no admin payout.
+  Widget _earningsCard(double collected, double commission, Color primary,
       Color secondary, Color border) {
     return Container(
       padding: const EdgeInsets.all(18),
@@ -191,12 +200,12 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('RM ${received.toStringAsFixed(0)}',
+                    Text('RM ${collected.toStringAsFixed(0)}',
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF22C55E))),
-                    Text('Received',
+                    Text('Collected',
                         style: GoogleFonts.inter(
                             fontSize: 12, color: secondary)),
                   ],
@@ -208,12 +217,12 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('RM ${pending.toStringAsFixed(0)}',
+                    Text('RM ${commission.toStringAsFixed(0)}',
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
                             color: AppColors.orange)),
-                    Text('Pending',
+                    Text('Your commission',
                         style: GoogleFonts.inter(
                             fontSize: 12, color: secondary)),
                   ],
@@ -222,7 +231,9 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          Text('Admin sends your commission ~1 hour before each kick-off.',
+          Text(
+              'Players pay you directly. "Collected" counts confirmed payments; '
+              'the rest covers your pitch rental.',
               style: GoogleFonts.inter(fontSize: 11, color: secondary)),
         ],
       ),
@@ -318,9 +329,14 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
     );
   }
 
-  Widget _gameCard(BuildContext context, Game g, Color primary,
+  Widget _gameCard(BuildContext context, Game g, int paidCount, Color primary,
       Color secondary, Color border, Color surface) {
     final ratio = g.totalSlots == 0 ? 0.0 : g.filledSlots / g.totalSlots;
+    final collected = paidCount * g.price;
+    final realizedCommission =
+        g.totalSlots == 0 ? 0.0 : paidCount * g.commission / g.totalSlots;
+    final pendingCount =
+        (g.filledSlots - paidCount).clamp(0, g.totalSlots);
     return GestureDetector(
       // Ended games open the match report (review window: edit stats,
       // read player comments); upcoming/live games open the match panel.
@@ -400,32 +416,27 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
             children: [
               Expanded(
                 child: Text(
-                  'RM ${(g.price * g.filledSlots).toStringAsFixed(0)} collected · RM ${g.commission.toStringAsFixed(0)} commission',
+                  'RM ${collected.toStringAsFixed(0)} collected · RM ${realizedCommission.toStringAsFixed(0)} commission',
                   style: GoogleFonts.spaceGrotesk(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF22C55E)),
                 ),
               ),
-              // Once the game is over, show whether the admin has paid you.
-              if (g.ended)
+              // Payments still awaiting the agent's confirmation.
+              if (pendingCount > 0)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: (g.agentPaidOut
-                            ? const Color(0xFF22C55E)
-                            : AppColors.orange)
-                        .withValues(alpha: 0.15),
+                    color: AppColors.orange.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(99),
                   ),
-                  child: Text(g.agentPaidOut ? 'Paid' : 'Pending',
+                  child: Text('$pendingCount to confirm',
                       style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: g.agentPaidOut
-                              ? const Color(0xFF22C55E)
-                              : AppColors.orange)),
+                          color: AppColors.orange)),
                 ),
             ],
           ),

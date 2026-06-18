@@ -242,6 +242,30 @@ class GameService {
     }
   }
 
+  /// Count of *confirmed* (paid) players per game for the current agent's
+  /// games — powers the dashboard's money-received & commission totals.
+  /// Returns a map of game_id → confirmed player count.
+  static Future<Map<String, int>> fetchConfirmedCounts() async {
+    final uid = SupabaseService.userId;
+    if (uid == null) return const {};
+    try {
+      final rows = await _sb
+          .from('game_players')
+          .select('game_id, games!inner(agent_id)')
+          .eq('games.agent_id', uid)
+          .eq('payment_status', 'paid');
+      final map = <String, int>{};
+      for (final r in rows) {
+        final gid = r['game_id'] as String?;
+        if (gid == null) continue;
+        map[gid] = (map[gid] ?? 0) + 1;
+      }
+      return map;
+    } catch (_) {
+      return const {};
+    }
+  }
+
   /// Removes abandoned games (scheduled, past kick-off, nobody joined) so they
   /// don't linger in the feed. Best-effort — never throws to the caller.
   static Future<void> cleanupEmptyGames() async {

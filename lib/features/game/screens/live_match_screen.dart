@@ -8,9 +8,11 @@ import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
 import '../../../../core/services/game_service.dart';
 import '../../../../core/services/live_match_service.dart';
+import '../../../../core/services/rating_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/nav.dart';
+import '../../../../core/widgets/agent_rating_dialog.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -120,6 +122,11 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
       _review = true;
       _loadingRoster = false;
       if (_canWatch) _loadReview();
+      // Players get a one-time "rate your agent" popup on opening the report.
+      if (!_canEdit) {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => _maybePromptRating(game));
+      }
       return;
     }
     // If the match is already live (e.g. watcher joins mid-game), show the
@@ -135,6 +142,20 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
       });
     }
     if (_canWatch) _loadRoster();
+  }
+
+  /// One-time "rate your agent" popup shown to a player when they open a
+  /// finished game's report — only if they haven't already rated it.
+  Future<void> _maybePromptRating(Game? game) async {
+    if (game == null || game.agentId == null) return;
+    if (await RatingService.hasRated(widget.id)) return;
+    if (!mounted) return;
+    await showAgentRatingDialog(
+      context,
+      gameId: widget.id,
+      agentId: game.agentId!,
+      agentName: game.agentName ?? 'the agent',
+    );
   }
 
   /// Final stats + comments for the review panel. Polled every 30s so the

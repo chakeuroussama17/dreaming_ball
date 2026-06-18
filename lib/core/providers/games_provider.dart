@@ -22,6 +22,7 @@ class Game {
   final Uint8List? photo; // local preview before upload
   final String? photoUrl; // field-photos bucket
   final String? paymentQrUrl; // agent's TNG / bank QR for players to pay
+  final String? agentId; // the agent who created the game
   final String? agentName;
   final bool mine; // created by the current agent
   final bool live; // match is currently being played live
@@ -49,6 +50,7 @@ class Game {
     this.photo,
     this.photoUrl,
     this.paymentQrUrl,
+    this.agentId,
     this.agentName,
     this.mine = false,
     this.live = false,
@@ -93,6 +95,7 @@ class Game {
       commission: ((row['commission'] ?? 0) as num).toDouble(),
       photoUrl: row['photo_url'] as String?,
       paymentQrUrl: row['payment_qr_url'] as String?,
+      agentId: row['agent_id'] as String?,
       agentName: agent is Map ? agent['full_name'] as String? : null,
       mine: uid != null && row['agent_id'] == uid,
       live: status == 'live',
@@ -151,6 +154,7 @@ class Game {
         photo: photo,
         photoUrl: photoUrl,
         paymentQrUrl: paymentQrUrl,
+        agentId: agentId,
         agentName: agentName,
         mine: mine,
         live: live ?? this.live,
@@ -338,3 +342,10 @@ class GamesNotifier extends StateNotifier<List<Game>> {
 
 final gamesProvider = StateNotifierProvider<GamesNotifier, List<Game>>(
     (ref) => GamesNotifier(ref));
+
+/// Confirmed (paid) player counts per game for the current agent — refetched
+/// each time the dashboard is opened so money totals reflect reality.
+final agentConfirmedCountsProvider =
+    FutureProvider.autoDispose<Map<String, int>>((ref) {
+  return GameService.fetchConfirmedCounts();
+});
