@@ -101,6 +101,86 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     );
   }
 
+  // Agent: which player row is mid-action (so we can show a spinner on it).
+  String? _busyPlayerId;
+
+  Future<void> _confirmPayment(SquadPlayer p) async {
+    if (_busyPlayerId != null) return;
+    setState(() => _busyPlayerId = p.userId);
+    try {
+      await GameService.confirmPayment(id, p.userId);
+      await _refresh();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${p.name} confirmed — they\'re in')),
+        );
+      }
+    } on GameServiceException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } finally {
+      if (mounted) setState(() => _busyPlayerId = null);
+    }
+  }
+
+  Future<void> _rejectPayment(SquadPlayer p) async {
+    if (_busyPlayerId != null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reject payment?'),
+        content: Text(
+            'This removes ${p.name} from the game and frees their slot. '
+            'They\'ll be notified to pay again. Continue?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Reject',
+                  style: TextStyle(color: AppColors.tierElite))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() => _busyPlayerId = p.userId);
+    try {
+      await GameService.rejectPayment(id, p.userId);
+      await _refresh();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${p.name} removed — slot freed')),
+        );
+      }
+    } on GameServiceException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } finally {
+      if (mounted) setState(() => _busyPlayerId = null);
+    }
+  }
+
+  // Free game: join instantly (no payment, no agent confirmation).
+  Future<void> _joinFree() async {
+    final error = await ref.read(gamesProvider.notifier).join(id);
+    if (!mounted) return;
+    if (error != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    setState(() => _game = ref.read(gamesProvider.notifier).byId(id));
+    _refresh();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("You're in! See you on the pitch.")),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -349,12 +429,14 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       Divider(height: 1, indent: 72, color: border),
                   itemBuilder: (ctx, i) {
                     final p = _squad[i];
+                    final isHost = game?.mine ?? false;
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 12),
                       child: Row(
                         children: [
                           PlayerAvatar(
+                              imageUrl: p.avatarUrl,
                               fallbackInitials: p.name.substring(0, 1),
                               radius: 22),
                           const SizedBox(width: 12),
@@ -362,24 +444,40 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(p.name,
-                                    style: GoogleFonts.spaceGrotesk(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: primary)),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(p.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: primary)),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _payChip(p),
+                                  ],
+                                ),
                                 Text(p.position,
                                     style: GoogleFonts.inter(
                                         fontSize: 12, color: secondary)),
                               ],
                             ),
                           ),
-                          TierBadge(tier: playerTierFromLabel(p.tier)),
-                          const SizedBox(width: 10),
-                          Text('+${p.totalXp} XP',
-                              style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.orange)),
+                          // Host sees confirm/reject on pending players;
+                          // everyone else sees tier + XP.
+                          if (isHost && p.pending)
+                            _agentActions(p)
+                          else ...[
+                            TierBadge(tier: playerTierFromLabel(p.tier)),
+                            const SizedBox(width: 10),
+                            Text('+${p.totalXp} XP',
+                                style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.orange)),
+                          ],
                         ],
                       ),
                     );
@@ -411,89 +509,238 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                 color: surface,
                 border: Border(top: BorderSide(color: border)),
               ),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('RM ${price.toStringAsFixed(0)}',
-                          style: GoogleFonts.spaceGrotesk(
-                              fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.orange)),
-                      Text('per player',
-                          style: GoogleFonts.inter(fontSize: 12, color: secondary)),
-                    ],
-                  ),
-                  const SizedBox(width: 20),
-                  // Joined (and not live yet) → offer to leave and free the slot.
-                  if ((game?.joined ?? false) && !live) ...[
-                    Expanded(
-                      child: SizedBox(
-                        height: 52,
-                        child: OutlinedButton(
-                          onPressed: _leaving ? null : _leave,
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                                color:
-                                    AppColors.tierElite.withValues(alpha: 0.6)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
-                          ),
-                          child: _leaving
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: AppColors.tierElite))
-                              : Text('Leave',
-                                  style: GoogleFonts.spaceGrotesk(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.tierElite)),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: SizedBox(
-                      height: 52,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          ),
-                          onPressed: (game?.joined ?? false) && !live
-                              ? null
-                              : () => live
-                                  ? context.pushNamed('live-match',
-                                      pathParameters: {'id': id})
-                                  : context.pushNamed('payment',
-                                      pathParameters: {'id': id}),
-                          child: Text(
-                              live
-                                  ? 'View Live Match'
-                                  : (game?.joined ?? false)
-                                      ? 'Joined ✓'
-                                      : (isFull ? 'Join Waitlist' : 'Join Game'),
-                              style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: _bottomBar(game, live, isFull, price, secondary),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _bottomBar(
+      Game? game, bool live, bool isFull, double price, Color secondary) {
+    final isHost = game?.mine ?? false;
+    final joined = game?.joined ?? false;
+    final pending = game?.awaitingConfirmation ?? false;
+    final isFree = game?.isFree ?? false;
+    final pendingCount = _squad.where((p) => p.pending).length;
+
+    // ── Host view: no join button; confirm payments in the squad list. ──
+    if (isHost) {
+      return Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("You're hosting",
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.orange)),
+                Text(
+                    pendingCount > 0
+                        ? '$pendingCount payment${pendingCount == 1 ? '' : 's'} to confirm above'
+                        : 'No pending payments',
+                    style: GoogleFonts.inter(fontSize: 12, color: secondary)),
+              ],
+            ),
+          ),
+          if (live)
+            SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () => context.pushNamed('live-match',
+                    pathParameters: {'id': id}),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.orange,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14))),
+                child: Text('Live Match',
+                    style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.w700, color: Colors.white)),
+              ),
+            ),
+        ],
+      );
+    }
+
+    // ── Player view ──
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(isFree ? 'Free' : 'RM ${price.toStringAsFixed(0)}',
+                style: GoogleFonts.spaceGrotesk(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.orange)),
+            Text(isFree ? 'no charge' : 'per player',
+                style: GoogleFonts.inter(fontSize: 12, color: secondary)),
+          ],
+        ),
+        const SizedBox(width: 20),
+        // Joined (and not live yet) → offer to leave and free the slot.
+        if (joined && !live) ...[
+          Expanded(
+            child: SizedBox(
+              height: 52,
+              child: OutlinedButton(
+                onPressed: _leaving ? null : _leave,
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                      color: AppColors.tierElite.withValues(alpha: 0.6)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                child: _leaving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.5, color: AppColors.tierElite))
+                    : Text('Leave',
+                        style: GoogleFonts.spaceGrotesk(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.tierElite)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+        Expanded(
+          child: SizedBox(
+            height: 52,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [AppColors.pink, AppColors.orange]),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: _bottomAction(game, live, isFull, joined, pending,
+                    isFree),
+                child: Text(
+                    _bottomLabel(live, isFull, joined, pending, isFree),
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  VoidCallback? _bottomAction(Game? game, bool live, bool isFull, bool joined,
+      bool pending, bool isFree) {
+    if (live) {
+      return () =>
+          context.pushNamed('live-match', pathParameters: {'id': id});
+    }
+    if (pending) {
+      // Tap to review the "awaiting confirmation" screen.
+      return () => context.pushNamed('payment', pathParameters: {'id': id});
+    }
+    if (joined) return null; // confirmed — "Joined ✓", nothing to do
+    if (isFull) return null; // full — can't join
+    if (isFree) return _joinFree;
+    return () => context.pushNamed('payment', pathParameters: {'id': id});
+  }
+
+  String _bottomLabel(
+      bool live, bool isFull, bool joined, bool pending, bool isFree) {
+    if (live) return 'View Live Match';
+    if (pending) return 'Payment Pending';
+    if (joined) return 'Joined ✓';
+    if (isFull) return 'Game Full';
+    return isFree ? 'Join Game' : 'Pay & Join';
+  }
+
+  // Small payment-status chip shown next to each player's name.
+  Widget _payChip(SquadPlayer p) {
+    if (p.paid) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: AppColors.cyan.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(99),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.check_circle, size: 12, color: AppColors.cyan),
+          const SizedBox(width: 3),
+          Text('Paid',
+              style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.cyan)),
+        ]),
+      );
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.orange.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Text('Pending',
+          style: GoogleFonts.inter(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: AppColors.orange)),
+    );
+  }
+
+  // Host-only Confirm / Reject buttons for a pending player.
+  Widget _agentActions(SquadPlayer p) {
+    if (_busyPlayerId == p.userId) {
+      return const SizedBox(
+        width: 32,
+        height: 32,
+        child: Center(
+          child: SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+                strokeWidth: 2.5, color: AppColors.orange),
+          ),
+        ),
+      );
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _actionBtn(Icons.close, AppColors.tierElite, () => _rejectPayment(p)),
+        const SizedBox(width: 8),
+        _actionBtn(Icons.check, AppColors.cyan, () => _confirmPayment(p)),
+      ],
+    );
+  }
+
+  Widget _actionBtn(IconData icon, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          shape: BoxShape.circle,
+          border: Border.all(color: color.withValues(alpha: 0.5)),
+        ),
+        child: Icon(icon, size: 18, color: color),
       ),
     );
   }

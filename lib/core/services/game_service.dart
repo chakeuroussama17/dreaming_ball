@@ -19,7 +19,7 @@ class SquadPlayer {
   final String tier;
   final int totalXp;
   final String? avatarUrl;
-  final bool paid;
+  final String paymentStatus; // 'pending' | 'paid' | 'refunded'
 
   const SquadPlayer({
     required this.userId,
@@ -28,8 +28,14 @@ class SquadPlayer {
     required this.tier,
     required this.totalXp,
     this.avatarUrl,
-    required this.paid,
+    required this.paymentStatus,
   });
+
+  /// Officially in (agent confirmed, or a free game).
+  bool get paid => paymentStatus == 'paid';
+
+  /// Paid externally, waiting for the agent to confirm.
+  bool get pending => paymentStatus == 'pending';
 }
 
 class GameService {
@@ -115,7 +121,7 @@ class GameService {
               tier: (profile['current_tier'] ?? 'Beginner') as String,
               totalXp: (profile['total_xp'] ?? 0) as int,
               avatarUrl: user['avatar_url'] as String?,
-              paid: r['payment_status'] == 'paid',
+              paymentStatus: (r['payment_status'] ?? 'pending') as String,
             );
           }()
       ];
@@ -142,27 +148,27 @@ class GameService {
     }
   }
 
-  /// Marks the current user's game_players row paid (after the payment flow).
-  static Future<void> markPaid({
-    required String gameId,
-    required String method, // 'card' | 'fpx' | 'ewallet'
-    required double amount,
-    required String bookingRef,
-  }) async {
-    final uid = SupabaseService.userId;
-    if (uid == null) return;
+  /// Agent confirms a pending player's payment → they become officially in
+  /// and get a push notification. Agent-only (enforced in the RPC).
+  static Future<void> confirmPayment(String gameId, String playerId) async {
     try {
-      await _sb
-          .from('game_players')
-          .update({
-            'payment_status': 'paid',
-            'payment_method': method,
-            'amount_paid': amount,
-            'booking_ref': bookingRef,
-            'paid_at': DateTime.now().toUtc().toIso8601String(),
-          })
-          .eq('game_id', gameId)
-          .eq('player_id', uid);
+      await _sb.rpc('confirm_payment', params: {
+        'p_game_id': gameId,
+        'p_player_id': playerId,
+      });
+    } catch (e) {
+      throw GameServiceException(friendlyError(e));
+    }
+  }
+
+  /// Agent rejects a pending player (payment never arrived) → slot freed,
+  /// player notified. Agent-only (enforced in the RPC).
+  static Future<void> rejectPayment(String gameId, String playerId) async {
+    try {
+      await _sb.rpc('reject_payment', params: {
+        'p_game_id': gameId,
+        'p_player_id': playerId,
+      });
     } catch (e) {
       throw GameServiceException(friendlyError(e));
     }
@@ -236,7 +242,29 @@ class GameService {
     }
   }
 
-  /// Inserts a new game (agent), uploading the field photo first.
+  /// The QR image URL from this agent's most recent game, so the create form
+  /// can pre-fill it (they rarely change their TNG/bank QR between games).
+  static Future<String?> fetchLastQrUrl() async {
+    final uid = SupabaseService.userId;
+    if (uid == null) return null;
+    try {
+      final row = await _sb
+          .from('games')
+          .select('payment_qr_url')
+          .eq('agent_id', uid)
+          .not('payment_qr_url', 'is', null)
+          .order('created_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+      return row?['payment_qr_url'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Inserts a new game (agent), uploading the field photo + payment QR first.
+  /// For paid games a QR is required so players know where to pay; pass either
+  /// fresh [qrBytes] to upload, or [qrUrl] to reuse a previously uploaded one.
   static Future<void> createGame({
     required String fieldName,
     required String location,
@@ -250,16 +278,27 @@ class GameService {
     required double fieldCost,
     required double commission,
     Uint8List? photoBytes,
+    Uint8List? qrBytes,
+    String? qrUrl,
   }) async {
     final uid = SupabaseService.userId;
     if (uid == null) throw GameServiceException('You must be signed in');
     try {
+      final storage = _sb.storage.from('field-photos');
+
       String? photoUrl;
       if (photoBytes != null) {
-        final storage = _sb.storage.from('field-photos');
         final path = '$uid/${DateTime.now().millisecondsSinceEpoch}.jpg';
         await storage.uploadBinary(path, photoBytes);
         photoUrl = storage.getPublicUrl(path);
+      }
+
+      // Newly picked QR uploads; otherwise reuse the passed-through URL.
+      String? paymentQrUrl = qrUrl;
+      if (qrBytes != null) {
+        final path = '$uid/qr_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        await storage.uploadBinary(path, qrBytes);
+        paymentQrUrl = storage.getPublicUrl(path);
       }
 
       await _sb.from('games').insert({
@@ -276,6 +315,7 @@ class GameService {
         'field_cost': fieldCost,
         'commission': commission,
         'photo_url': photoUrl,
+        'payment_qr_url': paymentQrUrl,
       });
     } catch (e) {
       throw GameServiceException(friendlyError(e));

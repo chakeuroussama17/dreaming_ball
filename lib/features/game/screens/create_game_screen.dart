@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/providers/games_provider.dart';
+import '../../../../core/services/game_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/nav.dart';
 import '../../../../core/widgets/custom_input.dart';
@@ -30,12 +31,27 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   Uint8List? _photo;
   bool _photoError = false;
 
+  // Payment QR (TNG / bank) players scan to pay. Required for paid games.
+  Uint8List? _qr; // freshly picked image
+  String? _prefilledQrUrl; // reused from the agent's last game
+  bool _qrError = false;
+
   static const _formats = ['5-aside', '6-aside', '7-aside', '11-aside'];
   String _format = '5-aside';
 
   int _players = 10;
   DateTime? _date;
   TimeOfDay? _time;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill the QR with the one from the agent's previous game so they
+    // don't have to re-upload it every time.
+    GameService.fetchLastQrUrl().then((url) {
+      if (mounted && url != null) setState(() => _prefilledQrUrl = url);
+    });
+  }
 
   @override
   void dispose() {
@@ -62,12 +78,29 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     });
   }
 
+  Future<void> _pickQr() async {
+    final file = await _picker.pickImage(source: ImageSource.gallery);
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    setState(() {
+      _qr = bytes;
+      _qrError = false;
+    });
+  }
+
+  // A QR is set if the agent picked a new one or is reusing their last one.
+  bool get _hasQr => _qr != null || _prefilledQrUrl != null;
+
   bool _publishing = false;
 
   Future<void> _publish() async {
     if (_publishing) return;
     final photoOk = _photo != null;
     if (!photoOk) setState(() => _photoError = true);
+    // Paid games need a QR so players know where to pay. Free games skip it.
+    final qrOk = _playerPrice <= 0 || _hasQr;
+    if (!qrOk) setState(() => _qrError = true);
     final formOk = _formKey.currentState!.validate();
     if (_date == null || _time == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -75,7 +108,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
       );
       return;
     }
-    if (!formOk || !photoOk) return;
+    if (!formOk || !photoOk || !qrOk) return;
 
     setState(() => _publishing = true);
     final error = await ref.read(gamesProvider.notifier).createGame(
@@ -91,6 +124,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
           fieldCost: _cost,
           commission: _commission,
           photoBytes: _photo,
+          qrBytes: _qr,
+          qrUrl: _qr == null ? _prefilledQrUrl : null,
         );
     if (!mounted) return;
     setState(() => _publishing = false);
@@ -327,6 +362,34 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             const SizedBox(height: 14),
             _priceBreakdown(primary, secondary),
 
+            // Payment QR — only relevant when players actually pay.
+            if (_playerPrice > 0) ...[
+              const SizedBox(height: 20),
+              _label('Payment QR (TNG / bank)', secondary),
+              const SizedBox(height: 4),
+              Text(
+                'Players scan this to pay you. You confirm each payment from the '
+                'game once the money arrives.',
+                style: GoogleFonts.inter(fontSize: 11, color: secondary),
+              ),
+              const SizedBox(height: 8),
+              _qrPicker(secondary, surface),
+              if (_prefilledQrUrl != null && _qr == null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text('Reusing your last QR — tap to change',
+                      style:
+                          GoogleFonts.inter(fontSize: 11, color: secondary)),
+                ),
+              if (_qrError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text('Payment QR is required for paid games',
+                      style: GoogleFonts.inter(
+                          fontSize: 11, color: AppColors.tierElite)),
+                ),
+            ],
+
             const SizedBox(height: 24),
             CustomButton(
                 label: 'Publish Game',
@@ -391,6 +454,50 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               grad: true),
           row('Field owner gets:', 'RM ${_cost.toStringAsFixed(2)}'),
         ],
+      ),
+    );
+  }
+
+  Widget _qrPicker(Color secondary, Color surface) {
+    // Square preview: freshly picked image, the reused one, or an empty prompt.
+    Widget content;
+    if (_qr != null) {
+      content = ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.memory(_qr!, fit: BoxFit.contain),
+      );
+    } else if (_prefilledQrUrl != null) {
+      content = ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.network(_prefilledQrUrl!, fit: BoxFit.contain),
+      );
+    } else {
+      content = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.qr_code_2, size: 36, color: secondary),
+          const SizedBox(height: 8),
+          Text('Add payment QR',
+              style: GoogleFonts.inter(fontSize: 13, color: secondary)),
+        ],
+      );
+    }
+
+    return GestureDetector(
+      onTap: _pickQr,
+      child: Container(
+        height: 180,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _qrError
+                ? AppColors.tierElite
+                : secondary.withValues(alpha: 0.4),
+          ),
+        ),
+        child: content,
       ),
     );
   }

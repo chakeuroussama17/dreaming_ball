@@ -21,10 +21,12 @@ class Game {
   final double commission; // agent's commission
   final Uint8List? photo; // local preview before upload
   final String? photoUrl; // field-photos bucket
+  final String? paymentQrUrl; // agent's TNG / bank QR for players to pay
   final String? agentName;
   final bool mine; // created by the current agent
   final bool live; // match is currently being played live
   final bool joined; // current player registered for this game
+  final String? myPaymentStatus; // null=not joined, 'pending', 'paid'
   final bool ended; // match finished, stats submitted
   final DateTime? endedAt; // when the agent submitted (review window start)
   final bool agentPaidOut; // admin has sent the agent their share
@@ -46,10 +48,12 @@ class Game {
     required this.commission,
     this.photo,
     this.photoUrl,
+    this.paymentQrUrl,
     this.agentName,
     this.mine = false,
     this.live = false,
     this.joined = false,
+    this.myPaymentStatus,
     this.ended = false,
     this.endedAt,
     this.agentPaidOut = false,
@@ -61,6 +65,17 @@ class Game {
     final roster = (row['game_players'] as List?) ?? const [];
     final agent = row['users'];
     final status = (row['status'] ?? 'scheduled') as String;
+
+    // The current user's own roster row (if any) — drives joined/pending state.
+    Map? myRow;
+    if (uid != null) {
+      for (final p in roster) {
+        if (p is Map && p['player_id'] == uid) {
+          myRow = p;
+          break;
+        }
+      }
+    }
     return Game(
       id: row['id'] as String,
       fieldName: (row['field_name'] ?? '') as String,
@@ -77,6 +92,7 @@ class Game {
       fieldCost: ((row['field_cost'] ?? 0) as num).toDouble(),
       commission: ((row['commission'] ?? 0) as num).toDouble(),
       photoUrl: row['photo_url'] as String?,
+      paymentQrUrl: row['payment_qr_url'] as String?,
       agentName: agent is Map ? agent['full_name'] as String? : null,
       mine: uid != null && row['agent_id'] == uid,
       live: status == 'live',
@@ -85,7 +101,8 @@ class Game {
           ? null
           : DateTime.parse(row['ended_at'] as String).toLocal(),
       agentPaidOut: (row['agent_paid_out'] ?? false) as bool,
-      joined: uid != null && roster.any((p) => p['player_id'] == uid),
+      joined: myRow != null,
+      myPaymentStatus: myRow?['payment_status'] as String?,
     );
   }
 
@@ -112,6 +129,7 @@ class Game {
           {int? filledSlots,
           bool? live,
           bool? joined,
+          String? myPaymentStatus,
           bool? ended,
           DateTime? endedAt,
           bool? agentPaidOut}) =>
@@ -132,14 +150,25 @@ class Game {
         commission: commission,
         photo: photo,
         photoUrl: photoUrl,
+        paymentQrUrl: paymentQrUrl,
         agentName: agentName,
         mine: mine,
         live: live ?? this.live,
         joined: joined ?? this.joined,
+        myPaymentStatus: myPaymentStatus ?? this.myPaymentStatus,
         ended: ended ?? this.ended,
         endedAt: endedAt ?? this.endedAt,
         agentPaidOut: agentPaidOut ?? this.agentPaidOut,
       );
+
+  /// Player has joined but the agent hasn't confirmed their payment yet.
+  bool get awaitingConfirmation => joined && myPaymentStatus == 'pending';
+
+  /// Player is officially in (agent confirmed, or it was a free game).
+  bool get confirmedIn => joined && myPaymentStatus == 'paid';
+
+  /// This is a free game — no payment / confirmation needed.
+  bool get isFree => price <= 0;
 
   /// Per-player price from a pitch rental cost: split across players + 30%.
   static double priceFor(double fieldCost, int players) =>
@@ -200,6 +229,8 @@ class GamesNotifier extends StateNotifier<List<Game>> {
     required double fieldCost,
     required double commission,
     Uint8List? photoBytes,
+    Uint8List? qrBytes,
+    String? qrUrl,
   }) async {
     try {
       await GameService.createGame(
@@ -215,6 +246,8 @@ class GamesNotifier extends StateNotifier<List<Game>> {
         fieldCost: fieldCost,
         commission: commission,
         photoBytes: photoBytes,
+        qrBytes: qrBytes,
+        qrUrl: qrUrl,
       );
       await load();
       return null;
@@ -224,6 +257,8 @@ class GamesNotifier extends StateNotifier<List<Game>> {
   }
 
   /// Race-safe join via RPC; updates the local copy on success.
+  /// Free games join as confirmed ('paid'); paid games as 'pending' (the
+  /// player has tapped "I've Paid" and is awaiting the agent's confirmation).
   /// Returns null on success, or a friendly error message.
   Future<String?> join(String id) async {
     final error = await GameService.joinGame(id);
@@ -231,7 +266,11 @@ class GamesNotifier extends StateNotifier<List<Game>> {
     state = [
       for (final g in state)
         if (g.id == id)
-          g.copyWith(filledSlots: g.filledSlots + 1, joined: true)
+          g.copyWith(
+            filledSlots: g.filledSlots + 1,
+            joined: true,
+            myPaymentStatus: g.isFree ? 'paid' : 'pending',
+          )
         else
           g,
     ];
