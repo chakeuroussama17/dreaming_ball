@@ -115,8 +115,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 1:
         context.goNamed('leaderboard');
       case 2:
-        context.goNamed('private-room');
+        context.goNamed('tournaments');
       case 3:
+        context.goNamed('private-room');
+      case 4:
         context.goNamed('profile');
       default:
         break;
@@ -809,6 +811,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.leaderboard_outlined),
             activeIcon: const Icon(Icons.leaderboard),
             label: l.navLeaderboard,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.emoji_events_outlined),
+            activeIcon: const Icon(Icons.emoji_events),
+            label: l.navTournaments,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.lock_outline),

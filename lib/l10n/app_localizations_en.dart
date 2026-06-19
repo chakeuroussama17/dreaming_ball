@@ -48,6 +48,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get navTournaments => 'Tournaments';
+
+  @override
+  String get tournamentsTitle => 'Tournaments';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get tournamentsBlurb =>
+      'Cups, brackets and prizes are on the way. Stay tuned — this is where your squad goes for glory.';
+
+  @override
   String get welcomeTitle => 'Dreaming Ball';
 
   @override

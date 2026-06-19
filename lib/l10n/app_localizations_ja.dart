@@ -48,6 +48,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get navProfile => 'プロフィール';
 
   @override
+  String get navTournaments => 'トーナメント';
+
+  @override
+  String get tournamentsTitle => 'トーナメント';
+
+  @override
+  String get comingSoon => '近日公開';
+
+  @override
+  String get tournamentsBlurb =>
+      'カップ戦、トーナメント表、賞品が登場予定。お楽しみに——ここはあなたのチームが栄光をつかむ場所です。';
+
+  @override
   String get welcomeTitle => 'Dreaming Ball';
 
   @override

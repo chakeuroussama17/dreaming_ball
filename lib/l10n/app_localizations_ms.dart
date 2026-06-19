@@ -48,6 +48,19 @@ class AppLocalizationsMs extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
+  String get navTournaments => 'Kejohanan';
+
+  @override
+  String get tournamentsTitle => 'Kejohanan';
+
+  @override
+  String get comingSoon => 'Akan datang';
+
+  @override
+  String get tournamentsBlurb =>
+      'Piala, peringkat dan hadiah dalam perjalanan. Nantikan — di sinilah skuad anda mengejar kejayaan.';
+
+  @override
   String get welcomeTitle => 'Dreaming Ball';
 
   @override

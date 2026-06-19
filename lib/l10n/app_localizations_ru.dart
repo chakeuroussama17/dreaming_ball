@@ -48,6 +48,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navProfile => 'Профиль';
 
   @override
+  String get navTournaments => 'Турниры';
+
+  @override
+  String get tournamentsTitle => 'Турниры';
+
+  @override
+  String get comingSoon => 'Скоро';
+
+  @override
+  String get tournamentsBlurb =>
+      'Кубки, сетки и призы уже в пути. Следите за обновлениями — здесь ваша команда поборется за славу.';
+
+  @override
   String get welcomeTitle => 'Dreaming Ball';
 
   @override

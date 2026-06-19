@@ -21,6 +21,7 @@ import '../features/profile/screens/edit_profile_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/notifications/screens/notifications_screen.dart';
 import '../features/leaderboard/screens/leaderboard_screen.dart';
+import '../features/tournaments/screens/tournaments_screen.dart';
 import '../features/private_room/screens/private_room_screen.dart';
 import '../features/private_room/screens/room_detail_screen.dart';
 import '../features/dispute/screens/dispute_screen.dart';
@@ -85,6 +86,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/settings', name: 'settings', builder: (c, s) => const SettingsScreen()),
       GoRoute(path: '/notifications', name: 'notifications', builder: (c, s) => const NotificationsScreen()),
       GoRoute(path: '/leaderboard', name: 'leaderboard', builder: (c, s) => const LeaderboardScreen()),
+      GoRoute(path: '/tournaments', name: 'tournaments', builder: (c, s) => const TournamentsScreen()),
       GoRoute(path: '/private-room', name: 'private-room', builder: (c, s) => const PrivateRoomScreen()),
       GoRoute(path: '/room/:id', name: 'room-detail', builder: (c, s) => RoomDetailScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/dispute/:id', name: 'dispute', builder: (c, s) => DisputeScreen(id: s.pathParameters['id']!)),

@@ -257,8 +257,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             case 0:
               context.goNamed('home');
             case 2:
-              context.goNamed('private-room');
+              context.goNamed('tournaments');
             case 3:
+              context.goNamed('private-room');
+            case 4:
               context.goNamed('profile');
             default:
               break;
@@ -267,6 +269,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
           BottomNavigationBarItem(icon: const Icon(Icons.leaderboard), label: l.navLeaderboard),
+          BottomNavigationBarItem(icon: const Icon(Icons.emoji_events_outlined), label: l.navTournaments),
           BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
           BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: l.navProfile),
         ],

@@ -154,7 +154,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
+        currentIndex: 3,
         type: BottomNavigationBarType.fixed,
         onTap: (i) {
           switch (i) {
@@ -162,7 +162,9 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
               context.goNamed('home');
             case 1:
               context.goNamed('leaderboard');
-            case 3:
+            case 2:
+              context.goNamed('tournaments');
+            case 4:
               context.goNamed('profile');
             default:
               break;
@@ -171,6 +173,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
           BottomNavigationBarItem(icon: const Icon(Icons.leaderboard), label: l.navLeaderboard),
+          BottomNavigationBarItem(icon: const Icon(Icons.emoji_events_outlined), label: l.navTournaments),
           BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
           BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: l.navProfile),
         ],

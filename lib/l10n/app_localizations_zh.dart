@@ -48,6 +48,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navProfile => '我的';
 
   @override
+  String get navTournaments => '锦标赛';
+
+  @override
+  String get tournamentsTitle => '锦标赛';
+
+  @override
+  String get comingSoon => '即将推出';
+
+  @override
+  String get tournamentsBlurb => '杯赛、对阵和奖品即将上线。敬请期待——这里是你的队伍争夺荣耀的舞台。';
+
+  @override
   String get welcomeTitle => 'Dreaming Ball';
 
   @override

@@ -373,7 +373,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       bottomNavigationBar: isGuest
           ? null
           : BottomNavigationBar(
-              currentIndex: 3,
+              currentIndex: 4,
               type: BottomNavigationBarType.fixed,
               onTap: (i) {
                 switch (i) {
@@ -382,6 +382,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   case 1:
                     context.goNamed('leaderboard');
                   case 2:
+                    context.goNamed('tournaments');
+                  case 3:
                     context.goNamed('private-room');
                   default:
                     break;
@@ -390,6 +392,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               items: [
                 BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
                 BottomNavigationBarItem(icon: const Icon(Icons.leaderboard_outlined), label: l.navLeaderboard),
+                BottomNavigationBarItem(icon: const Icon(Icons.emoji_events_outlined), label: l.navTournaments),
                 BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
                 BottomNavigationBarItem(icon: const Icon(Icons.person), label: l.navProfile),
               ],

@@ -182,6 +182,30 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get navProfile;
 
+  /// No description provided for @navTournaments.
+  ///
+  /// In en, this message translates to:
+  /// **'Tournaments'**
+  String get navTournaments;
+
+  /// No description provided for @tournamentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tournaments'**
+  String get tournamentsTitle;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @tournamentsBlurb.
+  ///
+  /// In en, this message translates to:
+  /// **'Cups, brackets and prizes are on the way. Stay tuned — this is where your squad goes for glory.'**
+  String get tournamentsBlurb;
+
   /// No description provided for @welcomeTitle.
   ///
   /// In en, this message translates to:
