@@ -13,6 +13,7 @@ import '../../../../core/services/rating_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // ── Data models ───────────────────────────────────────────────────────────────
 
@@ -251,6 +252,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final primary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final secondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final l = AppLocalizations.of(context);
 
     final games = ref.watch(gamesProvider);
     final gamesStatus = ref.watch(gamesStatusProvider);
@@ -437,10 +439,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const SizedBox(width: 8),
                           Text(
                             hasLive
-                                ? 'Live Now'
+                                ? l.liveNow
                                 : hasUpcomingMine
-                                    ? 'Starting Soon'
-                                    : 'Match Report',
+                                    ? l.startingSoon
+                                    : l.matchReport,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -461,11 +463,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 : AppColors.orange;
                         final label = g.live
                             ? ((isAgent && g.mine)
-                                ? 'Manage Live'
-                                : 'Watch Live')
+                                ? l.manageLive
+                                : l.watchLive)
                             : g.ended
-                                ? 'Match Report'
-                                : 'Check Attendance';
+                                ? l.matchReport
+                                : l.checkAttendance;
                         final subtitle = g.live
                             ? g.dateTime
                             : g.ended
@@ -597,7 +599,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           size: 18, color: AppColors.orange),
                       const SizedBox(width: 6),
                       Text(
-                        'Near You',
+                        l.nearYou,
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -650,7 +652,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Games This Week',
+                      l.gamesThisWeek,
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -658,7 +660,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     Text(
-                      'View all',
+                      l.viewAll,
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -683,7 +685,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         : filteredGames.isEmpty
                             ? Center(
                                 child: Text(
-                                  'No $_selectedFormat games this week',
+                                  l.noGamesThisWeek,
                                   style: GoogleFonts.inter(
                                       fontSize: 14, color: secondary),
                                 ),
@@ -722,7 +724,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Top Players This Week',
+                      l.topPlayers,
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -797,26 +799,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         currentIndex: _currentNav,
         onTap: _onNavTap,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l.navHome,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard_outlined),
-            activeIcon: Icon(Icons.leaderboard),
-            label: 'Rankings',
+            icon: const Icon(Icons.leaderboard_outlined),
+            activeIcon: const Icon(Icons.leaderboard),
+            label: l.navLeaderboard,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.lock_outline),
-            activeIcon: Icon(Icons.lock),
-            label: 'Private',
+            icon: const Icon(Icons.lock_outline),
+            activeIcon: const Icon(Icons.lock),
+            label: l.navPrivateRoom,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l.navProfile,
           ),
         ],
       ),
@@ -966,6 +968,7 @@ class _HomeGameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
     final slotRatio = data.filledSlots / data.totalSlots;
     final isFull = data.filledSlots >= data.totalSlots;
@@ -1257,10 +1260,10 @@ class _HomeGameCard extends StatelessWidget {
                               ],
                               Text(
                                 joined
-                                    ? 'Joined'
+                                    ? l.joinedTick
                                     : data.live
-                                        ? 'Watch Live'
-                                        : (isFull ? 'Full' : 'Join'),
+                                        ? l.watchLive
+                                        : (isFull ? l.gameFull : l.joinGame),
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,

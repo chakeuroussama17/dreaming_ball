@@ -10,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/custom_input.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PrivateRoomScreen extends StatefulWidget {
   const PrivateRoomScreen({super.key});
@@ -49,6 +50,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = AppLocalizations.of(context);
     final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
     final primary =
         isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
@@ -166,11 +168,11 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
               break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Rankings'),
-          BottomNavigationBarItem(icon: Icon(Icons.lock_outline), label: 'Private'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+        items: [
+          BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
+          BottomNavigationBarItem(icon: const Icon(Icons.leaderboard), label: l.navLeaderboard),
+          BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
+          BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: l.navProfile),
         ],
       ),
       ),

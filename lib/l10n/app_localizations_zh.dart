@@ -111,6 +111,90 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chooseLanguage => '选择语言';
 
   @override
+  String get gamesThisWeek => '本周比赛';
+
+  @override
+  String get viewAll => '查看全部';
+
+  @override
+  String get nearYou => '附近的比赛';
+
+  @override
+  String get topPlayers => '本周顶尖球员';
+
+  @override
+  String get noGamesThisWeek => '本周暂无比赛';
+
+  @override
+  String get liveNow => '正在进行';
+
+  @override
+  String get startingSoon => '即将开始';
+
+  @override
+  String get matchReport => '比赛报告';
+
+  @override
+  String get checkAttendance => '查看出席';
+
+  @override
+  String get watchLive => '观看直播';
+
+  @override
+  String get manageLive => '管理直播';
+
+  @override
+  String get squad => '阵容';
+
+  @override
+  String get joinGame => '加入比赛';
+
+  @override
+  String get payAndJoin => '支付并加入';
+
+  @override
+  String get joinedTick => '已加入 ✓';
+
+  @override
+  String get paymentPending => '等待付款';
+
+  @override
+  String get gameFull => '已满';
+
+  @override
+  String get viewLiveMatch => '观看直播比赛';
+
+  @override
+  String get leave => '退出';
+
+  @override
+  String get perPlayer => '每位球员';
+
+  @override
+  String get priceFree => '免费';
+
+  @override
+  String get scanToPay => '扫码支付';
+
+  @override
+  String get ivePaid => '我已支付';
+
+  @override
+  String get amountToPay => '应付金额';
+
+  @override
+  String get awaitingConfirmation => '等待确认';
+
+  @override
+  String get youreIn => '加入成功！';
+
+  @override
+  String get backToGames => '返回比赛';
+
+  @override
+  String get paymentTitle => '支付';
+
+  @override
   String get languageEnglish => 'English';
 
   @override

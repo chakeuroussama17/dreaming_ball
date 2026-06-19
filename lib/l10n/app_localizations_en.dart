@@ -111,6 +111,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseLanguage => 'Choose language';
 
   @override
+  String get gamesThisWeek => 'Games This Week';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get nearYou => 'Near You';
+
+  @override
+  String get topPlayers => 'Top Players This Week';
+
+  @override
+  String get noGamesThisWeek => 'No games this week';
+
+  @override
+  String get liveNow => 'Live Now';
+
+  @override
+  String get startingSoon => 'Starting Soon';
+
+  @override
+  String get matchReport => 'Match Report';
+
+  @override
+  String get checkAttendance => 'Check Attendance';
+
+  @override
+  String get watchLive => 'Watch Live';
+
+  @override
+  String get manageLive => 'Manage Live';
+
+  @override
+  String get squad => 'Squad';
+
+  @override
+  String get joinGame => 'Join Game';
+
+  @override
+  String get payAndJoin => 'Pay & Join';
+
+  @override
+  String get joinedTick => 'Joined ✓';
+
+  @override
+  String get paymentPending => 'Payment Pending';
+
+  @override
+  String get gameFull => 'Game Full';
+
+  @override
+  String get viewLiveMatch => 'View Live Match';
+
+  @override
+  String get leave => 'Leave';
+
+  @override
+  String get perPlayer => 'per player';
+
+  @override
+  String get priceFree => 'Free';
+
+  @override
+  String get scanToPay => 'Scan to pay';
+
+  @override
+  String get ivePaid => 'I\'ve Paid';
+
+  @override
+  String get amountToPay => 'Amount to pay';
+
+  @override
+  String get awaitingConfirmation => 'Awaiting confirmation';
+
+  @override
+  String get youreIn => 'You\'re in!';
+
+  @override
+  String get backToGames => 'Back to Games';
+
+  @override
+  String get paymentTitle => 'Payment';
+
+  @override
   String get languageEnglish => 'English';
 
   @override

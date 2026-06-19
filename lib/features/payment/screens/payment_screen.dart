@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/nav.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Manual payment: the agent uploaded a TNG/bank QR on the game. The player
 /// scans it in their own app, pays, then taps "I've Paid" — which joins them
@@ -21,6 +22,8 @@ class PaymentScreen extends ConsumerStatefulWidget {
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   bool _submitting = false;
+
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   Future<void> _markPaid(Game game) async {
     if (_submitting) return;
@@ -79,7 +82,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
           onPressed: () => context.safePop(),
         ),
-        title: Text('Payment',
+        title: Text(_t.paymentTitle,
             style: GoogleFonts.spaceGrotesk(
                 fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
         centerTitle: true,
@@ -123,7 +126,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Amount to pay',
+                    Text(_t.amountToPay,
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -143,7 +146,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               const SizedBox(height: 20),
 
               // QR
-              Text('Scan to pay',
+              Text(_t.scanToPay,
                   style: GoogleFonts.spaceGrotesk(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -232,7 +235,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
         ),
         _bottomButton(
-          _submitting ? 'Please wait…' : "I've Paid",
+          _submitting ? '…' : _t.ivePaid,
           _submitting ? null : () => _markPaid(game),
         ),
       ],
@@ -270,7 +273,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         ),
         const SizedBox(height: 16),
         Center(
-          child: Text('Awaiting confirmation',
+          child: Text(_t.awaitingConfirmation,
               style: GoogleFonts.spaceGrotesk(
                   fontSize: 22, fontWeight: FontWeight.w800, color: primary)),
         ),
@@ -290,7 +293,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         const SizedBox(height: 24),
         _gameCard(game, primary, secondary, border, surface),
         const SizedBox(height: 24),
-        _gradientButton('Back to Games', () => context.goNamed('home')),
+        _gradientButton(_t.backToGames, () => context.goNamed('home')),
       ],
     );
   }
@@ -328,7 +331,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         Center(
           child: ShaderMask(
             shaderCallback: (b) => AppColors.brandGradient.createShader(b),
-            child: Text("You're in!",
+            child: Text(_t.youreIn,
                 style: GoogleFonts.spaceGrotesk(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
@@ -343,7 +346,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         const SizedBox(height: 24),
         _gameCard(game, primary, secondary, border, surface),
         const SizedBox(height: 24),
-        _gradientButton('Back to Games', () => context.goNamed('home')),
+        _gradientButton(_t.backToGames, () => context.goNamed('home')),
       ],
     );
   }

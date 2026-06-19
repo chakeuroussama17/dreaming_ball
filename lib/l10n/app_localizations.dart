@@ -308,6 +308,174 @@ abstract class AppLocalizations {
   /// **'Choose language'**
   String get chooseLanguage;
 
+  /// No description provided for @gamesThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Games This Week'**
+  String get gamesThisWeek;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @nearYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Near You'**
+  String get nearYou;
+
+  /// No description provided for @topPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Players This Week'**
+  String get topPlayers;
+
+  /// No description provided for @noGamesThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'No games this week'**
+  String get noGamesThisWeek;
+
+  /// No description provided for @liveNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Now'**
+  String get liveNow;
+
+  /// No description provided for @startingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Soon'**
+  String get startingSoon;
+
+  /// No description provided for @matchReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Report'**
+  String get matchReport;
+
+  /// No description provided for @checkAttendance.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Attendance'**
+  String get checkAttendance;
+
+  /// No description provided for @watchLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Live'**
+  String get watchLive;
+
+  /// No description provided for @manageLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Live'**
+  String get manageLive;
+
+  /// No description provided for @squad.
+  ///
+  /// In en, this message translates to:
+  /// **'Squad'**
+  String get squad;
+
+  /// No description provided for @joinGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Game'**
+  String get joinGame;
+
+  /// No description provided for @payAndJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay & Join'**
+  String get payAndJoin;
+
+  /// No description provided for @joinedTick.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined ✓'**
+  String get joinedTick;
+
+  /// No description provided for @paymentPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Pending'**
+  String get paymentPending;
+
+  /// No description provided for @gameFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Full'**
+  String get gameFull;
+
+  /// No description provided for @viewLiveMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'View Live Match'**
+  String get viewLiveMatch;
+
+  /// No description provided for @leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leave;
+
+  /// No description provided for @perPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'per player'**
+  String get perPlayer;
+
+  /// No description provided for @priceFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get priceFree;
+
+  /// No description provided for @scanToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to pay'**
+  String get scanToPay;
+
+  /// No description provided for @ivePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve Paid'**
+  String get ivePaid;
+
+  /// No description provided for @amountToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to pay'**
+  String get amountToPay;
+
+  /// No description provided for @awaitingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting confirmation'**
+  String get awaitingConfirmation;
+
+  /// No description provided for @youreIn.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in!'**
+  String get youreIn;
+
+  /// No description provided for @backToGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Games'**
+  String get backToGames;
+
+  /// No description provided for @paymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentTitle;
+
   /// No description provided for @languageEnglish.
   ///
   /// In en, this message translates to:

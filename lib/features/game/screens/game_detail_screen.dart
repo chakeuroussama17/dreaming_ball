@@ -14,6 +14,7 @@ import '../../../../core/utils/nav.dart';
 import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class GameDetailScreen extends ConsumerStatefulWidget {
   final String id;
@@ -25,6 +26,8 @@ class GameDetailScreen extends ConsumerStatefulWidget {
 
 class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   String get id => widget.id;
+
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   Game? _game;
   List<SquadPlayer> _squad = const [];
@@ -425,7 +428,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: Text('Squad',
+                  child: Text(_t.squad,
                       style: GoogleFonts.spaceGrotesk(
                           fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
                 ),
@@ -599,12 +602,12 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(isFree ? 'Free' : 'RM ${price.toStringAsFixed(0)}',
+            Text(isFree ? _t.priceFree : 'RM ${price.toStringAsFixed(0)}',
                 style: GoogleFonts.spaceGrotesk(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     color: AppColors.orange)),
-            Text(isFree ? 'no charge' : 'per player',
+            Text(isFree ? _t.priceFree : _t.perPlayer,
                 style: GoogleFonts.inter(fontSize: 12, color: secondary)),
           ],
         ),
@@ -628,7 +631,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                         height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2.5, color: AppColors.tierElite))
-                    : Text('Leave',
+                    : Text(_t.leave,
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -688,11 +691,11 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
 
   String _bottomLabel(
       bool live, bool isFull, bool joined, bool pending, bool isFree) {
-    if (live) return 'View Live Match';
-    if (pending) return 'Payment Pending';
-    if (joined) return 'Joined ✓';
-    if (isFull) return 'Game Full';
-    return isFree ? 'Join Game' : 'Pay & Join';
+    if (live) return _t.viewLiveMatch;
+    if (pending) return _t.paymentPending;
+    if (joined) return _t.joinedTick;
+    if (isFull) return _t.gameFull;
+    return isFree ? _t.joinGame : _t.payAndJoin;
   }
 
   // Small payment-status chip shown next to each player's name.

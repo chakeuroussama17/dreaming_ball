@@ -112,6 +112,90 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chooseLanguage => 'Выберите язык';
 
   @override
+  String get gamesThisWeek => 'Игры этой недели';
+
+  @override
+  String get viewAll => 'Показать все';
+
+  @override
+  String get nearYou => 'Рядом с вами';
+
+  @override
+  String get topPlayers => 'Лучшие игроки недели';
+
+  @override
+  String get noGamesThisWeek => 'На этой неделе игр нет';
+
+  @override
+  String get liveNow => 'Сейчас в эфире';
+
+  @override
+  String get startingSoon => 'Скоро начнётся';
+
+  @override
+  String get matchReport => 'Отчёт о матче';
+
+  @override
+  String get checkAttendance => 'Отметить посещаемость';
+
+  @override
+  String get watchLive => 'Смотреть трансляцию';
+
+  @override
+  String get manageLive => 'Управление матчем';
+
+  @override
+  String get squad => 'Состав';
+
+  @override
+  String get joinGame => 'Присоединиться';
+
+  @override
+  String get payAndJoin => 'Оплатить и вступить';
+
+  @override
+  String get joinedTick => 'Вы в игре ✓';
+
+  @override
+  String get paymentPending => 'Ожидание оплаты';
+
+  @override
+  String get gameFull => 'Мест нет';
+
+  @override
+  String get viewLiveMatch => 'Смотреть матч';
+
+  @override
+  String get leave => 'Выйти';
+
+  @override
+  String get perPlayer => 'с игрока';
+
+  @override
+  String get priceFree => 'Бесплатно';
+
+  @override
+  String get scanToPay => 'Сканируйте для оплаты';
+
+  @override
+  String get ivePaid => 'Я оплатил';
+
+  @override
+  String get amountToPay => 'Сумма к оплате';
+
+  @override
+  String get awaitingConfirmation => 'Ожидает подтверждения';
+
+  @override
+  String get youreIn => 'Вы в игре!';
+
+  @override
+  String get backToGames => 'К играм';
+
+  @override
+  String get paymentTitle => 'Оплата';
+
+  @override
   String get languageEnglish => 'English';
 
   @override

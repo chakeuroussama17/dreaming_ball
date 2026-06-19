@@ -111,6 +111,90 @@ class AppLocalizationsMs extends AppLocalizations {
   String get chooseLanguage => 'Pilih bahasa';
 
   @override
+  String get gamesThisWeek => 'Perlawanan Minggu Ini';
+
+  @override
+  String get viewAll => 'Lihat semua';
+
+  @override
+  String get nearYou => 'Berhampiran Anda';
+
+  @override
+  String get topPlayers => 'Pemain Teratas Minggu Ini';
+
+  @override
+  String get noGamesThisWeek => 'Tiada perlawanan minggu ini';
+
+  @override
+  String get liveNow => 'Sedang Berlangsung';
+
+  @override
+  String get startingSoon => 'Akan Bermula';
+
+  @override
+  String get matchReport => 'Laporan Perlawanan';
+
+  @override
+  String get checkAttendance => 'Semak Kehadiran';
+
+  @override
+  String get watchLive => 'Tonton Langsung';
+
+  @override
+  String get manageLive => 'Urus Langsung';
+
+  @override
+  String get squad => 'Skuad';
+
+  @override
+  String get joinGame => 'Sertai';
+
+  @override
+  String get payAndJoin => 'Bayar & Sertai';
+
+  @override
+  String get joinedTick => 'Disertai ✓';
+
+  @override
+  String get paymentPending => 'Menunggu Bayaran';
+
+  @override
+  String get gameFull => 'Penuh';
+
+  @override
+  String get viewLiveMatch => 'Lihat Perlawanan Langsung';
+
+  @override
+  String get leave => 'Keluar';
+
+  @override
+  String get perPlayer => 'setiap pemain';
+
+  @override
+  String get priceFree => 'Percuma';
+
+  @override
+  String get scanToPay => 'Imbas untuk bayar';
+
+  @override
+  String get ivePaid => 'Saya Sudah Bayar';
+
+  @override
+  String get amountToPay => 'Jumlah perlu dibayar';
+
+  @override
+  String get awaitingConfirmation => 'Menunggu pengesahan';
+
+  @override
+  String get youreIn => 'Anda berjaya!';
+
+  @override
+  String get backToGames => 'Kembali ke Perlawanan';
+
+  @override
+  String get paymentTitle => 'Pembayaran';
+
+  @override
   String get languageEnglish => 'English';
 
   @override

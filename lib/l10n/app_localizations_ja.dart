@@ -111,6 +111,90 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chooseLanguage => '言語を選択';
 
   @override
+  String get gamesThisWeek => '今週の試合';
+
+  @override
+  String get viewAll => 'すべて見る';
+
+  @override
+  String get nearYou => '近くの試合';
+
+  @override
+  String get topPlayers => '今週のトッププレイヤー';
+
+  @override
+  String get noGamesThisWeek => '今週は試合がありません';
+
+  @override
+  String get liveNow => '開催中';
+
+  @override
+  String get startingSoon => 'まもなく開始';
+
+  @override
+  String get matchReport => '試合レポート';
+
+  @override
+  String get checkAttendance => '出欠確認';
+
+  @override
+  String get watchLive => 'ライブ観戦';
+
+  @override
+  String get manageLive => 'ライブ管理';
+
+  @override
+  String get squad => 'メンバー';
+
+  @override
+  String get joinGame => '参加する';
+
+  @override
+  String get payAndJoin => '支払って参加';
+
+  @override
+  String get joinedTick => '参加済み ✓';
+
+  @override
+  String get paymentPending => '支払い待ち';
+
+  @override
+  String get gameFull => '満員';
+
+  @override
+  String get viewLiveMatch => 'ライブ試合を見る';
+
+  @override
+  String get leave => '退出';
+
+  @override
+  String get perPlayer => '1人あたり';
+
+  @override
+  String get priceFree => '無料';
+
+  @override
+  String get scanToPay => 'スキャンして支払う';
+
+  @override
+  String get ivePaid => '支払いました';
+
+  @override
+  String get amountToPay => '支払金額';
+
+  @override
+  String get awaitingConfirmation => '確認待ち';
+
+  @override
+  String get youreIn => '参加完了！';
+
+  @override
+  String get backToGames => '試合一覧に戻る';
+
+  @override
+  String get paymentTitle => '支払い';
+
+  @override
   String get languageEnglish => 'English';
 
   @override
