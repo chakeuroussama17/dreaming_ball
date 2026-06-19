@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../services/game_service.dart';
+import '../services/rating_service.dart';
 
 /// A game shown in the home feed. Created by agents, joined by players.
 class Game {
@@ -348,4 +349,11 @@ final gamesProvider = StateNotifierProvider<GamesNotifier, List<Game>>(
 final agentConfirmedCountsProvider =
     FutureProvider.autoDispose<Map<String, int>>((ref) {
   return GameService.fetchConfirmedCounts();
+});
+
+/// Aggregate agent ratings (agent id → avg + count) for the star badge on
+/// game cards. Cheap and shared across the feed.
+final agentRatingsProvider =
+    FutureProvider<Map<String, AgentRating>>((ref) {
+  return RatingService.allAgentRatings();
 });

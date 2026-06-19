@@ -5,11 +5,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/config/app_links.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/services/game_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/nav.dart';
+import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 
@@ -165,6 +167,18 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     }
   }
 
+  // Share this game to WhatsApp / the native sheet with a deep link.
+  Future<void> _shareGame(Game game) async {
+    final price = game.isFree ? 'Free' : 'RM ${game.price.toStringAsFixed(0)}';
+    final msg = '⚽ ${game.fieldName}\n'
+        '📅 ${game.dateTime}\n'
+        '📍 ${game.location}\n'
+        '💰 $price per player\n'
+        '👥 ${game.filledSlots}/${game.totalSlots} joined\n\n'
+        'Join us on Dreaming Ball 👇\n${AppLinks.gameUrl(game.id)}';
+    await ShareUtils.shareViaWhatsApp(msg);
+  }
+
   // Free game: join instantly (no payment, no agent confirmation).
   Future<void> _joinFree() async {
     final error = await ref.read(gamesProvider.notifier).join(id);
@@ -191,6 +205,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     final game = _game ?? ref.watch(gamesProvider.notifier).byId(id);
+    final agentRating = (game?.agentId == null)
+        ? null
+        : ref.watch(agentRatingsProvider).valueOrNull?[game!.agentId];
     final fieldName = game?.fieldName ?? 'Game';
     final location = game?.location ?? '';
     final format = game?.format ?? '5-aside';
@@ -290,7 +307,8 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             _circleBtn(Icons.arrow_back_ios_new, () => context.safePop()),
-                            _circleBtn(Icons.ios_share_outlined, () {}),
+                            _circleBtn(Icons.ios_share_outlined,
+                                game == null ? () {} : () => _shareGame(game)),
                           ],
                         ),
                       ),
@@ -371,11 +389,19 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                                   style: GoogleFonts.spaceGrotesk(
                                       fontSize: 14, fontWeight: FontWeight.w700, color: primary)),
                               const SizedBox(height: 3),
-                              Row(children: [
-                                const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFBBF24)),
-                                const SizedBox(width: 3),
-                                Text('4.8', style: GoogleFonts.inter(fontSize: 12, color: secondary)),
-                              ]),
+                              (agentRating != null && agentRating.count > 0)
+                                  ? Row(children: [
+                                      const Icon(Icons.star_rounded,
+                                          size: 14, color: Color(0xFFFBBF24)),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                          '${agentRating.avg.toStringAsFixed(1)} (${agentRating.count})',
+                                          style: GoogleFonts.inter(
+                                              fontSize: 12, color: secondary)),
+                                    ])
+                                  : Text('New agent',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 12, color: secondary)),
                             ],
                           ),
                         ),

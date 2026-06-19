@@ -9,6 +9,7 @@ import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/providers/content_providers.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
+import '../../../../core/services/rating_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
@@ -288,6 +289,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final filteredGames = _selectedFormat == 'All'
         ? upcoming
         : upcoming.where((g) => g.format == _selectedFormat).toList();
+
+    // Agent ratings (star badge on cards) and "near you" matching by the
+    // player's city/state against each game's free-text location.
+    final ratings =
+        ref.watch(agentRatingsProvider).valueOrNull ?? const <String, AgentRating>{};
+    final myCity = myProfile?.city?.trim() ?? '';
+    final myState = myProfile?.state?.trim() ?? '';
+    bool isNearby(Game g) {
+      final loc = g.location.toLowerCase();
+      if (loc.isEmpty) return false;
+      if (myCity.isNotEmpty && loc.contains(myCity.toLowerCase())) return true;
+      if (myState.isNotEmpty && loc.contains(myState.toLowerCase())) return true;
+      return false;
+    }
+
+    final nearGames = upcoming.where(isNearby).toList();
 
     return Scaffold(
       backgroundColor: bg,
@@ -569,6 +586,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
 
+            // ── Near You ───────────────────────────────────────────────────────
+            if (nearGames.isNotEmpty) ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          size: 18, color: AppColors.orange),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Near You',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: primary,
+                        ),
+                      ),
+                      if (myCity.isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        Text('· $myCity',
+                            style: GoogleFonts.inter(
+                                fontSize: 13, color: secondary)),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 265,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: nearGames.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
+                    itemBuilder: (ctx, i) {
+                      final g = nearGames[i];
+                      return _HomeGameCard(
+                        data: g,
+                        rating: ratings[g.agentId],
+                        isDark: isDark,
+                        primary: primary,
+                        secondary: secondary,
+                        border: border,
+                        onTap: () => context.pushNamed(
+                          g.live ? 'live-match' : 'game-detail',
+                          pathParameters: {'id': g.id},
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+
             // ── Games This Week ────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
@@ -626,6 +699,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   final g = filteredGames[i];
                                   return _HomeGameCard(
                                     data: g,
+                                    rating: ratings[g.agentId],
                                     isDark: isDark,
                                     primary: primary,
                                     secondary: secondary,
@@ -875,12 +949,14 @@ class _BannerCard extends StatelessWidget {
 
 class _HomeGameCard extends StatelessWidget {
   final Game data;
+  final AgentRating? rating;
   final bool isDark;
   final Color primary, secondary, border;
   final VoidCallback onTap;
 
   const _HomeGameCard({
     required this.data,
+    this.rating,
     required this.isDark,
     required this.primary,
     required this.secondary,
@@ -1032,6 +1108,36 @@ class _HomeGameCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Agent rating badge (top-right of the photo)
+                if (rating != null && rating!.count > 0)
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star_rounded,
+                              size: 12, color: Color(0xFFFBBF24)),
+                          const SizedBox(width: 2),
+                          Text(
+                            rating!.avg.toStringAsFixed(1),
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
             // Card content

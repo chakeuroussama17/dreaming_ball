@@ -20,6 +20,8 @@ class PlayerProfile {
   final int totalAssists;
   final int totalGamesPlayed;
   final int cleanSheets;
+  final String? city;
+  final String? state;
 
   const PlayerProfile({
     required this.userId,
@@ -36,6 +38,8 @@ class PlayerProfile {
     required this.totalAssists,
     required this.totalGamesPlayed,
     required this.cleanSheets,
+    this.city,
+    this.state,
   });
 
   factory PlayerProfile.fromRow(Map<String, dynamic> profile) {
@@ -55,6 +59,8 @@ class PlayerProfile {
       totalAssists: (profile['total_assists'] ?? 0) as int,
       totalGamesPlayed: (profile['total_games_played'] ?? 0) as int,
       cleanSheets: (profile['clean_sheets'] ?? 0) as int,
+      city: user['city'] as String?,
+      state: user['state'] as String?,
     );
   }
 }
@@ -107,7 +113,8 @@ class ProfileService {
   static final _sb = SupabaseService.supabase;
 
   static const _profileSelect = '*, '
-      'users!player_profiles_user_id_fkey(full_name, email, phone, role, avatar_url)';
+      'users!player_profiles_user_id_fkey(full_name, email, phone, role, '
+      'avatar_url, city, state)';
 
   static Future<PlayerProfile?> fetchMyProfile() async {
     final uid = SupabaseService.userId;

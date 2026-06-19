@@ -1,5 +1,12 @@
 import 'supabase_service.dart';
 
+/// An agent's aggregate rating (average stars + how many ratings).
+class AgentRating {
+  final double avg;
+  final int count;
+  const AgentRating(this.avg, this.count);
+}
+
 /// Players rate the agent 1–5 stars after a game. Backed by the agent_ratings
 /// table (unique per game+player, so each player rates a game once).
 class RatingService {
@@ -56,6 +63,28 @@ class RatingService {
       return (total / rows.length, rows.length);
     } catch (_) {
       return (0.0, 0);
+    }
+  }
+
+  /// Aggregate ratings for every agent, keyed by agent id — powers the star
+  /// badge shown on game cards. (agent_ratings is public-read.)
+  static Future<Map<String, AgentRating>> allAgentRatings() async {
+    try {
+      final rows = await _sb.from('agent_ratings').select('agent_id, rating');
+      final sums = <String, int>{};
+      final counts = <String, int>{};
+      for (final r in rows) {
+        final id = r['agent_id'] as String?;
+        if (id == null) continue;
+        sums[id] = (sums[id] ?? 0) + (r['rating'] as int? ?? 0);
+        counts[id] = (counts[id] ?? 0) + 1;
+      }
+      return {
+        for (final id in counts.keys)
+          id: AgentRating(sums[id]! / counts[id]!, counts[id]!)
+      };
+    } catch (_) {
+      return const {};
     }
   }
 }
