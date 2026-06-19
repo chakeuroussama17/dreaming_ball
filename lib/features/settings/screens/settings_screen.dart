@@ -8,6 +8,7 @@ import '../../../core/providers/session_provider.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/nav.dart';
+import '../../../l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -22,6 +23,8 @@ class SettingsScreen extends ConsumerWidget {
     final surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
 
     final mode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: bg,
@@ -31,7 +34,7 @@ class SettingsScreen extends ConsumerWidget {
           icon: Icon(Icons.arrow_back_ios_new, size: 18, color: primary),
           onPressed: () => context.safePop('profile'),
         ),
-        title: Text('Settings',
+        title: Text(l.settingsTitle,
             style: GoogleFonts.spaceGrotesk(
                 fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
         centerTitle: true,
@@ -39,7 +42,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
-          _sectionLabel('Appearance', secondary),
+          _sectionLabel(l.settingsTheme, secondary),
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.all(6),
@@ -58,11 +61,20 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
-          _sectionLabel('Account', secondary),
+          // ── Language ──────────────────────────────────────────────────
+          _sectionLabel(l.settingsLanguage, secondary),
+          const SizedBox(height: 10),
+          _tile(Icons.language, _langName(l, locale.languageCode), primary,
+              secondary, border, surface,
+              () => _showLanguageSheet(context, ref, l, surface, border,
+                  primary, secondary)),
+          const SizedBox(height: 24),
+
+          _sectionLabel(l.settingsAccount, secondary),
           const SizedBox(height: 10),
           _tile(Icons.person_outline, 'Edit Profile', primary, secondary,
               border, surface, () => context.pushNamed('edit-profile')),
-          _tile(Icons.notifications_outlined, 'Notifications', primary,
+          _tile(Icons.notifications_outlined, l.settingsNotifications, primary,
               secondary, border, surface, () => context.pushNamed('notifications')),
           _tile(Icons.lock_reset, 'Change Password', primary, secondary, border,
               surface, () => context.pushNamed('forgot-password')),
@@ -96,7 +108,7 @@ class SettingsScreen extends ConsumerWidget {
                 context.goNamed('login');
               },
               icon: const Icon(Icons.logout, size: 18, color: AppColors.tierElite),
-              label: Text('Log Out',
+              label: Text(l.settingsLogout,
                   style: GoogleFonts.spaceGrotesk(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -104,6 +116,58 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Autonym for a language code (shown the same in every locale).
+  String _langName(AppLocalizations l, String code) => switch (code) {
+        'ms' => l.languageMalay,
+        'zh' => l.languageChinese,
+        'ja' => l.languageJapanese,
+        'ru' => l.languageRussian,
+        _ => l.languageEnglish,
+      };
+
+  void _showLanguageSheet(BuildContext context, WidgetRef ref,
+      AppLocalizations l, Color surface, Color border, Color primary,
+      Color secondary) {
+    final current = ref.read(localeProvider).languageCode;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(l.chooseLanguage,
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: primary)),
+              ),
+            ),
+            for (final loc in LocaleNotifier.supported)
+              ListTile(
+                title: Text(_langName(l, loc.languageCode),
+                    style: GoogleFonts.inter(fontSize: 15, color: primary)),
+                trailing: loc.languageCode == current
+                    ? const Icon(Icons.check, color: AppColors.orange)
+                    : null,
+                onTap: () {
+                  ref.read(localeProvider.notifier).set(loc);
+                  Navigator.pop(ctx);
+                },
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

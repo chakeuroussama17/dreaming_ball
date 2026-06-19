@@ -7,6 +7,7 @@ import '../core/providers/admin_providers.dart';
 import '../core/providers/session_provider.dart';
 import '../core/services/auth_service.dart';
 import '../core/theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'router.dart';
 
 /// Holds the chosen theme mode and persists it **per user**, so each account
@@ -47,6 +48,38 @@ final themeModeProvider =
   (ref) => ThemeModeNotifier(ThemeMode.dark),
 );
 
+/// Holds the chosen UI language and persists it app-wide. Defaults to English;
+/// the user can switch in Settings. The initial value is loaded in main().
+class LocaleNotifier extends StateNotifier<Locale> {
+  LocaleNotifier(super.initial);
+
+  static const _key = 'app_locale';
+  static const fallback = Locale('en');
+
+  /// Supported languages, in the order shown in the picker.
+  static const supported = [
+    Locale('en'),
+    Locale('ms'),
+    Locale('zh'),
+    Locale('ja'),
+    Locale('ru'),
+  ];
+
+  static Locale decode(String? code) =>
+      (code == null || code.isEmpty) ? fallback : Locale(code);
+
+  Future<void> set(Locale locale) async {
+    state = locale;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, locale.languageCode);
+  }
+}
+
+// Overridden in main() with the persisted initial value.
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>(
+  (ref) => LocaleNotifier(LocaleNotifier.fallback),
+);
+
 class DreamingBallApp extends ConsumerStatefulWidget {
   const DreamingBallApp({super.key});
 
@@ -85,6 +118,7 @@ class _DreamingBallAppState extends ConsumerState<DreamingBallApp> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
       title: 'Dreaming Ball',
@@ -92,6 +126,9 @@ class _DreamingBallAppState extends ConsumerState<DreamingBallApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: ref.watch(routerProvider),
     );
   }

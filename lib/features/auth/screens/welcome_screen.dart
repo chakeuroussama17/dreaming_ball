@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -11,6 +12,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textSecondary = AppColors.darkTextSecondary;
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.darkBg,
@@ -77,7 +79,7 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'The street is your stage.\nEvery game is your chance.',
+                        l.welcomeSubtitle,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
                           fontSize: 14,
@@ -105,7 +107,7 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: CustomButton(
-                          label: 'Sign In',
+                          label: l.logIn,
                           variant: ButtonVariant.ghost,
                           onPressed: () => context.goNamed('login'),
                         ),
@@ -113,7 +115,7 @@ class WelcomeScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: CustomButton(
-                          label: 'Sign Up',
+                          label: l.signUp,
                           onPressed: () => context.goNamed('register'),
                         ),
                       ),

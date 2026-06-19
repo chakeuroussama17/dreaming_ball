@@ -38,11 +38,15 @@ void main() async {
   final initialTheme = ThemeModeNotifier.decode(
       prefs.getString(ThemeModeNotifier.keyFor(scope)));
 
+  // Saved UI language (app-wide), defaulting to English.
+  final initialLocale = LocaleNotifier.decode(prefs.getString('app_locale'));
+
   runApp(
     ProviderScope(
       overrides: [
         themeModeProvider
             .overrideWith((ref) => ThemeModeNotifier(initialTheme, scope)),
+        localeProvider.overrideWith((ref) => LocaleNotifier(initialLocale)),
       ],
       child: const DreamingBallApp(),
     ),

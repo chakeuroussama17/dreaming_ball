@@ -13,6 +13,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_input.dart';
 import '../../../../app/app.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -94,6 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
     final dividerColor =
         isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: bg,
@@ -118,7 +120,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Title
                 Text(
-                  'Welcome Back!',
+                  l.loginTitle,
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
@@ -132,7 +134,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 6),
 
                 Text(
-                  'The pitch is waiting.',
+                  l.loginSubtitle,
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     color: const Color(0xFF555555),
@@ -143,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Email
                 CustomInput(
-                  label: 'Email address',
+                  label: l.fieldEmail,
                   hint: 'your@email.com',
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
@@ -163,7 +165,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Password
                 CustomInput(
-                  label: 'Password',
+                  label: l.fieldPassword,
                   hint: 'Min. 8 characters',
                   controller: _passwordCtrl,
                   obscureText: _obscurePassword,
@@ -201,7 +203,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Forgot Password?',
+                      l.forgotPassword,
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
@@ -244,7 +246,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Sign In button
                 CustomButton(
-                  label: 'Sign In',
+                  label: l.logIn,
                   isLoading: _isLoading,
                   onPressed: _submit,
                 )
@@ -282,7 +284,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onTap: () => context.goNamed('register'),
                     child: RichText(
                       text: TextSpan(
-                        text: "Don't have an account?  ",
+                        text: '${l.noAccountPrompt}  ',
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           color: textSecondary,
@@ -295,7 +297,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               shaderCallback: (b) =>
                                   AppColors.brandGradient.createShader(b),
                               child: Text(
-                                'Sign Up',
+                                l.signUp,
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,

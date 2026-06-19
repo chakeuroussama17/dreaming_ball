@@ -1,0 +1,9 @@
+# Configures Flutter's gen_l10n. ARB files live in lib/l10n; the generated
+# AppLocalizations class is written into lib/l10n so it can be imported
+# directly (no synthetic package).
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/l10n
+nullable-getter: false
