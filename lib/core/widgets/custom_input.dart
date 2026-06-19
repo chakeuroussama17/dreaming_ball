@@ -12,6 +12,7 @@ class CustomInput extends StatelessWidget {
   final void Function(String)? onChanged;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final int? maxLength;
 
   const CustomInput({
     super.key,
@@ -24,6 +25,7 @@ class CustomInput extends StatelessWidget {
     this.onChanged,
     this.prefixIcon,
     this.suffixIcon,
+    this.maxLength,
   });
 
   @override
@@ -51,6 +53,7 @@ class CustomInput extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           onChanged: onChanged,
+          maxLength: maxLength,
           style: GoogleFonts.inter(
             fontSize: 14,
             color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
