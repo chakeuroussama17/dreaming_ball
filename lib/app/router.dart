@@ -23,6 +23,11 @@ import '../features/notifications/screens/notifications_screen.dart';
 import '../features/leaderboard/screens/leaderboard_screen.dart';
 import '../features/tournaments/screens/tournament_list_screen.dart';
 import '../features/tournaments/screens/tournament_apply_screen.dart';
+import '../features/tournaments/screens/tournament_detail_screen.dart';
+import '../features/tournaments/screens/build_teams_screen.dart';
+import '../features/tournaments/screens/bracket_view_screen.dart';
+import '../features/tournaments/screens/schedule_matches_screen.dart';
+import '../features/tournaments/screens/tournament_live_match_screen.dart';
 import '../features/private_room/screens/private_room_screen.dart';
 import '../features/private_room/screens/room_detail_screen.dart';
 import '../features/dispute/screens/dispute_screen.dart';
@@ -30,6 +35,7 @@ import '../features/agent/screens/agent_dashboard_screen.dart';
 import '../features/admin/screens/admin_dashboard_screen.dart';
 import '../features/admin/screens/agent_management_screen.dart';
 import '../features/admin/screens/admin_agent_stats_screen.dart';
+import '../features/admin/screens/admin_tournament_approval_screen.dart';
 import '../features/admin/screens/announcements_screen.dart';
 import '../features/admin/screens/user_management_screen.dart';
 import '../features/admin/screens/admin_disputes_screen.dart';
@@ -89,6 +95,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/leaderboard', name: 'leaderboard', builder: (c, s) => const LeaderboardScreen()),
       GoRoute(path: '/tournaments', name: 'tournaments', builder: (c, s) => const TournamentListScreen()),
       GoRoute(path: '/tournament/apply', name: 'tournament-apply', builder: (c, s) => const TournamentApplyScreen()),
+      GoRoute(path: '/tournament/:id', name: 'tournament-detail', builder: (c, s) => TournamentDetailScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/tournament/:id/build-teams', name: 'tournament-build-teams', builder: (c, s) => BuildTeamsScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/tournament/:id/bracket', name: 'tournament-bracket', builder: (c, s) => BracketViewScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/tournament/:id/schedule', name: 'tournament-schedule', builder: (c, s) => ScheduleMatchesScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/tournament-match/:id', name: 'tournament-match', builder: (c, s) => TournamentLiveMatchScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/private-room', name: 'private-room', builder: (c, s) => const PrivateRoomScreen()),
       GoRoute(path: '/room/:id', name: 'room-detail', builder: (c, s) => RoomDetailScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/dispute/:id', name: 'dispute', builder: (c, s) => DisputeScreen(id: s.pathParameters['id']!)),
@@ -96,6 +107,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/admin-dashboard', name: 'admin-dashboard', builder: (c, s) => const AdminDashboardScreen()),
       GoRoute(path: '/admin/agents', name: 'admin-agents', builder: (c, s) => const AgentManagementScreen()),
       GoRoute(path: '/admin/agent-stats', name: 'admin-agent-stats', builder: (c, s) => const AdminAgentStatsScreen()),
+      GoRoute(path: '/admin/tournaments', name: 'admin-tournaments', builder: (c, s) => const AdminTournamentApprovalScreen()),
       GoRoute(path: '/admin/announcements', name: 'admin-announcements', builder: (c, s) => const AnnouncementsScreen()),
       GoRoute(path: '/admin/users', name: 'admin-users', builder: (c, s) => const UserManagementScreen()),
       GoRoute(path: '/admin/disputes', name: 'admin-disputes', builder: (c, s) => const AdminDisputesScreen()),

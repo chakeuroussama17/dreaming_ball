@@ -10,7 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/share_utils.dart';
 import '../../../../core/widgets/custom_input.dart';
 import '../../../../core/widgets/custom_button.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../core/widgets/app_bottom_nav.dart';
 
 class PrivateRoomScreen extends StatefulWidget {
   const PrivateRoomScreen({super.key});
@@ -50,7 +50,6 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l = AppLocalizations.of(context);
     final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
     final primary =
         isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
@@ -153,31 +152,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
-        type: BottomNavigationBarType.fixed,
-        onTap: (i) {
-          switch (i) {
-            case 0:
-              context.goNamed('home');
-            case 1:
-              context.goNamed('leaderboard');
-            case 2:
-              context.goNamed('tournaments');
-            case 4:
-              context.goNamed('profile');
-            default:
-              break;
-          }
-        },
-        items: [
-          BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
-          BottomNavigationBarItem(icon: const Icon(Icons.leaderboard), label: l.navLeaderboard),
-          BottomNavigationBarItem(icon: const Icon(Icons.emoji_events_outlined), label: l.navTournaments),
-          BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
-          BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: l.navProfile),
-        ],
-      ),
+      bottomNavigationBar: const AppBottomNav(current: 3),
       ),
     );
   }

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/content_providers.dart';
 import '../../../../core/services/profile_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_bottom_nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
-import '../../../../l10n/app_localizations.dart';
 
 class _Ranked {
   final int rank;
@@ -57,7 +56,6 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l = AppLocalizations.of(context);
     final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
     final primary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final secondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
@@ -249,31 +247,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        type: BottomNavigationBarType.fixed,
-        onTap: (i) {
-          switch (i) {
-            case 0:
-              context.goNamed('home');
-            case 2:
-              context.goNamed('tournaments');
-            case 3:
-              context.goNamed('private-room');
-            case 4:
-              context.goNamed('profile');
-            default:
-              break;
-          }
-        },
-        items: [
-          BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
-          BottomNavigationBarItem(icon: const Icon(Icons.leaderboard), label: l.navLeaderboard),
-          BottomNavigationBarItem(icon: const Icon(Icons.emoji_events_outlined), label: l.navTournaments),
-          BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
-          BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: l.navProfile),
-        ],
-      ),
+      bottomNavigationBar: const AppBottomNav(current: 2),
     );
   }
 

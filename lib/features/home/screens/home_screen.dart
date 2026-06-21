@@ -11,6 +11,7 @@ import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
 import '../../../../core/services/rating_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_bottom_nav.dart';
 import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/tier_badge.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -74,7 +75,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _clockTimer; // re-checks the 30-min pre-match window
 
   String _selectedFormat = 'All';
-  int _currentNav = 0;
 
   static const _formats = ['All', '5-aside', '6-aside', '7-aside', '11-aside'];
 
@@ -107,22 +107,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _clockTimer?.cancel();
     _bannerController.dispose();
     super.dispose();
-  }
-
-  void _onNavTap(int index) {
-    setState(() => _currentNav = index);
-    switch (index) {
-      case 1:
-        context.goNamed('leaderboard');
-      case 2:
-        context.goNamed('tournaments');
-      case 3:
-        context.goNamed('private-room');
-      case 4:
-        context.goNamed('profile');
-      default:
-        break;
-    }
   }
 
   /// Grey placeholder cards shown while a rail is loading.
@@ -797,38 +781,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNav,
-        onTap: _onNavTap,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            activeIcon: const Icon(Icons.home),
-            label: l.navHome,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.leaderboard_outlined),
-            activeIcon: const Icon(Icons.leaderboard),
-            label: l.navLeaderboard,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.emoji_events_outlined),
-            activeIcon: const Icon(Icons.emoji_events),
-            label: l.navTournaments,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.lock_outline),
-            activeIcon: const Icon(Icons.lock),
-            label: l.navPrivateRoom,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline),
-            activeIcon: const Icon(Icons.person),
-            label: l.navProfile,
-          ),
-        ],
-      ),
+      bottomNavigationBar: const AppBottomNav(current: 0),
       floatingActionButton: isAgent
           ? SizedBox(
               width: 58,

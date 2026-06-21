@@ -20,7 +20,7 @@ import '../../../../core/widgets/player_avatar.dart';
 import '../../../../core/widgets/player_stat_card.dart';
 import '../../../../core/widgets/tier_badge.dart';
 import '../../../../core/widgets/xp_bar.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../core/widgets/app_bottom_nav.dart';
 import '../../../../core/widgets/custom_button.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -222,7 +222,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l = AppLocalizations.of(context);
     final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
     final primary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final secondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
@@ -370,33 +369,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           ],
         ),
       ),
-      bottomNavigationBar: isGuest
-          ? null
-          : BottomNavigationBar(
-              currentIndex: 4,
-              type: BottomNavigationBarType.fixed,
-              onTap: (i) {
-                switch (i) {
-                  case 0:
-                    context.goNamed('home');
-                  case 1:
-                    context.goNamed('leaderboard');
-                  case 2:
-                    context.goNamed('tournaments');
-                  case 3:
-                    context.goNamed('private-room');
-                  default:
-                    break;
-                }
-              },
-              items: [
-                BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l.navHome),
-                BottomNavigationBarItem(icon: const Icon(Icons.leaderboard_outlined), label: l.navLeaderboard),
-                BottomNavigationBarItem(icon: const Icon(Icons.emoji_events_outlined), label: l.navTournaments),
-                BottomNavigationBarItem(icon: const Icon(Icons.lock_outline), label: l.navPrivateRoom),
-                BottomNavigationBarItem(icon: const Icon(Icons.person), label: l.navProfile),
-              ],
-            ),
+      bottomNavigationBar: isGuest ? null : const AppBottomNav(current: 4),
     );
   }
 
