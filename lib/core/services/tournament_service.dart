@@ -314,9 +314,11 @@ class TournamentService {
   }
 
   static Future<void> approve(String id) async {
+    // Note: we don't set approved_by — the hardcoded admin has no public.users
+    // row, so writing its id would violate the foreign key. approved_at is
+    // enough to record the approval.
     await _sb.from('tournaments').update({
       'status': 'approved',
-      'approved_by': SupabaseService.userId,
       'approved_at': DateTime.now().toUtc().toIso8601String(),
     }).eq('id', id);
   }
