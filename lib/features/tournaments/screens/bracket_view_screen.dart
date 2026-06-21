@@ -70,8 +70,8 @@ class BracketViewScreen extends ConsumerWidget {
                     child: t.isKnockout
                         ? _knockout(context, matches, primary, secondary,
                             border, surface)
-                        : _groups(context, matches, primary, secondary, border,
-                            surface),
+                        : _groups(context, ref, t, matches, primary, secondary,
+                            border, surface),
                   ),
                 ),
               ),
@@ -208,15 +208,20 @@ class BracketViewScreen extends ConsumerWidget {
     );
   }
 
-  // ── Group tables ─────────────────────────────────────────────────────────
-  Widget _groups(BuildContext context, List<TournamentMatch> matches,
-      Color primary, Color secondary, Color border, Color surface) {
+  // ── Group tables (+ knockout once generated) ─────────────────────────────
+  Widget _groups(BuildContext context, WidgetRef ref, Tournament t,
+      List<TournamentMatch> matches, Color primary, Color secondary,
+      Color border, Color surface) {
     final groupMatches = matches.where((m) => m.isGroup).toList();
     if (groupMatches.isEmpty) {
       return _emptyNote('Groups will appear here.', secondary);
     }
     final groupNames = groupMatches.map((m) => m.groupName!).toSet().toList()
       ..sort();
+    final hasKnockout = matches.any((m) => !m.isGroup);
+    final groupsDone =
+        groupMatches.every((m) => m.status == 'completed');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -225,20 +230,70 @@ class BracketViewScreen extends ConsumerWidget {
               primary, secondary, border, surface),
           const SizedBox(height: 18),
         ],
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.orange.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(12),
+        if (hasKnockout) ...[
+          Text('Knockout Stage',
+              style: GoogleFonts.spaceGrotesk(
+                  fontSize: 18, fontWeight: FontWeight.w800, color: primary)),
+          const SizedBox(height: 12),
+          _knockout(context, matches, primary, secondary, border, surface),
+        ] else if (t.mine && groupsDone)
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [AppColors.pink, AppColors.orange]),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () => _genKnockout(context, ref, t),
+                child: Text('Generate Knockout Stage',
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+              ),
+            ),
+          )
+        else
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.orange.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              'Knockout stage unlocks once all group matches are complete — top 2 of each group advance.',
+              style: GoogleFonts.inter(
+                  fontSize: 12, height: 1.4, color: AppColors.orange),
+            ),
           ),
-          child: Text(
-            'Knockout stage unlocks once the group matches are complete — top 2 of each group advance.',
-            style: GoogleFonts.inter(
-                fontSize: 12, height: 1.4, color: AppColors.orange),
-          ),
-        ),
       ],
     );
+  }
+
+  Future<void> _genKnockout(
+      BuildContext context, WidgetRef ref, Tournament t) async {
+    try {
+      await TournamentService.generateKnockoutFromGroups(t.id);
+      ref.invalidate(tournamentMatchesProvider(t.id));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Knockout stage generated — schedule the matches')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
+      }
+    }
   }
 
   Widget _groupTable(String groupName, List<TournamentMatch> ms, Color primary,

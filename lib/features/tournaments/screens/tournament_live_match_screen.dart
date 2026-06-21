@@ -18,7 +18,6 @@ class TournamentLiveMatchScreen extends ConsumerStatefulWidget {
 class _TournamentLiveMatchScreenState
     extends ConsumerState<TournamentLiveMatchScreen> {
   TournamentMatch? _match;
-  Tournament? _t;
   TournamentTeam? _teamA;
   TournamentTeam? _teamB;
   bool _loading = true;
@@ -66,7 +65,6 @@ class _TournamentLiveMatchScreenState
       if (!mounted) return;
       setState(() {
         _match = m;
-        _t = t;
         _teamA = find(m.teamAId);
         _teamB = find(m.teamBId);
         _canEdit = t?.mine ?? false;
@@ -112,10 +110,9 @@ class _TournamentLiveMatchScreenState
         .isAfter(at.subtract(const Duration(minutes: 30)));
   }
 
-  int get _minPerSide {
-    final n = _t?.playersPerSide ?? 5;
-    return n <= 1 ? 1 : n - 1;
-  }
+  // Organiser's discretion — only needs at least one present player per side
+  // to start (keeps small/test squads playable).
+  int get _minPerSide => 1;
 
   @override
   Widget build(BuildContext context) {

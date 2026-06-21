@@ -153,6 +153,15 @@ class BuildTeamsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.edit_outlined, color: AppColors.orange),
+              title: const Text('Edit team'),
+              onTap: () {
+                Navigator.pop(ctx);
+                final t = ref.read(tournamentProvider(id)).valueOrNull;
+                if (t != null) _openBuilder(context, ref, t, existing: tm);
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.delete_outline,
                   color: AppColors.tierElite),
               title: const Text('Delete team'),
@@ -168,13 +177,13 @@ class BuildTeamsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _openBuilder(
-      BuildContext context, WidgetRef ref, Tournament t) async {
+  Future<void> _openBuilder(BuildContext context, WidgetRef ref, Tournament t,
+      {TournamentTeam? existing}) async {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _TeamBuilderSheet(tournamentId: t.id),
+      builder: (_) => _TeamBuilderSheet(tournamentId: t.id, existing: existing),
     );
     if (saved == true) {
       // First team created → move status to building_teams.
@@ -276,7 +285,8 @@ class _SelectedPlayer {
 
 class _TeamBuilderSheet extends StatefulWidget {
   final String tournamentId;
-  const _TeamBuilderSheet({required this.tournamentId});
+  final TournamentTeam? existing;
+  const _TeamBuilderSheet({required this.tournamentId, this.existing});
 
   @override
   State<_TeamBuilderSheet> createState() => _TeamBuilderSheetState();
@@ -287,6 +297,19 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
   Uint8List? _logo;
   final _players = <_SelectedPlayer>[];
   bool _saving = false;
+
+  bool get _isEdit => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    if (e != null) {
+      _nameCtrl.text = e.name;
+      _players.addAll(e.players.map(
+          (p) => _SelectedPlayer(p.playerId, p.name, p.position, p.avatarUrl)));
+    }
+  }
 
   @override
   void dispose() {
@@ -332,14 +355,21 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
     }
     setState(() => _saving = true);
     try {
-      await TournamentService.createTeam(
-        tournamentId: widget.tournamentId,
-        teamName: _nameCtrl.text.trim(),
-        logoBytes: _logo,
-        players: [
-          for (final p in _players) (playerId: p.playerId, position: p.position)
-        ],
-      );
+      final roster = [
+        for (final p in _players) (playerId: p.playerId, position: p.position)
+      ];
+      if (_isEdit) {
+        await TournamentService.updateTeam(widget.existing!.id,
+            name: _nameCtrl.text.trim(), logoBytes: _logo);
+        await TournamentService.setTeamPlayers(widget.existing!.id, roster);
+      } else {
+        await TournamentService.createTeam(
+          tournamentId: widget.tournamentId,
+          teamName: _nameCtrl.text.trim(),
+          logoBytes: _logo,
+          players: roster,
+        );
+      }
       if (mounted) Navigator.pop(context, true);
     } on GameServiceException catch (e) {
       if (mounted) {
@@ -379,7 +409,7 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Text('New Team',
+                Text(_isEdit ? 'Edit Team' : 'New Team',
                     style: GoogleFonts.spaceGrotesk(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -401,9 +431,13 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
                     child: CircleAvatar(
                       radius: 44,
                       backgroundColor: surface,
-                      backgroundImage:
-                          _logo != null ? MemoryImage(_logo!) : null,
-                      child: _logo == null
+                      backgroundImage: _logo != null
+                          ? MemoryImage(_logo!)
+                          : (widget.existing?.logoUrl != null
+                              ? NetworkImage(widget.existing!.logoUrl!)
+                              : null) as ImageProvider?,
+                      child: (_logo == null &&
+                              widget.existing?.logoUrl == null)
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

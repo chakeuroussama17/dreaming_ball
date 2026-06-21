@@ -551,7 +551,14 @@ class TournamentService {
 
   static Future<void> _generateKnockout(
       String tId, List<String> teamIds) async {
-    final teams = [...teamIds]..shuffle(Random());
+    await _buildKnockoutBracket(tId, [...teamIds]..shuffle(Random()));
+  }
+
+  /// Builds a single-elimination bracket from an already-ordered team list
+  /// (byes when not a power of two), linking each match to its parent so the
+  /// advancement trigger can promote winners.
+  static Future<void> _buildKnockoutBracket(
+      String tId, List<String> teams) async {
     final n = teams.length;
     var bracket = 1;
     while (bracket < n) {
@@ -669,4 +676,133 @@ class TournamentService {
       }
     }
   }
+
+  /// When every group match is complete, builds the knockout stage from the
+  /// top 2 of each group (cross-paired so group-mates don't meet immediately).
+  static Future<void> generateKnockoutFromGroups(String tournamentId) async {
+    try {
+      final matches = await fetchMatches(tournamentId);
+      final groupMatches = matches.where((m) => m.isGroup).toList();
+      if (groupMatches.isEmpty) {
+        throw GameServiceException('No group stage to advance from');
+      }
+      if (matches.any((m) => !m.isGroup)) {
+        throw GameServiceException('Knockout stage already generated');
+      }
+      if (groupMatches.any((m) => m.status != 'completed')) {
+        throw GameServiceException('Finish all group matches first');
+      }
+      final groupNames =
+          groupMatches.map((m) => m.groupName!).toSet().toList()..sort();
+      final winners = <String>[];
+      final runners = <String>[];
+      for (final g in groupNames) {
+        final ranked =
+            _rankGroup(groupMatches.where((m) => m.groupName == g).toList());
+        if (ranked.length < 2) {
+          throw GameServiceException('Each group needs at least 2 teams');
+        }
+        winners.add(ranked[0]);
+        runners.add(ranked[1]);
+      }
+      // Cross-pair: winner of group i vs runner-up of the next group.
+      final ordered = <String>[];
+      final g = groupNames.length;
+      for (var i = 0; i < g; i++) {
+        ordered.add(winners[i]);
+        ordered.add(runners[(i + 1) % g]);
+      }
+      await _buildKnockoutBracket(tournamentId, ordered);
+    } on GameServiceException {
+      rethrow;
+    } catch (e) {
+      throw GameServiceException(GameService.friendlyError(e));
+    }
+  }
+
+  /// Team ids of a group ordered by points then goal difference.
+  static List<String> _rankGroup(List<TournamentMatch> ms) {
+    final s = <String, _Stand>{};
+    void ensure(String? id) {
+      if (id != null) s.putIfAbsent(id, () => _Stand());
+    }
+
+    for (final m in ms) {
+      ensure(m.teamAId);
+      ensure(m.teamBId);
+      if (m.status == 'completed' &&
+          m.teamAId != null &&
+          m.teamBId != null &&
+          m.teamAScore != null &&
+          m.teamBScore != null) {
+        final a = s[m.teamAId]!, b = s[m.teamBId]!;
+        a.gf += m.teamAScore!;
+        a.ga += m.teamBScore!;
+        b.gf += m.teamBScore!;
+        b.ga += m.teamAScore!;
+        if (m.teamAScore! > m.teamBScore!) {
+          a.pts += 3;
+        } else if (m.teamAScore! < m.teamBScore!) {
+          b.pts += 3;
+        } else {
+          a.pts++;
+          b.pts++;
+        }
+      }
+    }
+    final ids = s.keys.toList()
+      ..sort((x, y) {
+        final p = s[y]!.pts.compareTo(s[x]!.pts);
+        return p != 0 ? p : s[y]!.gd.compareTo(s[x]!.gd);
+      });
+    return ids;
+  }
+
+  // ── Edit / delete ───────────────────────────────────────────────────────
+
+  static Future<void> updateTournament(String id,
+      {String? name, String? description}) async {
+    await _sb.from('tournaments').update({
+      'name': ?name,
+      'description': description,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('id', id);
+  }
+
+  static Future<void> deleteTournament(String id) async {
+    await _sb.from('tournaments').delete().eq('id', id);
+  }
+
+  static Future<void> updateTeam(String teamId,
+      {String? name, Uint8List? logoBytes}) async {
+    final uid = SupabaseService.userId;
+    String? logoUrl;
+    if (logoBytes != null && uid != null) {
+      final storage = _sb.storage.from('team-logos');
+      final path = '$uid/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      await storage.uploadBinary(path, logoBytes);
+      logoUrl = storage.getPublicUrl(path);
+    }
+    await _sb.from('tournament_teams').update({
+      'team_name': ?name,
+      'team_logo_url': ?logoUrl,
+    }).eq('id', teamId);
+  }
+
+  /// Replaces a team's roster (delete all, insert the given set).
+  static Future<void> setTeamPlayers(String teamId,
+      List<({String playerId, String? position})> players) async {
+    await _sb.from('tournament_team_players').delete().eq('team_id', teamId);
+    if (players.isNotEmpty) {
+      await _sb.from('tournament_team_players').insert([
+        for (final p in players)
+          {'team_id': teamId, 'player_id': p.playerId, 'position': p.position}
+      ]);
+    }
+  }
+}
+
+class _Stand {
+  int gf = 0, ga = 0, pts = 0;
+  int get gd => gf - ga;
 }

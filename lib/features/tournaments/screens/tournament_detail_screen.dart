@@ -43,6 +43,22 @@ class TournamentDetailScreen extends ConsumerWidget {
             style: GoogleFonts.spaceGrotesk(
                 fontSize: 18, fontWeight: FontWeight.w700, color: primary)),
         centerTitle: true,
+        actions: [
+          if (async.valueOrNull?.mine == true)
+            PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert, color: primary),
+              onSelected: (v) {
+                final t = async.valueOrNull;
+                if (t == null) return;
+                if (v == 'edit') _editDetails(context, ref, t);
+                if (v == 'delete') _deleteTournament(context, ref, t);
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(value: 'edit', child: Text('Edit details')),
+                PopupMenuItem(value: 'delete', child: Text('Delete tournament')),
+              ],
+            ),
+        ],
       ),
       body: async.when(
         loading: () => const Center(
@@ -453,6 +469,70 @@ class TournamentDetailScreen extends ConsumerWidget {
             .showSnackBar(SnackBar(content: Text('$e')));
       }
     }
+  }
+
+  Future<void> _editDetails(
+      BuildContext context, WidgetRef ref, Tournament t) async {
+    final nameCtrl = TextEditingController(text: t.name);
+    final descCtrl = TextEditingController(text: t.description ?? '');
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: 'Name')),
+            const SizedBox(height: 8),
+            TextField(
+                controller: descCtrl,
+                maxLength: 200,
+                decoration: const InputDecoration(labelText: 'Description')),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Save')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await TournamentService.updateTournament(t.id,
+        name: nameCtrl.text.trim().isEmpty ? null : nameCtrl.text.trim(),
+        description:
+            descCtrl.text.trim().isEmpty ? null : descCtrl.text.trim());
+    ref.invalidate(tournamentProvider(t.id));
+  }
+
+  Future<void> _deleteTournament(
+      BuildContext context, WidgetRef ref, Tournament t) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete tournament?'),
+        content: const Text(
+            'This permanently removes the tournament, its teams and matches. This cannot be undone.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Delete',
+                  style: TextStyle(color: AppColors.tierElite))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await TournamentService.deleteTournament(t.id);
+    ref.invalidate(tournamentsProvider);
+    if (context.mounted) context.safePop('tournaments');
   }
 
   // ── small builders ──────────────────────────────────────────────────────
