@@ -542,12 +542,26 @@ class TournamentService {
     }
   }
 
-  static String _knockoutRoundName(int matchesInRound) => switch (matchesInRound) {
+  static String knockoutRoundName(int matchesInRound) => switch (matchesInRound) {
         1 => 'Final',
         2 => 'Semi Final',
         4 => 'Quarter Final',
         _ => 'Round of ${matchesInRound * 2}',
       };
+
+  /// Pure bracket maths (no DB): bracket size (next power of two ≥ n) and the
+  /// match count per round, first round → final. Exposed for unit testing.
+  static KnockoutPlan planKnockout(int n) {
+    var bracket = 1;
+    while (bracket < n) {
+      bracket *= 2;
+    }
+    final sizes = <int>[];
+    for (var s = bracket ~/ 2; s >= 1; s ~/= 2) {
+      sizes.add(s);
+    }
+    return KnockoutPlan(bracketSize: bracket, roundSizes: sizes);
+  }
 
   static Future<void> _generateKnockout(
       String tId, List<String> teamIds) async {
@@ -560,17 +574,10 @@ class TournamentService {
   static Future<void> _buildKnockoutBracket(
       String tId, List<String> teams) async {
     final n = teams.length;
-    var bracket = 1;
-    while (bracket < n) {
-      bracket *= 2; // next power of two
-    }
+    final plan = planKnockout(n);
+    final bracket = plan.bracketSize;
     final round1 = bracket ~/ 2;
-
-    // Round sizes from first round down to the final.
-    final roundSizes = <int>[];
-    for (var s = round1; s >= 1; s ~/= 2) {
-      roundSizes.add(s);
-    }
+    final roundSizes = plan.roundSizes;
 
     // Insert each round's matches, capturing their ids.
     final roundIds = <List<String>>[];
@@ -582,7 +589,7 @@ class TournamentService {
             for (var i = 0; i < size; i++)
               {
                 'tournament_id': tId,
-                'round_name': _knockoutRoundName(size),
+                'round_name': knockoutRoundName(size),
                 'round_order': r + 1,
                 'status': 'unscheduled',
               }
@@ -698,7 +705,7 @@ class TournamentService {
       final runners = <String>[];
       for (final g in groupNames) {
         final ranked =
-            _rankGroup(groupMatches.where((m) => m.groupName == g).toList());
+            rankGroup(groupMatches.where((m) => m.groupName == g).toList());
         if (ranked.length < 2) {
           throw GameServiceException('Each group needs at least 2 teams');
         }
@@ -721,7 +728,7 @@ class TournamentService {
   }
 
   /// Team ids of a group ordered by points then goal difference.
-  static List<String> _rankGroup(List<TournamentMatch> ms) {
+  static List<String> rankGroup(List<TournamentMatch> ms) {
     final s = <String, _Stand>{};
     void ensure(String? id) {
       if (id != null) s.putIfAbsent(id, () => _Stand());
@@ -805,4 +812,14 @@ class TournamentService {
 class _Stand {
   int gf = 0, ga = 0, pts = 0;
   int get gd => gf - ga;
+}
+
+/// Pure description of a knockout bracket's shape.
+class KnockoutPlan {
+  final int bracketSize; // next power of two ≥ team count
+  final List<int> roundSizes; // matches per round, first round → final
+  const KnockoutPlan({required this.bracketSize, required this.roundSizes});
+
+  int byesFor(int teamCount) => bracketSize - teamCount;
+  int get rounds => roundSizes.length;
 }
