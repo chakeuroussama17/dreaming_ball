@@ -494,9 +494,11 @@ class TournamentService {
     }).eq('id', matchId);
   }
 
-  /// Ends a match. [winnerTeamId] decides advancement (handled by the DB
-  /// trigger). For a draw the caller passes the penalty-shootout winner.
-  static Future<void> endMatch(String matchId, String winnerTeamId) async {
+  /// Ends a match. [winnerTeamId] decides knockout advancement (handled by the
+  /// DB trigger); for a knockout draw the caller passes the penalty-shootout
+  /// winner. Group matches may end with a null winner (a real draw — standings
+  /// use the score, not a winner).
+  static Future<void> endMatch(String matchId, String? winnerTeamId) async {
     await _sb.from('tournament_matches').update({
       'status': 'completed',
       'winner_team_id': winnerTeamId,

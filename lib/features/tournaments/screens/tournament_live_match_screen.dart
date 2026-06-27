@@ -485,13 +485,18 @@ class _TournamentLiveMatchScreenState
   }
 
   Future<void> _end() async {
+    final isGroup = _match?.isGroup ?? false;
     String? winnerId;
     if (_scoreA > _scoreB) {
       winnerId = _teamA?.id;
     } else if (_scoreB > _scoreA) {
       winnerId = _teamB?.id;
+    } else if (isGroup) {
+      // Group-stage draw stands as a draw (both teams get a point) — no
+      // penalties, no winner. Standings are computed from the score.
+      winnerId = null;
     } else {
-      // Draw → penalty shootout winner.
+      // Knockout draw → must be decided on penalties to advance someone.
       winnerId = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -510,7 +515,8 @@ class _TournamentLiveMatchScreenState
       if (winnerId == null) return; // cancelled
     }
 
-    if (winnerId == null) return;
+    // Knockout matches must resolve to a winner; group matches may be a draw.
+    if (!isGroup && winnerId == null) return;
     if (!mounted) return;
     final confirm = await showDialog<bool>(
       context: context,

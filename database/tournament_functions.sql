@@ -34,8 +34,10 @@ begin
       end if;
     end if;
 
-    -- No next match → this was the final → the tournament is done.
-    if NEW.next_match_id is null then
+    -- No next match AND not a group match → this was the knockout final →
+    -- the tournament is done. (Group matches also have no next_match_id, but
+    -- completing one must NOT end the whole tournament.)
+    if NEW.next_match_id is null and NEW.group_name is null then
       update public.tournaments
         set status = 'completed', updated_at = now()
         where id = NEW.tournament_id and status <> 'completed';
