@@ -1,0 +1,65 @@
+name: Build iOS (unsigned)
+
+# Builds an UNSIGNED iOS .ipa in the cloud (macOS runner — no Mac needed locally).
+#
+# ⚠️ Without a paid Apple Developer account this build is NOT signed, so it can't
+# be installed normally on an iPhone or shipped to the App Store / TestFlight.
+# You can only sideload it onto your own device with a tool like AltStore or
+# Sideloadly (using a free Apple ID), and it stops working after ~7 days.
+# For real distribution to users, get the $99/yr account and we'll switch this
+# to a signed TestFlight build.
+#
+# Download the .ipa from the run's "Artifacts" section.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # trigger manually from the Actions tab
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # .env is gitignored (it holds the Supabase key), so recreate it here
+      # from GitHub repository secrets (same as the APK workflow).
+      - name: Create .env
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # No code signing — produces build/ios/iphoneos/Runner.app
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      # Wrap the unsigned .app into an .ipa (Payload/ zip) so it's downloadable
+      # and sideload-able.
+      - name: Package unsigned IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -qq -r app-unsigned.ipa Payload
+          cd -
+          mkdir -p dist
+          mv build/ios/iphoneos/app-unsigned.ipa dist/dreaming-ball-unsigned.ipa
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreaming-ball-ios-unsigned
+          path: dist/dreaming-ball-unsigned.ipa
+          if-no-files-found: error
