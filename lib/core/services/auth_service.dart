@@ -73,6 +73,49 @@ class AppUser {
   }
 }
 
+/// An agent's game-credit entitlement (from agent_profiles).
+class AgentQuota {
+  final int credits; // counted games left
+  final DateTime? creditsExpireAt;
+  final DateTime? unlimitedUntil;
+  final String? currentPlan;
+
+  const AgentQuota({
+    this.credits = 0,
+    this.creditsExpireAt,
+    this.unlimitedUntil,
+    this.currentPlan,
+  });
+
+  factory AgentQuota.fromRow(Map<String, dynamic> r) => AgentQuota(
+        credits: (r['game_credits'] ?? 0) as int,
+        creditsExpireAt: r['credits_expire_at'] == null
+            ? null
+            : DateTime.tryParse(r['credits_expire_at'] as String)?.toLocal(),
+        unlimitedUntil: r['unlimited_until'] == null
+            ? null
+            : DateTime.tryParse(r['unlimited_until'] as String)?.toLocal(),
+        currentPlan: r['current_plan'] as String?,
+      );
+
+  bool get unlimitedActive =>
+      unlimitedUntil != null && unlimitedUntil!.isAfter(DateTime.now());
+
+  bool get creditsActive =>
+      credits > 0 &&
+      (creditsExpireAt == null || creditsExpireAt!.isAfter(DateTime.now()));
+
+  /// Whether the agent can create a game right now.
+  bool get canCreateGame => unlimitedActive || creditsActive;
+
+  /// Short status line for the dashboard.
+  String get label {
+    if (unlimitedActive) return 'Unlimited';
+    if (creditsActive) return '$credits game${credits == 1 ? '' : 's'} left';
+    return 'No games left';
+  }
+}
+
 class AuthService {
   static final _sb = SupabaseService.supabase;
 
@@ -372,6 +415,22 @@ class AuthService {
           .eq('user_id', userId)
           .maybeSingle();
       return row?['status'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The signed-in agent's game-credit quota (null if no agent profile).
+  static Future<AgentQuota?> fetchMyQuota() async {
+    final uid = _sb.auth.currentUser?.id;
+    if (uid == null) return null;
+    try {
+      final row = await _sb
+          .from('agent_profiles')
+          .select('game_credits, credits_expire_at, unlimited_until, current_plan')
+          .eq('user_id', uid)
+          .maybeSingle();
+      return row == null ? null : AgentQuota.fromRow(row);
     } catch (_) {
       return null;
     }

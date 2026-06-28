@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/nav.dart';
 
@@ -108,6 +109,8 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                       Icons.groups_outlined, primary, secondary, border, surface)),
             ],
           ),
+          const SizedBox(height: 12),
+          _plansCard(context, primary, secondary, border, surface),
           const SizedBox(height: 24),
 
           if (myGames.isEmpty)
@@ -166,6 +169,49 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
 
   /// Big, clear money card: total collected from players vs the agent's own
   /// commission (profit). Players pay the agent directly — no admin payout.
+  /// Tappable card showing games left → opens the plans/chat screen.
+  Widget _plansCard(BuildContext context, Color primary, Color secondary,
+      Color border, Color surface) {
+    return GestureDetector(
+      onTap: () => context.pushNamed('agent-plans'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: surface,
+          border: Border.all(color: border),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.confirmation_number_outlined,
+                color: AppColors.orange),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Plans & games',
+                      style: GoogleFonts.spaceGrotesk(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: primary)),
+                  FutureBuilder<AgentQuota?>(
+                    future: AuthService.fetchMyQuota(),
+                    builder: (c, snap) => Text(
+                        snap.data?.label ?? 'Tap to view plans',
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: secondary)),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: secondary),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _earningsCard(double collected, double commission, Color primary,
       Color secondary, Color border) {
     return Container(

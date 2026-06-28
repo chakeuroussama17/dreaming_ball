@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -133,8 +134,20 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     setState(() => _publishing = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error)));
+      final lower = error.toLowerCase();
+      final outOfGames =
+          lower.contains('out of games') || lower.contains('choose a plan');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(error),
+        duration: const Duration(seconds: 6),
+        action: outOfGames
+            ? SnackBarAction(
+                label: 'Plans',
+                textColor: AppColors.orange,
+                onPressed: () => context.pushNamed('agent-plans'),
+              )
+            : null,
+      ));
       return;
     }
 

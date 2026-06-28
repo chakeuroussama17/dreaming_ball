@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show FileOptions;
+import '../constants/plans.dart';
 import 'supabase_service.dart';
 
 /// One player's line in the payout detail (payment + stats).
@@ -177,6 +178,18 @@ class AdminService {
       if (status == 'approved')
         'verified_at': DateTime.now().toUtc().toIso8601String(),
     }).eq('user_id', userId);
+  }
+
+  /// Grants a subscription plan to an agent (after off-platform payment).
+  /// Adds counted games or extends unlimited access per the plan table.
+  static Future<void> grantPlan(String agentUserId, SubPlan plan) async {
+    await _sb.rpc('grant_agent_plan', params: {
+      'p_agent': agentUserId,
+      'p_games': plan.games ?? 0,
+      'p_days': plan.days,
+      'p_unlimited': plan.unlimited,
+      'p_plan': plan.key,
+    });
   }
 
   /// Signed URL (private kyc-documents bucket) for an uploaded ID image.

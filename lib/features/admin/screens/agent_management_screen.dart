@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/constants/plans.dart';
 import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/services/admin_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -214,9 +215,109 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
               ref.read(adminAgentsProvider.notifier).approve(a.id);
               _snack('${a.name} reinstated');
             }),
+
+          // Grant a paid plan (after off-platform payment) to active agents.
+          if (a.status == AdminAgentStatus.approved ||
+              a.status == AdminAgentStatus.suspended) ...[
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => _grantPlanSheet(a),
+              style: OutlinedButton.styleFrom(
+                side:
+                    BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                minimumSize: const Size.fromHeight(44),
+              ),
+              icon: const Icon(Icons.card_giftcard_rounded,
+                  size: 18, color: AppColors.orange),
+              label: Text('Grant games / plan',
+                  style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w700, color: AppColors.orange)),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  /// Bottom sheet: pick a plan from the dropdown and grant it to [a].
+  Future<void> _grantPlanSheet(AgentRecord a) async {
+    SubPlan selected = kSubPlans.first;
+    final granted = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        bool busy = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheet) => Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Grant plan to ${a.name}',
+                    style: GoogleFonts.spaceGrotesk(
+                        fontSize: 18, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<SubPlan>(
+                  initialValue: selected,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Plan',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    for (final p in kSubPlans)
+                      DropdownMenuItem(
+                        value: p,
+                        child: Text('${p.label} — ${p.summary}',
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
+                  onChanged: (v) => setSheet(() => selected = v ?? selected),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  selected.unlimited
+                      ? 'Unlimited games for ${selected.days} days.'
+                      : 'Adds ${selected.games} games, valid ${selected.days} days.',
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: AppColors.orange),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: _gradientBtn(busy ? 'Granting…' : 'Grant plan', () async {
+                    if (busy) return;
+                    setSheet(() => busy = true);
+                    try {
+                      await AdminService.grantPlan(a.id, selected);
+                      if (ctx.mounted) Navigator.pop(ctx, true);
+                    } catch (e) {
+                      setSheet(() => busy = false);
+                      if (ctx.mounted) {
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(content: Text('Failed: $e')));
+                      }
+                    }
+                  }),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (granted == true) {
+      _snack('${selected.label} granted to ${a.name}');
+      ref.invalidate(adminAgentsProvider);
+    }
   }
 
   Widget _gradientBtn(String label, VoidCallback onTap) {

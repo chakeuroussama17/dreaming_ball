@@ -36,6 +36,10 @@ import '../features/admin/screens/admin_dashboard_screen.dart';
 import '../features/admin/screens/agent_management_screen.dart';
 import '../features/admin/screens/admin_agent_stats_screen.dart';
 import '../features/admin/screens/admin_tournament_approval_screen.dart';
+import '../features/chat/screens/agent_plans_screen.dart';
+import '../features/chat/screens/agent_chat_screen.dart';
+import '../features/chat/screens/admin_chats_screen.dart';
+import '../features/chat/screens/admin_chat_thread_screen.dart';
 import '../features/admin/screens/announcements_screen.dart';
 import '../features/admin/screens/user_management_screen.dart';
 import '../features/admin/screens/admin_disputes_screen.dart';
@@ -60,7 +64,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           AgentVerification.approved;
 
       // Approved-agent-only routes.
-      const approvedAgentOnly = ['/create-game', '/attendance', '/stats'];
+      const approvedAgentOnly = [
+        '/create-game',
+        '/attendance',
+        '/stats',
+        '/agent/plans',
+        '/agent/chat',
+      ];
       if (approvedAgentOnly.any((p) => loc.startsWith(p))) {
         return (role == UserRole.agent && approved) ? null : '/home';
       }
@@ -104,8 +114,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/room/:id', name: 'room-detail', builder: (c, s) => RoomDetailScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/dispute/:id', name: 'dispute', builder: (c, s) => DisputeScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/agent-dashboard', name: 'agent-dashboard', builder: (c, s) => const AgentDashboardScreen()),
+      GoRoute(path: '/agent/plans', name: 'agent-plans', builder: (c, s) => const AgentPlansScreen()),
+      GoRoute(path: '/agent/chat', name: 'agent-chat', builder: (c, s) => const AgentChatScreen()),
       GoRoute(path: '/admin-dashboard', name: 'admin-dashboard', builder: (c, s) => const AdminDashboardScreen()),
       GoRoute(path: '/admin/agents', name: 'admin-agents', builder: (c, s) => const AgentManagementScreen()),
+      GoRoute(path: '/admin/chats', name: 'admin-chats', builder: (c, s) => const AdminChatsScreen()),
+      GoRoute(path: '/admin/chats/:agentId', name: 'admin-chat-thread', builder: (c, s) => AdminChatThreadScreen(agentId: s.pathParameters['agentId']!, agentName: (s.extra as String?) ?? 'Agent')),
       GoRoute(path: '/admin/agent-stats', name: 'admin-agent-stats', builder: (c, s) => const AdminAgentStatsScreen()),
       GoRoute(path: '/admin/tournaments', name: 'admin-tournaments', builder: (c, s) => const AdminTournamentApprovalScreen()),
       GoRoute(path: '/admin/announcements', name: 'admin-announcements', builder: (c, s) => const AnnouncementsScreen()),

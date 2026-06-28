@@ -375,6 +375,12 @@ class GameService {
   /// Maps raw Postgrest/storage/network errors to UI-safe messages.
   static String friendlyError(Object e) {
     final m = e.toString().toLowerCase();
+    if (m.contains('no_game_credits')) {
+      return "You're out of games — choose a plan to add more.";
+    }
+    if (m.contains('no_agent_profile')) {
+      return 'Your agent account is not set up yet.';
+    }
     if (m.contains('socketexception') ||
         m.contains('failed host lookup') ||
         m.contains('connection') ||
