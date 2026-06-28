@@ -1,16 +1,14 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../../core/providers/tournament_providers.dart';
 import '../../../core/services/tournament_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/nav.dart';
+import '../../../core/utils/share_image.dart';
 
 class BracketViewScreen extends ConsumerWidget {
   final String id;
@@ -408,9 +406,7 @@ class BracketViewScreen extends ConsumerWidget {
     try {
       final Uint8List? bytes = await shot.capture();
       if (bytes == null) return;
-      final dir = await getTemporaryDirectory();
-      final file = await File('${dir.path}/bracket.png').writeAsBytes(bytes);
-      await Share.shareXFiles([XFile(file.path)], text: 'Tournament bracket');
+      await shareImageBytes(bytes, text: 'Tournament bracket');
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
