@@ -176,7 +176,7 @@ $$;
 
 grant execute on function public.admin_support_threads() to authenticated;
 
--- Realtime so chats update live.
+-- Realtime so chats + agent quota update live.
 do $$
 begin
   if not exists (
@@ -185,5 +185,12 @@ begin
       and tablename = 'support_messages'
   ) then
     alter publication supabase_realtime add table public.support_messages;
+  end if;
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public'
+      and tablename = 'agent_profiles'
+  ) then
+    alter publication supabase_realtime add table public.agent_profiles;
   end if;
 end $$;

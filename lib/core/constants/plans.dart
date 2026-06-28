@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Agent subscription plans. Counted plans grant [games] games for [days] days;
 /// unlimited plans ([games] == null) grant unlimited games for [days] days.
 /// Prices are in Malaysian Ringgit (RM). The admin grants these manually after
@@ -9,6 +11,7 @@ class SubPlan {
   final int days;
   final int? games; // null = unlimited
   final String bestFor;
+  final Color color; // brand colour for this tier
 
   const SubPlan({
     required this.key,
@@ -17,6 +20,7 @@ class SubPlan {
     required this.days,
     required this.games,
     required this.bestFor,
+    required this.color,
   });
 
   bool get unlimited => games == null;
@@ -26,13 +30,30 @@ class SubPlan {
       'RM$priceRm · ${unlimited ? 'Unlimited' : '$games games'} · $days days';
 }
 
-/// The 7 plans agents can request, cheapest first.
+/// The 7 plans agents can request, cheapest first — each its own colour.
 const kSubPlans = <SubPlan>[
-  SubPlan(key: 'WEEKLY', label: 'Weekly', priceRm: 10, days: 7, games: null, bestFor: 'Testing, 1 tournament'),
-  SubPlan(key: 'BASIC', label: 'Basic', priceRm: 15, days: 30, games: 3, bestFor: '1–3 games/month'),
-  SubPlan(key: 'STANDARD', label: 'Standard', priceRm: 30, days: 30, games: 10, bestFor: '5–10 games/month'),
-  SubPlan(key: 'MONTHLY', label: 'Monthly', priceRm: 35, days: 30, games: null, bestFor: 'Regular agents'),
-  SubPlan(key: 'PRO', label: 'Pro', priceRm: 50, days: 40, games: null, bestFor: '10+ games/month'),
-  SubPlan(key: 'ELITE', label: 'Elite', priceRm: 80, days: 45, games: null, bestFor: '20+ games/month'),
-  SubPlan(key: 'QUARTERLY', label: 'Quarterly', priceRm: 120, days: 90, games: null, bestFor: 'Year-long agents'),
+  SubPlan(key: 'WEEKLY', label: 'Weekly', priceRm: 10, days: 7, games: null, bestFor: 'Testing, 1 tournament', color: Color(0xFF22D3EE)),
+  SubPlan(key: 'BASIC', label: 'Basic', priceRm: 15, days: 30, games: 3, bestFor: '1–3 games/month', color: Color(0xFF3B82F6)),
+  SubPlan(key: 'STANDARD', label: 'Standard', priceRm: 30, days: 30, games: 10, bestFor: '5–10 games/month', color: Color(0xFF22C55E)),
+  SubPlan(key: 'MONTHLY', label: 'Monthly', priceRm: 35, days: 30, games: null, bestFor: 'Regular agents', color: Color(0xFF8B5CF6)),
+  SubPlan(key: 'PRO', label: 'Pro', priceRm: 50, days: 40, games: null, bestFor: '10+ games/month', color: Color(0xFFF97316)),
+  SubPlan(key: 'ELITE', label: 'Elite', priceRm: 80, days: 45, games: null, bestFor: '20+ games/month', color: Color(0xFFFF3CAC)),
+  SubPlan(key: 'QUARTERLY', label: 'Quarterly', priceRm: 120, days: 90, games: null, bestFor: 'Year-long agents', color: Color(0xFFFBBF24)),
 ];
+
+/// Colour for a stored plan key (incl. 'free_trial' / unknown → slate).
+Color planColor(String? key) {
+  for (final p in kSubPlans) {
+    if (p.key == key) return p.color;
+  }
+  return const Color(0xFF64748B); // slate: free trial / none
+}
+
+/// Friendly label for a stored plan key.
+String planLabel(String? key) {
+  if (key == 'free_trial') return 'Free trial';
+  for (final p in kSubPlans) {
+    if (p.key == key) return p.label;
+  }
+  return '—';
+}

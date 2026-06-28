@@ -33,6 +33,11 @@ class _ChatThreadViewState extends State<ChatThreadView> {
     super.dispose();
   }
 
+  void _scrollToBottom() {
+    if (!_scroll.hasClients) return;
+    _scroll.jumpTo(_scroll.position.maxScrollExtent);
+  }
+
   Future<void> _markRead() async {
     if (widget.asAdmin) {
       await ChatService.markReadAsAdmin(widget.agentId);
@@ -66,7 +71,9 @@ class _ChatThreadViewState extends State<ChatThreadView> {
           child: StreamBuilder<List<SupportMessage>>(
             stream: ChatService.threadStream(widget.agentId),
             builder: (context, snap) {
-              final msgs = snap.data ?? const <SupportMessage>[];
+              // Oldest first (newest at the bottom), regardless of stream order.
+              final msgs = [...(snap.data ?? const <SupportMessage>[])]
+                ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
               if (snap.connectionState == ConnectionState.waiting &&
                   msgs.isEmpty) {
                 return const Center(
@@ -87,8 +94,11 @@ class _ChatThreadViewState extends State<ChatThreadView> {
                   ),
                 );
               }
-              // After new data, mark anything unread as read.
-              WidgetsBinding.instance.addPostFrameCallback((_) => _markRead());
+              // After new data: mark read + keep the latest message in view.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _markRead();
+                _scrollToBottom();
+              });
               return ListView.builder(
                 controller: _scroll,
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),

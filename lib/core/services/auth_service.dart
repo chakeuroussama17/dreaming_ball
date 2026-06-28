@@ -436,6 +436,19 @@ class AuthService {
     }
   }
 
+  /// Live stream of the agent's quota — updates the moment the admin grants a
+  /// plan (requires agent_profiles in the realtime publication; the UI falls
+  /// back to fetchMyQuota() if realtime isn't enabled).
+  static Stream<AgentQuota?> myQuotaStream() {
+    final uid = _sb.auth.currentUser?.id;
+    if (uid == null) return Stream.value(null);
+    return _sb
+        .from('agent_profiles')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', uid)
+        .map((rows) => rows.isEmpty ? null : AgentQuota.fromRow(rows.first));
+  }
+
   /// Maps raw Supabase/auth errors to messages safe for the UI.
   static String friendlyAuthError(String raw) {
     final m = raw.toLowerCase();

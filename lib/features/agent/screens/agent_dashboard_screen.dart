@@ -195,12 +195,22 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: primary)),
-                  FutureBuilder<AgentQuota?>(
-                    future: AuthService.fetchMyQuota(),
-                    builder: (c, snap) => Text(
-                        snap.data?.label ?? 'Tap to view plans',
-                        style: GoogleFonts.inter(
-                            fontSize: 12, color: secondary)),
+                  StreamBuilder<AgentQuota?>(
+                    stream: AuthService.myQuotaStream(),
+                    builder: (c, snap) {
+                      if (snap.hasError) {
+                        return FutureBuilder<AgentQuota?>(
+                          future: AuthService.fetchMyQuota(),
+                          builder: (c, f) => Text(
+                              f.data?.label ?? 'Tap to view plans',
+                              style: GoogleFonts.inter(
+                                  fontSize: 12, color: secondary)),
+                        );
+                      }
+                      return Text(snap.data?.label ?? 'Tap to view plans',
+                          style: GoogleFonts.inter(
+                              fontSize: 12, color: secondary));
+                    },
                   ),
                 ],
               ),
