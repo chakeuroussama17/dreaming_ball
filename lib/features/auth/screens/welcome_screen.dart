@@ -100,32 +100,7 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                // ── Primary call-to-action: jump straight into the games ──────
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      CustomButton(
-                        label: 'Browse Games',
-                        onPressed: () => context.goNamed('home'),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Look around — no account needed',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                            fontSize: 12, color: textSecondary),
-                      ),
-                    ],
-                  ),
-                )
-                    .animate()
-                    .fadeIn(delay: 300.ms, duration: 500.ms)
-                    .slideY(begin: 0.12, end: 0, delay: 300.ms, duration: 500.ms),
-
-                const SizedBox(height: 18),
-
-                // ── Secondary: log in / sign up ───────────────────────────────
+                // Buttons
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Row(
@@ -141,7 +116,6 @@ class WelcomeScreen extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           label: l.signUp,
-                          variant: ButtonVariant.ghost,
                           onPressed: () => context.goNamed('register'),
                         ),
                       ),
@@ -149,8 +123,8 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 )
                     .animate()
-                    .fadeIn(delay: 450.ms, duration: 500.ms)
-                    .slideY(begin: 0.12, end: 0, delay: 450.ms, duration: 500.ms),
+                    .fadeIn(delay: 350.ms, duration: 500.ms)
+                    .slideY(begin: 0.12, end: 0, delay: 350.ms, duration: 500.ms),
 
                 const SizedBox(height: 40),
               ],
