@@ -9,12 +9,14 @@ import '../../../../core/providers/admin_providers.dart';
 import '../../../../core/providers/content_providers.dart';
 import '../../../../core/providers/games_provider.dart';
 import '../../../../core/providers/session_provider.dart';
+import '../../../../core/legal/terms.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_input.dart';
 import '../../../../app/app.dart';
+import '../widgets/terms_dialog.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -126,8 +128,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   /// Creates the account in Supabase, uploads the avatar, then routes by
   /// role. Agents land on profile, where the verification banner lives.
+  ///
+  /// Registration is gated on accepting the Terms of Use — if the user declines
+  /// the popup, no account is created.
   Future<void> _submit() async {
     if (_submitting) return;
+
+    // Require Terms acceptance before creating the account. Their acceptance
+    // (version + timestamp) is recorded on the profile for the record.
+    final agreed = await showTermsDialog(context);
+    if (agreed != true) return;
+    if (!mounted) return;
+
     setState(() => _submitting = true);
     try {
       final role = _role == 'agent' ? 'agent' : 'player';
@@ -145,6 +157,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         state: _state,
         city: _cityCtrl.text.trim(),
         dateOfBirth: _dob,
+        termsVersion: kTermsVersion,
       );
 
       if (_photoBytes != null) {

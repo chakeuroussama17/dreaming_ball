@@ -160,12 +160,15 @@ class AuthService {
     String? state,
     String? city,
     DateTime? dateOfBirth,
+    String? termsVersion, // accepted Terms of Use version (null = not recorded)
   }) async {
     final dob = dateOfBirth == null
         ? null
         : '${dateOfBirth.year.toString().padLeft(4, '0')}-'
             '${dateOfBirth.month.toString().padLeft(2, '0')}-'
             '${dateOfBirth.day.toString().padLeft(2, '0')}';
+    final termsAcceptedAt =
+        termsVersion == null ? null : DateTime.now().toUtc().toIso8601String();
     try {
       final res = await _sb.auth.signUp(
         email: email,
@@ -184,6 +187,8 @@ class AuthService {
           'state': ?state,
           'city': ?city,
           'date_of_birth': ?dob,
+          'terms_version': ?termsVersion,
+          'terms_accepted_at': ?termsAcceptedAt,
         },
       );
       final user = res.user;
@@ -208,6 +213,8 @@ class AuthService {
         'state': state,
         'city': city,
         'date_of_birth': dob,
+        'terms_version': termsVersion,
+        'terms_accepted_at': termsAcceptedAt,
       });
 
       // The trigger created the player profile with a default position;
@@ -359,6 +366,8 @@ class AuthService {
       'state': meta['state'],
       'city': meta['city'],
       'date_of_birth': meta['date_of_birth'],
+      'terms_version': meta['terms_version'],
+      'terms_accepted_at': meta['terms_accepted_at'],
     };
     await _sb.from('users').insert(insert);
     // The trigger just created player_profiles with a default position;
