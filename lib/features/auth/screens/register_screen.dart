@@ -49,7 +49,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   DateTime? _dob;
   String? _gender;
   String? _state;
-  final _countryCtrl = TextEditingController(text: 'Malaysia');
+  String? _country = 'Malaysia';
   final _cityCtrl = TextEditingController();
 
   static const _genders = ['Male', 'Female', 'Other'];
@@ -57,6 +57,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     'Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang',
     'Penang', 'Perak', 'Perlis', 'Sabah', 'Sarawak', 'Selangor',
     'Terengganu', 'Kuala Lumpur', 'Putrajaya', 'Labuan',
+  ];
+
+  // Country of origin (Malaysia first, then alphabetical).
+  static const _countries = [
+    'Malaysia',
+    'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria',
+    'Bahrain', 'Bangladesh', 'Belgium', 'Brazil', 'Brunei', 'Cambodia',
+    'Cameroon', 'Canada', 'Chile', 'China', 'Colombia', 'Denmark', 'Egypt',
+    'Ethiopia', 'Finland', 'France', 'Germany', 'Ghana', 'Greece', 'India',
+    'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Italy', 'Japan', 'Jordan',
+    'Kazakhstan', 'Kenya', 'Kuwait', 'Laos', 'Lebanon', 'Libya', 'Maldives',
+    'Mexico', 'Morocco', 'Myanmar', 'Nepal', 'Netherlands', 'New Zealand',
+    'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palestine', 'Philippines',
+    'Poland', 'Portugal', 'Qatar', 'Russia', 'Saudi Arabia', 'Senegal',
+    'Singapore', 'Somalia', 'South Africa', 'South Korea', 'Spain',
+    'Sri Lanka', 'Sudan', 'Sweden', 'Switzerland', 'Syria', 'Taiwan',
+    'Tanzania', 'Thailand', 'Tunisia', 'Turkey', 'Uganda', 'Ukraine',
+    'United Arab Emirates', 'United Kingdom', 'United States', 'Uzbekistan',
+    'Vietnam', 'Yemen', 'Other',
   ];
 
   // Step 4 — Photo
@@ -71,7 +90,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _phoneCtrl.dispose();
     _passCtrl.dispose();
     _confirmCtrl.dispose();
-    _countryCtrl.dispose();
     _cityCtrl.dispose();
     super.dispose();
   }
@@ -108,12 +126,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         _snack('Please select your gender');
         return;
       }
-      if (_countryCtrl.text.trim().isEmpty) {
-        _snack('Please enter your country of origin');
+      if (_country == null) {
+        _snack('Please select your country of origin');
         return;
       }
       if (_state == null) {
-        _snack('Please select your state');
+        _snack('Please select your state of living');
         return;
       }
       if (_cityCtrl.text.trim().isEmpty) {
@@ -153,7 +171,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         // UI labels use en-dashes ('16–20'); schema check uses '16-20'.
         ageGroup: _ageGroup?.replaceAll('–', '-'),
         gender: _gender,
-        country: _countryCtrl.text.trim(),
+        country: _country,
         state: _state,
         city: _cityCtrl.text.trim(),
         dateOfBirth: _dob,
@@ -721,44 +739,37 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
         const SizedBox(height: 14),
 
-        CustomInput(
-          label: 'Country of Origin',
-          hint: 'e.g. Malaysia',
-          controller: _countryCtrl,
-        ),
-        const SizedBox(height: 14),
-
-        // State
-        Text('State',
+        // Country of origin
+        Text('Country of Origin',
             style: GoogleFonts.inter(
                 fontSize: 13, fontWeight: FontWeight.w500, color: secondary)),
         const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          initialValue: _state,
-          isExpanded: true,
-          dropdownColor: surface,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: surface,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.orange),
-            ),
-          ),
-          hint: Text('Select state',
-              style: GoogleFonts.inter(fontSize: 14, color: secondary)),
-          style: GoogleFonts.inter(fontSize: 14, color: primary),
-          items: [
-            for (final s in _myStates)
-              DropdownMenuItem(value: s, child: Text(s)),
-          ],
+        _dropdown(
+          value: _country,
+          hint: 'Select country',
+          items: _countries,
+          onChanged: (v) => setState(() => _country = v),
+          surface: surface,
+          border: border,
+          primary: primary,
+          secondary: secondary,
+        ),
+        const SizedBox(height: 14),
+
+        // State of living
+        Text('State of Living',
+            style: GoogleFonts.inter(
+                fontSize: 13, fontWeight: FontWeight.w500, color: secondary)),
+        const SizedBox(height: 8),
+        _dropdown(
+          value: _state,
+          hint: 'Select state of living',
+          items: _myStates,
           onChanged: (v) => setState(() => _state = v),
+          surface: surface,
+          border: border,
+          primary: primary,
+          secondary: secondary,
         ),
         const SizedBox(height: 14),
 
@@ -859,6 +870,46 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   // ── Shared helpers ────────────────────────────────────────────────────────
+
+  // Styled dropdown used for country + state.
+  Widget _dropdown({
+    required String? value,
+    required String hint,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+    required Color surface,
+    required Color border,
+    required Color primary,
+    required Color secondary,
+  }) {
+    return DropdownButtonFormField<String>(
+      initialValue: value,
+      isExpanded: true,
+      dropdownColor: surface,
+      menuMaxHeight: 360,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: surface,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.orange),
+        ),
+      ),
+      hint: Text(hint,
+          style: GoogleFonts.inter(fontSize: 14, color: secondary)),
+      style: GoogleFonts.inter(fontSize: 14, color: primary),
+      items: [
+        for (final s in items) DropdownMenuItem(value: s, child: Text(s)),
+      ],
+      onChanged: onChanged,
+    );
+  }
 
   Widget _heading(String text, bool isDark) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
