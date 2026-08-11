@@ -29,7 +29,7 @@ class ConfirmedScreen extends StatelessWidget {
                 height: 72,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                  gradient: LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                 ),
                 child: const Icon(Icons.check, color: Colors.white, size: 38),
               ).animate().scale(
@@ -71,7 +71,7 @@ class ConfirmedScreen extends StatelessWidget {
                 height: 52,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                    gradient: const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: ElevatedButton(

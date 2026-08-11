@@ -92,7 +92,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
     final code = _room?.code ?? '';
     if (code.isEmpty) return;
     ShareUtils.shareText(
-      'Join my Dreaming Ball private room! '
+      'Join my Boundless private room! '
       'Open the app, tap "Join Room" and enter code: $code',
     );
   }
@@ -153,7 +153,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppColors.pink.withValues(alpha: 0.12),
+                  color: AppColors.goldDeep.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(99),
                 ),
                 child: Text(
@@ -161,7 +161,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.pink,
+                    color: AppColors.goldDeep,
                   ),
                 ),
               ),
@@ -172,7 +172,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(
-                  color: AppColors.orange, strokeWidth: 2.5))
+                  color: AppColors.gold, strokeWidth: 2.5))
           : _error || room == null
               ? Center(
                   child: Padding(
@@ -195,17 +195,17 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                             horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(colors: [
-                            AppColors.orange.withValues(alpha: 0.10),
-                            AppColors.pink.withValues(alpha: 0.10),
+                            AppColors.gold.withValues(alpha: 0.10),
+                            AppColors.goldDeep.withValues(alpha: 0.10),
                           ]),
                           border: Border.all(
-                              color: AppColors.orange.withValues(alpha: 0.3)),
+                              color: AppColors.gold.withValues(alpha: 0.3)),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Row(
                           children: [
                             const Icon(Icons.event,
-                                size: 20, color: AppColors.orange),
+                                size: 20, color: AppColors.gold),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -250,9 +250,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                     // ── Info card ─────────────────────────────────────────
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.pink.withValues(alpha: 0.04),
+                        color: AppColors.goldDeep.withValues(alpha: 0.04),
                         border: Border.all(
-                            color: AppColors.pink.withValues(alpha: 0.2)),
+                            color: AppColors.goldDeep.withValues(alpha: 0.2)),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -299,7 +299,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                             ),
                             const Spacer(),
                             const Icon(Icons.copy,
-                                size: 18, color: AppColors.orange),
+                                size: 18, color: AppColors.gold),
                           ],
                         ),
                       ),
@@ -392,7 +392,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                              colors: [AppColors.pink, AppColors.orange]),
+                              colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: ElevatedButton.icon(
@@ -487,7 +487,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.15),
+                color: AppColors.gold.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(99),
               ),
               child: Text(
@@ -495,7 +495,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.orange,
+                  color: AppColors.gold,
                 ),
               ),
             ),

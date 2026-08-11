@@ -80,14 +80,14 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>(
   (ref) => LocaleNotifier(LocaleNotifier.fallback),
 );
 
-class DreamingBallApp extends ConsumerStatefulWidget {
-  const DreamingBallApp({super.key});
+class BoundlessApp extends ConsumerStatefulWidget {
+  const BoundlessApp({super.key});
 
   @override
-  ConsumerState<DreamingBallApp> createState() => _DreamingBallAppState();
+  ConsumerState<BoundlessApp> createState() => _BoundlessAppState();
 }
 
-class _DreamingBallAppState extends ConsumerState<DreamingBallApp> {
+class _BoundlessAppState extends ConsumerState<BoundlessApp> {
   StreamSubscription<AuthState>? _authSub;
 
   @override
@@ -121,7 +121,7 @@ class _DreamingBallAppState extends ConsumerState<DreamingBallApp> {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
-      title: 'Dreaming Ball',
+      title: 'Boundless',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

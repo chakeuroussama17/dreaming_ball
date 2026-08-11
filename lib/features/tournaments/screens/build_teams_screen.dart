@@ -48,7 +48,7 @@ class BuildTeamsScreen extends ConsumerWidget {
       ),
       body: t == null
           ? const Center(
-              child: CircularProgressIndicator(color: AppColors.orange))
+              child: CircularProgressIndicator(color: AppColors.gold))
           : Column(
               children: [
                 Expanded(
@@ -121,12 +121,12 @@ class BuildTeamsScreen extends ConsumerWidget {
             else
               CircleAvatar(
                 radius: 30,
-                backgroundColor: AppColors.orange.withValues(alpha: 0.18),
+                backgroundColor: AppColors.gold.withValues(alpha: 0.18),
                 child: Text(tm.name.isEmpty ? '?' : tm.name.substring(0, 1),
                     style: GoogleFonts.spaceGrotesk(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.orange)),
+                        color: AppColors.gold)),
               ),
             const SizedBox(height: 10),
             Text(tm.name,
@@ -153,7 +153,7 @@ class BuildTeamsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.edit_outlined, color: AppColors.orange),
+              leading: const Icon(Icons.edit_outlined, color: AppColors.gold),
               title: const Text('Edit team'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -236,7 +236,7 @@ class BuildTeamsScreen extends ConsumerWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient:
-                const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
             borderRadius: BorderRadius.circular(14),
           ),
           child: ElevatedButton(
@@ -474,11 +474,11 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
                     TextButton.icon(
                       onPressed: _addPlayer,
                       icon: const Icon(Icons.add, size: 18,
-                          color: AppColors.orange),
+                          color: AppColors.gold),
                       label: Text('Add Player',
                           style: GoogleFonts.spaceGrotesk(
                               fontWeight: FontWeight.w700,
-                              color: AppColors.orange)),
+                              color: AppColors.gold)),
                     ),
                   ],
                 ),
@@ -543,7 +543,7 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                        colors: [AppColors.pink, AppColors.orange]),
+                        colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: ElevatedButton(
@@ -588,7 +588,7 @@ class _TeamBuilderSheetState extends State<_TeamBuilderSheet> {
             borderSide: BorderSide(color: border)),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.orange)),
+            borderSide: const BorderSide(color: AppColors.gold)),
       );
 }
 
@@ -680,7 +680,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
                       borderSide: BorderSide(color: border)),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.orange)),
+                      borderSide: const BorderSide(color: AppColors.gold)),
                 ),
               ),
             ),
@@ -688,7 +688,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
               child: _loading
                   ? const Center(
                       child:
-                          CircularProgressIndicator(color: AppColors.orange))
+                          CircularProgressIndicator(color: AppColors.gold))
                   : _results.isEmpty
                       ? Center(
                           child: Text(

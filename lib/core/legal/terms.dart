@@ -20,14 +20,14 @@ class TermsSection {
 }
 
 const String kTermsIntro =
-    'Welcome to Dreaming Ball. Before creating your account, please read and '
+    'Welcome to Boundless. Before creating your account, please read and '
     'accept these Terms of Use and Acceptable-Use Rules. By tapping "I Agree", '
     'you confirm that you have read, understood, and agree to be bound by them.';
 
 const List<TermsSection> kTermsSections = [
   TermsSection(
     '1. Purpose & eligibility',
-    'Dreaming Ball is a platform for organising and joining recreational '
+    'Boundless is a platform for organising and joining recreational '
         'football games and tournaments. You confirm that you are of legal age '
         'in your country (or have a parent/guardian\'s consent) and that all '
         'the information you provide is true and accurate.',
@@ -49,7 +49,7 @@ const List<TermsSection> kTermsSections = [
   ),
   TermsSection(
     '4. Payments are between users',
-    'Dreaming Ball only helps connect players and organisers. It is NOT a bank, '
+    'Boundless only helps connect players and organisers. It is NOT a bank, '
         'money-services business, payment processor, or escrow provider, and it '
         'does not hold, transfer, or guarantee any funds. Any payment is made '
         'directly between users, at their own risk and responsibility. We are '
@@ -69,7 +69,7 @@ const List<TermsSection> kTermsSections = [
   TermsSection(
     '7. Assumption of risk',
     'Football is a physical activity. You take part in any game entirely at '
-        'your own risk. To the fullest extent permitted by law, Dreaming Ball '
+        'your own risk. To the fullest extent permitted by law, Boundless '
         'and its owner are not liable for any injury, loss, or damage arising '
         'from games, venues, travel, or interactions with other users. We do '
         'not supervise, vet, or guarantee games, venues, teams, agents, or '
@@ -89,7 +89,7 @@ const List<TermsSection> kTermsSections = [
   TermsSection(
     '10. Suspension & indemnity',
     'We may suspend or terminate any account that violates these terms. You '
-        'agree to indemnify and hold harmless Dreaming Ball and its owner from '
+        'agree to indemnify and hold harmless Boundless and its owner from '
         'any claim, loss, or cost arising from your misuse of the app or your '
         'breach of these terms.',
   ),

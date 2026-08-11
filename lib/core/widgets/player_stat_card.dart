@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../theme/app_colors.dart';
 import 'tier_badge.dart';
 
 /// A single stat displayed in the FIFA-style card grid.
@@ -14,29 +15,19 @@ class PlayerStat {
   });
 }
 
-/// Tier-specific background gradient for the FIFA card.
+/// Tier-specific background for the card.
+///
+/// Every tier sits on the crest navy, tinted by its own metal — so the cards
+/// stay unmistakably Boundless while still reading as eight distinct ranks.
+/// The gradient runs light-to-dark diagonally, which is what gives the flat
+/// panel its sense of a lit surface.
 LinearGradient _tierGradient(PlayerTier tier) {
-  late final List<Color> colors;
-  switch (tier) {
-    case PlayerTier.beginner:
-      colors = const [Color(0xFF14161A), Color(0xFF1C1F24)];
-    case PlayerTier.bronze:
-      colors = const [Color(0xFF1A0F00), Color(0xFF2D1A00)];
-    case PlayerTier.silver:
-      colors = const [Color(0xFF111518), Color(0xFF1A1F22)];
-    case PlayerTier.gold:
-      colors = const [Color(0xFF1A1000), Color(0xFF2A1E00)];
-    case PlayerTier.platinum:
-      colors = const [Color(0xFF001A1F), Color(0xFF002A30)];
-    case PlayerTier.diamond:
-      colors = const [Color(0xFF0F001A), Color(0xFF1A0030)];
-    case PlayerTier.elite:
-      colors = const [Color(0xFF1A0000), Color(0xFF2A0808)];
-    case PlayerTier.legend:
-      colors = const [Color(0xFF1A0010), Color(0xFF2A0020)];
-  }
+  final tint = tier.color;
   return LinearGradient(
-    colors: colors,
+    colors: [
+      Color.lerp(AppColors.navySurface, tint, 0.18)!,
+      Color.lerp(AppColors.navyDeep, tint, 0.06)!,
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -109,6 +100,20 @@ class PlayerStatCard extends StatelessWidget {
         gradient: _tierGradient(tier),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: tierColor, width: 1.5),
+        // The card is the hero object on the profile — it gets the deepest
+        // elevation in the app, haloed in its own tier colour.
+        boxShadow: [
+          BoxShadow(
+            color: tierColor.withValues(alpha: 0.28),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+          const BoxShadow(
+            color: Color(0x8C000000),
+            blurRadius: 16,
+            offset: Offset(0, 6),
+          ),
+        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
@@ -119,6 +124,24 @@ class PlayerStatCard extends StatelessWidget {
               child: CustomPaint(
                 painter:
                     _GridLinesPainter(Colors.white.withValues(alpha: 0.03)),
+              ),
+            ),
+
+            // ── Gloss sweep — a diagonal light across the card face ─────────
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    stops: const [0.0, 0.42, 0.62],
+                    colors: [
+                      Colors.white.withValues(alpha: 0.09),
+                      Colors.white.withValues(alpha: 0.02),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
               ),
             ),
 
@@ -164,7 +187,7 @@ class PlayerStatCard extends StatelessWidget {
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF888888),
+                              color: AppColors.darkTextSecondary,
                               letterSpacing: 1,
                             ),
                           ),
@@ -221,14 +244,18 @@ class PlayerStatCard extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // Brand label + separator
-                  Text(
-                    'DREAMING BALL',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 2,
-                      color: tierColor,
+                  // Brand label, stamped in gold foil
+                  ShaderMask(
+                    shaderCallback: (b) =>
+                        AppColors.brandGradient.createShader(b),
+                    child: Text(
+                      'BOUNDLESS F.C.',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -289,7 +316,7 @@ class _StatCell extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF888888),
+                    color: AppColors.darkTextSecondary,
                     letterSpacing: 0.5,
                   ),
                   maxLines: 1,
@@ -336,7 +363,7 @@ class _CareerStat extends StatelessWidget {
           label,
           style: GoogleFonts.inter(
             fontSize: 10,
-            color: const Color(0xFF888888),
+            color: AppColors.darkTextSecondary,
           ),
         ),
       ],

@@ -39,7 +39,7 @@ class ScheduleMatchesScreen extends ConsumerWidget {
       ),
       body: matchesAsync.when(
         loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.orange)),
+            child: CircularProgressIndicator(color: AppColors.gold)),
         error: (_, _) => Center(
             child: Text('Could not load',
                 style: GoogleFonts.inter(color: secondary))),
@@ -75,9 +75,9 @@ class ScheduleMatchesScreen extends ConsumerWidget {
                       decoration: BoxDecoration(
                         gradient: allScheduled
                             ? const LinearGradient(
-                                colors: [AppColors.pink, AppColors.orange])
+                                colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
                             : null,
-                        color: allScheduled ? null : const Color(0xFF444444),
+                        color: allScheduled ? null : AppColors.darkTextMuted,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: ElevatedButton(
@@ -139,15 +139,15 @@ class ScheduleMatchesScreen extends ConsumerWidget {
                     style: GoogleFonts.inter(
                         fontSize: 12,
                         color: m.scheduledAt == null
-                            ? AppColors.orange
-                            : const Color(0xFF22C55E))),
+                            ? AppColors.gold
+                            : AppColors.success)),
               ],
             ),
           ),
           OutlinedButton(
             onPressed: () => _pick(context, ref, m),
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+              side: BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -155,7 +155,7 @@ class ScheduleMatchesScreen extends ConsumerWidget {
                 style: GoogleFonts.spaceGrotesk(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.orange)),
+                    color: AppColors.gold)),
           ),
         ],
       ),

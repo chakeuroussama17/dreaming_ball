@@ -25,7 +25,7 @@ class WelcomeScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
 
-          // ── Gradient overlay: transparent → #0A0A0F (bottom 40%) ─────────
+          // ── Gradient overlay: transparent → #0A0F1A (bottom 40%) ─────────
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -35,7 +35,7 @@ class WelcomeScreen extends StatelessWidget {
                 colors: [
                   Colors.transparent,
                   Color(0x66000000),
-                  Color(0xCC0A0A0F),
+                  Color(0xCC0A0F1A),
                   AppColors.darkBg,
                 ],
               ),
@@ -68,7 +68,7 @@ class WelcomeScreen extends StatelessWidget {
                         shaderCallback: (b) =>
                             AppColors.brandGradient.createShader(b),
                         child: Text(
-                          'Dreaming Ball',
+                          'Boundless',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 38,

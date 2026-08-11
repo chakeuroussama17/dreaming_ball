@@ -1,11 +1,11 @@
 {
-    "name": "Dreaming Ball",
-    "short_name": "Dreaming Ball",
+    "name": "Boundless",
+    "short_name": "Boundless",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0A0A0F",
-    "theme_color": "#0A0A0F",
-    "description": "Find games, run tournaments and track your team — Dreaming Ball.",
+    "background_color": "#0A0F1A",
+    "theme_color": "#C9A961",
+    "description": "Find games, run tournaments and track your team — Boundless.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

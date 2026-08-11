@@ -39,14 +39,14 @@ class _AdminChatsScreenState extends State<AdminChatsScreen> {
         ],
       ),
       body: RefreshIndicator(
-        color: AppColors.orange,
+        color: AppColors.gold,
         onRefresh: _refresh,
         child: FutureBuilder<List<SupportThread>>(
           future: _threads,
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(
-                  child: CircularProgressIndicator(color: AppColors.orange));
+                  child: CircularProgressIndicator(color: AppColors.gold));
             }
             final threads = snap.data ?? const <SupportThread>[];
             if (threads.isEmpty) {
@@ -76,11 +76,11 @@ class _AdminChatsScreenState extends State<AdminChatsScreen> {
   Widget _tile(SupportThread t, ColorScheme scheme) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: AppColors.orange.withValues(alpha: 0.15),
+        backgroundColor: AppColors.gold.withValues(alpha: 0.15),
         child: Text(
           t.fullName.isNotEmpty ? t.fullName[0].toUpperCase() : '?',
           style: const TextStyle(
-              color: AppColors.orange, fontWeight: FontWeight.bold),
+              color: AppColors.gold, fontWeight: FontWeight.bold),
         ),
       ),
       title: Text(t.fullName,
@@ -104,7 +104,7 @@ class _AdminChatsScreenState extends State<AdminChatsScreen> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: const BoxDecoration(
-                  color: AppColors.orange, shape: BoxShape.circle),
+                  color: AppColors.gold, shape: BoxShape.circle),
               child: Text('${t.unread}',
                   style: const TextStyle(
                       color: Colors.white,

@@ -75,7 +75,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
     return async.when(
       loading: () => const Center(
           child: CircularProgressIndicator(
-              color: AppColors.orange, strokeWidth: 2.5)),
+              color: AppColors.gold, strokeWidth: 2.5)),
       error: (_, _) => _errorRetry(secondary, myPendingStatsProvider),
       data: (stats) {
         if (stats.isEmpty) {
@@ -119,7 +119,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
     return async.when(
       loading: () => const Center(
           child: CircularProgressIndicator(
-              color: AppColors.orange, strokeWidth: 2.5)),
+              color: AppColors.gold, strokeWidth: 2.5)),
       error: (_, _) => _errorRetry(secondary, agentDisputesProvider),
       data: (disputes) {
         if (disputes.isEmpty) {
@@ -188,18 +188,18 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          const Color(0xFF22C55E).withValues(alpha: 0.15),
+                          AppColors.success.withValues(alpha: 0.15),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: () => _resolve(d, accept: true),
                     icon: const Icon(Icons.check,
-                        size: 16, color: Color(0xFF22C55E)),
+                        size: 16, color: AppColors.success),
                     label: Text('Accept',
                         style: GoogleFonts.spaceGrotesk(
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF22C55E))),
+                            color: AppColors.success)),
                   ),
                 ),
               ),
@@ -259,7 +259,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon,
-                size: 56, color: const Color(0xFF22C55E).withValues(alpha: 0.8)),
+                size: 56, color: AppColors.success.withValues(alpha: 0.8)),
             const SizedBox(height: 12),
             Text(title,
                 style: GoogleFonts.spaceGrotesk(
@@ -286,13 +286,13 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
           OutlinedButton(
             onPressed: () => ref.invalidate(provider),
             style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: AppColors.orange),
+              side: const BorderSide(color: AppColors.gold),
               shape:
                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: Text('Retry',
                 style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.w700, color: AppColors.orange)),
+                    fontWeight: FontWeight.w700, color: AppColors.gold)),
           ),
         ],
       ),
@@ -413,7 +413,7 @@ class _PendingStatCardState extends State<_PendingStatCard> {
                     style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.orange)),
+                        color: AppColors.gold)),
               ],
             ),
           ),
@@ -448,7 +448,7 @@ class _PendingStatCardState extends State<_PendingStatCard> {
                       fontSize: 18, fontWeight: FontWeight.w800, color: p)),
               const SizedBox(width: 12),
               if (done)
-                _pill('Submitted', const Color(0xFFFBBF24))
+                _pill('Submitted', AppColors.warning)
               else
                 GestureDetector(
                   onTap: () => setState(() {
@@ -531,7 +531,7 @@ class _PendingStatCardState extends State<_PendingStatCard> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.orange),
+                borderSide: const BorderSide(color: AppColors.gold),
               ),
             ),
           ),
@@ -544,7 +544,7 @@ class _PendingStatCardState extends State<_PendingStatCard> {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                          colors: [AppColors.tierElite, AppColors.pink]),
+                          colors: [AppColors.tierElite, AppColors.goldDeep]),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ElevatedButton(
@@ -602,9 +602,9 @@ class _PendingStatCardState extends State<_PendingStatCard> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: enabled
-              ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+              ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
               : null,
-          color: enabled ? null : const Color(0xFF444444),
+          color: enabled ? null : AppColors.darkTextMuted,
         ),
         child: Icon(icon, color: Colors.white, size: 18),
       ),

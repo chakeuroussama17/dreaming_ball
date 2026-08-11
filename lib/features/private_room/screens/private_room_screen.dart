@@ -350,14 +350,14 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.orange.withValues(alpha: 0.15),
+                              color: AppColors.gold.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(99),
                             ),
                             child: Text('Host',
                                 style: GoogleFonts.inter(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.orange)),
+                                    color: AppColors.gold)),
                           ),
                         ],
                       ],
@@ -402,7 +402,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.5,
-                        color: AppColors.orange)),
+                        color: AppColors.gold)),
                 const SizedBox(width: 6),
               ],
               Icon(Icons.chevron_right, color: secondary),
@@ -701,7 +701,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
             ),
           ),
           onChanged: (_) => setState(() {}),
@@ -775,7 +775,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [AppColors.pink, AppColors.orange],
+                  colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
                 ),
               ),
               child: const Icon(Icons.check, color: Colors.white, size: 34),
@@ -808,15 +808,15 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.pink.withValues(alpha: 0.07),
+                color: AppColors.goldDeep.withValues(alpha: 0.07),
                 border:
-                    Border.all(color: AppColors.pink.withValues(alpha: 0.25)),
+                    Border.all(color: AppColors.goldDeep.withValues(alpha: 0.25)),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
                 child: ShaderMask(
                   shaderCallback: (b) => const LinearGradient(
-                    colors: [AppColors.pink, AppColors.orange],
+                    colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
                   ).createShader(b),
                   child: Text(
                     code,
@@ -868,7 +868,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                     height: 50,
                     child: OutlinedButton.icon(
                       onPressed: () => ShareUtils.shareViaWhatsApp(
-                          'Join my Dreaming Ball private room! '
+                          'Join my Boundless private room! '
                           'Open the app, tap "Join Room" and enter code: $code'),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFF25D366)),
@@ -903,7 +903,7 @@ class _PrivateRoomScreenState extends State<PrivateRoomScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.orange,
+                  color: AppColors.gold,
                 ),
               ),
             ),

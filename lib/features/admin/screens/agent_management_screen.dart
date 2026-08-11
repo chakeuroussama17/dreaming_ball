@@ -66,7 +66,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
         centerTitle: true,
         bottom: TabBar(
           controller: _tab,
-          indicatorColor: AppColors.orange,
+          indicatorColor: AppColors.gold,
           labelColor: primary,
           unselectedLabelColor: secondary,
           labelStyle:
@@ -201,14 +201,14 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
                 _snack('${a.name} suspended');
               },
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+                side: BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 minimumSize: const Size.fromHeight(44),
               ),
               child: Text('Suspend',
                   style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w700, color: AppColors.orange)),
+                      fontWeight: FontWeight.w700, color: AppColors.gold)),
             )
           else if (a.status == AdminAgentStatus.suspended)
             _gradientBtn('Reinstate', () {
@@ -224,16 +224,16 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
               onPressed: () => _grantPlanSheet(a),
               style: OutlinedButton.styleFrom(
                 side:
-                    BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+                    BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 minimumSize: const Size.fromHeight(44),
               ),
               icon: const Icon(Icons.card_giftcard_rounded,
-                  size: 18, color: AppColors.orange),
+                  size: 18, color: AppColors.gold),
               label: Text('Grant games / plan',
                   style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w700, color: AppColors.orange)),
+                      fontWeight: FontWeight.w700, color: AppColors.gold)),
             ),
           ],
         ],
@@ -288,7 +288,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
                       ? 'Unlimited games for ${selected.days} days.'
                       : 'Adds ${selected.games} games, valid ${selected.days} days.',
                   style: GoogleFonts.inter(
-                      fontSize: 12, color: AppColors.orange),
+                      fontSize: 12, color: AppColors.gold),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -326,7 +326,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-              colors: [AppColors.pink, AppColors.orange]),
+              colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
           borderRadius: BorderRadius.circular(12),
         ),
         child: ElevatedButton(
@@ -386,7 +386,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
       acc.length <= 4 ? acc : '••••${acc.substring(acc.length - 4)}';
 
   void _snack(String msg) => ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppColors.orange));
+      SnackBar(content: Text(msg)));
 
   void _showDocs(AgentRecord a, Color primary, Color secondary, Color border,
       Color surface) {
@@ -534,7 +534,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: AppColors.orange)));
+                          strokeWidth: 2, color: AppColors.gold)));
             } else if ((url = snap.data) == null) {
               inner = Center(
                   child: Icon(Icons.broken_image_outlined,
@@ -638,7 +638,7 @@ class _AgentManagementScreenState extends ConsumerState<AgentManagementScreen>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.orange),
+              borderSide: const BorderSide(color: AppColors.gold),
             ),
           ),
         ),

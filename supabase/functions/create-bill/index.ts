@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
       amount: String(amountCents),
       callback_url: callbackUrl,
       redirect_url: redirectUrl,
-      description: `Dreaming Ball — ${game.field_name}`,
+      description: `Boundless — ${game.field_name}`,
       reference_1_label: "game_id",
       reference_1: game_id,
       reference_2_label: "player_id",

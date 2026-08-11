@@ -62,7 +62,7 @@ class TournamentDetailScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.orange)),
+            child: CircularProgressIndicator(color: AppColors.gold)),
         error: (_, _) => Center(
             child: Text('Could not load',
                 style: GoogleFonts.inter(color: secondary))),
@@ -76,7 +76,7 @@ class TournamentDetailScreen extends ConsumerWidget {
           final matches =
               matchesAsync.valueOrNull ?? const <TournamentMatch>[];
           return RefreshIndicator(
-            color: AppColors.orange,
+            color: AppColors.gold,
             onRefresh: () async {
               ref.invalidate(tournamentProvider(id));
               ref.invalidate(tournamentTeamsProvider(id));
@@ -97,8 +97,8 @@ class TournamentDetailScreen extends ConsumerWidget {
                         : DecoratedBox(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(colors: [
-                                AppColors.pink.withValues(alpha: 0.25),
-                                AppColors.orange.withValues(alpha: 0.25),
+                                AppColors.goldDeep.withValues(alpha: 0.25),
+                                AppColors.gold.withValues(alpha: 0.25),
                               ]),
                             ),
                             child: const Center(
@@ -190,7 +190,7 @@ class TournamentDetailScreen extends ConsumerWidget {
           AppColors.tierElite);
     }
     if (t.status == 'pending_approval') {
-      return _infoBox('Waiting for admin approval.', const Color(0xFFFBBF24));
+      return _infoBox('Waiting for admin approval.', AppColors.warning);
     }
 
     if ((t.status == 'approved' || t.status == 'building_teams') && owner) {
@@ -249,11 +249,11 @@ class TournamentDetailScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                AppColors.pink.withValues(alpha: 0.15),
-                AppColors.orange.withValues(alpha: 0.15),
+                AppColors.goldDeep.withValues(alpha: 0.15),
+                AppColors.gold.withValues(alpha: 0.15),
               ]),
               border:
-                  Border.all(color: AppColors.orange.withValues(alpha: 0.4)),
+                  Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -430,10 +430,10 @@ class TournamentDetailScreen extends ConsumerWidget {
     }
     return CircleAvatar(
       radius: 18,
-      backgroundColor: AppColors.orange.withValues(alpha: 0.18),
+      backgroundColor: AppColors.gold.withValues(alpha: 0.18),
       child: Text(name.isEmpty ? '?' : name.substring(0, 1),
           style: GoogleFonts.spaceGrotesk(
-              fontWeight: FontWeight.w800, color: AppColors.orange)),
+              fontWeight: FontWeight.w800, color: AppColors.gold)),
     );
   }
 
@@ -569,7 +569,7 @@ class TournamentDetailScreen extends ConsumerWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient:
-                const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
             borderRadius: BorderRadius.circular(14),
           ),
           child: ElevatedButton(
@@ -594,7 +594,7 @@ class TournamentDetailScreen extends ConsumerWidget {
         height: 50,
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: AppColors.orange),
+            side: const BorderSide(color: AppColors.gold),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
@@ -603,7 +603,7 @@ class TournamentDetailScreen extends ConsumerWidget {
               style: GoogleFonts.spaceGrotesk(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.orange)),
+                  color: AppColors.gold)),
         ),
       );
 }

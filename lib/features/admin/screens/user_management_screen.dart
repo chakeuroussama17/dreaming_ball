@@ -85,7 +85,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.orange),
+                  borderSide: const BorderSide(color: AppColors.gold),
                 ),
               ),
             ),
@@ -200,7 +200,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   }
 
   Widget _rolePill(String role, Color secondary) {
-    final c = role == 'Agent' ? AppColors.pink : AppColors.cyan;
+    final c = role == 'Agent' ? AppColors.goldDeep : AppColors.ice;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -338,7 +338,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                        color: const Color(0xFF22C55E).withValues(alpha: 0.6)),
+                        color: AppColors.success.withValues(alpha: 0.6)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
@@ -349,7 +349,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                   child: Text('Unban User',
                       style: GoogleFonts.spaceGrotesk(
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF22C55E))),
+                          color: AppColors.success)),
                 ),
               ),
             const SizedBox(height: 10),
@@ -358,7 +358,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
               height: 46,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+                  side: BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
@@ -370,7 +370,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 },
                 child: Text('Reset Password',
                     style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.w700, color: AppColors.orange)),
+                        fontWeight: FontWeight.w700, color: AppColors.gold)),
               ),
             ),
           ],
@@ -440,7 +440,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.orange),
+                    borderSide: const BorderSide(color: AppColors.gold),
                   ),
                 ),
               ),

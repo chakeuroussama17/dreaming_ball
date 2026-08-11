@@ -87,7 +87,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
         children: [
           if (!approved)
             _banner(
-              color: AppColors.orange,
+              color: AppColors.gold,
               icon: Icons.lock_outline,
               title: 'Not verified yet',
               body:
@@ -184,7 +184,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
         child: Row(
           children: [
             const Icon(Icons.confirmation_number_outlined,
-                color: AppColors.orange),
+                color: AppColors.gold),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -228,10 +228,10 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [
-          AppColors.pink.withValues(alpha: 0.10),
-          AppColors.orange.withValues(alpha: 0.10),
+          AppColors.goldDeep.withValues(alpha: 0.10),
+          AppColors.gold.withValues(alpha: 0.10),
         ]),
-        border: Border.all(color: AppColors.orange.withValues(alpha: 0.25)),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.25)),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -240,7 +240,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
           Row(
             children: [
               const Icon(Icons.account_balance_wallet_outlined,
-                  size: 16, color: AppColors.orange),
+                  size: 16, color: AppColors.gold),
               const SizedBox(width: 6),
               Text('Your earnings',
                   style: GoogleFonts.inter(
@@ -260,7 +260,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF22C55E))),
+                            color: AppColors.success)),
                     Text('Collected',
                         style: GoogleFonts.inter(
                             fontSize: 12, color: secondary)),
@@ -277,7 +277,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.orange)),
+                            color: AppColors.gold)),
                     Text('Your commission',
                         style: GoogleFonts.inter(
                             fontSize: 12, color: secondary)),
@@ -308,7 +308,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: AppColors.orange),
+          Icon(icon, size: 18, color: AppColors.gold),
           const SizedBox(height: 8),
           Text(value,
               style: GoogleFonts.spaceGrotesk(
@@ -423,7 +423,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: (g.isFull
-                          ? const Color(0xFF22C55E)
+                          ? AppColors.success
                           : const Color(0xFF3B82F6))
                       .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(99),
@@ -433,7 +433,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: g.isFull
-                            ? const Color(0xFF22C55E)
+                            ? AppColors.success
                             : const Color(0xFF3B82F6))),
               ),
             ],
@@ -455,7 +455,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                         height: 6,
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
-                              colors: [AppColors.orange, AppColors.cyan]),
+                              colors: [AppColors.goldLight, AppColors.gold]),
                         ),
                       ),
                     ),
@@ -476,7 +476,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                   style: GoogleFonts.spaceGrotesk(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF22C55E)),
+                      color: AppColors.success),
                 ),
               ),
               // Payments still awaiting the agent's confirmation.
@@ -485,14 +485,14 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: AppColors.orange.withValues(alpha: 0.15),
+                    color: AppColors.gold.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(99),
                   ),
                   child: Text('$pendingCount to confirm',
                       style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.orange)),
+                          color: AppColors.gold)),
                 ),
             ],
           ),
@@ -506,7 +506,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                     onPressed: () => context.pushNamed('game-detail',
                         pathParameters: {'id': g.id}),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.orange),
+                      side: const BorderSide(color: AppColors.gold),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
@@ -514,7 +514,7 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.orange)),
+                            color: AppColors.gold)),
                   ),
                 ),
               ),
@@ -533,13 +533,13 @@ class _AgentDashboardScreenState extends ConsumerState<AgentDashboardScreen> {
                             : g.live
                                 ? const LinearGradient(colors: [
                                     AppColors.tierElite,
-                                    AppColors.pink
+                                    AppColors.goldDeep
                                   ])
                                 : const LinearGradient(colors: [
-                                    AppColors.pink,
-                                    AppColors.orange
+                                    AppColors.goldDeep,
+                                    AppColors.gold
                                   ]),
-                        color: locked ? const Color(0xFF444444) : null,
+                        color: locked ? AppColors.darkTextMuted : null,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ElevatedButton(

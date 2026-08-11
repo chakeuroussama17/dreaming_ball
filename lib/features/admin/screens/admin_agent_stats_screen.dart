@@ -39,7 +39,7 @@ class AdminAgentStatsScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.orange)),
+            child: CircularProgressIndicator(color: AppColors.gold)),
         error: (_, _) => Center(
           child: Text('Could not load agent stats',
               style: GoogleFonts.inter(fontSize: 14, color: secondary)),
@@ -65,11 +65,11 @@ class AdminAgentStatsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      AppColors.pink.withValues(alpha: 0.10),
-                      AppColors.orange.withValues(alpha: 0.10),
+                      AppColors.goldDeep.withValues(alpha: 0.10),
+                      AppColors.gold.withValues(alpha: 0.10),
                     ]),
                     border: Border.all(
-                        color: AppColors.orange.withValues(alpha: 0.25)),
+                        color: AppColors.gold.withValues(alpha: 0.25)),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -155,7 +155,7 @@ class AdminAgentStatsScreen extends ConsumerWidget {
                   style: GoogleFonts.spaceGrotesk(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.orange)),
+                      color: AppColors.gold)),
             ],
           ),
           const SizedBox(height: 4),

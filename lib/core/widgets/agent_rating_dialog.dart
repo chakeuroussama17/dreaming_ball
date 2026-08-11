@@ -94,7 +94,7 @@ class _AgentRatingDialogState extends State<_AgentRatingDialog> {
                     child: Icon(
                       filled ? Icons.star_rounded : Icons.star_outline_rounded,
                       size: 40,
-                      color: filled ? AppColors.orange : secondary,
+                      color: filled ? AppColors.gold : secondary,
                     ),
                   ),
                 );
@@ -110,8 +110,8 @@ class _AgentRatingDialogState extends State<_AgentRatingDialog> {
                   gradient: _rating == 0
                       ? null
                       : const LinearGradient(
-                          colors: [AppColors.pink, AppColors.orange]),
-                  color: _rating == 0 ? const Color(0xFF444444) : null,
+                          colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
+                  color: _rating == 0 ? AppColors.darkTextMuted : null,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: ElevatedButton(

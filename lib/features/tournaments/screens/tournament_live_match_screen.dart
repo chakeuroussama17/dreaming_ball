@@ -140,7 +140,7 @@ class _TournamentLiveMatchScreenState
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: AppColors.orange))
+              child: CircularProgressIndicator(color: AppColors.gold))
           : _match == null
               ? Center(
                   child: Text('Match not found',
@@ -219,9 +219,9 @@ class _TournamentLiveMatchScreenState
                 decoration: BoxDecoration(
                   gradient: (okA && okB)
                       ? const LinearGradient(
-                          colors: [AppColors.pink, AppColors.orange])
+                          colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
                       : null,
-                  color: (okA && okB) ? null : const Color(0xFF444444),
+                  color: (okA && okB) ? null : AppColors.darkTextMuted,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: ElevatedButton(
@@ -284,7 +284,7 @@ class _TournamentLiveMatchScreenState
                           : Icons.circle_outlined,
                       size: 18,
                       color: present.contains(p.playerId)
-                          ? const Color(0xFF22C55E)
+                          ? AppColors.success
                           : secondary),
                   const SizedBox(width: 8),
                   Expanded(
@@ -397,10 +397,10 @@ class _TournamentLiveMatchScreenState
         else
           CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.orange.withValues(alpha: 0.18),
+            backgroundColor: AppColors.gold.withValues(alpha: 0.18),
             child: Text((team?.name ?? '?').substring(0, 1),
                 style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.w800, color: AppColors.orange)),
+                    fontWeight: FontWeight.w800, color: AppColors.gold)),
           ),
         const SizedBox(height: 8),
         ShaderMask(
@@ -426,7 +426,7 @@ class _TournamentLiveMatchScreenState
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient:
-                const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
             borderRadius: BorderRadius.circular(14),
           ),
           child: ElevatedButton(
@@ -552,7 +552,7 @@ class _TournamentLiveMatchScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.verified, size: 48, color: Color(0xFF22C55E)),
+            const Icon(Icons.verified, size: 48, color: AppColors.success),
             const SizedBox(height: 12),
             Text('Full time',
                 style: GoogleFonts.inter(fontSize: 13, color: secondary)),
@@ -569,7 +569,7 @@ class _TournamentLiveMatchScreenState
                   style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.orange)),
+                      color: AppColors.gold)),
             ],
           ],
         ),

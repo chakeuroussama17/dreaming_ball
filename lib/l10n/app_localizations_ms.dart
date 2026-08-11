@@ -61,7 +61,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Piala, peringkat dan hadiah dalam perjalanan. Nantikan — di sinilah skuad anda mengejar kejayaan.';
 
   @override
-  String get welcomeTitle => 'Dreaming Ball';
+  String get welcomeTitle => 'Boundless';
 
   @override
   String get welcomeSubtitle => 'Cari perlawanan, sertai padang, naik ranking.';

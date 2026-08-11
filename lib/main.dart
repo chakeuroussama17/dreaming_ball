@@ -48,7 +48,7 @@ void main() async {
             .overrideWith((ref) => ThemeModeNotifier(initialTheme, scope)),
         localeProvider.overrideWith((ref) => LocaleNotifier(initialLocale)),
       ],
-      child: const DreamingBallApp(),
+      child: const BoundlessApp(),
     ),
   );
 }

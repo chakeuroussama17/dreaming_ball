@@ -61,7 +61,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cups, brackets and prizes are on the way. Stay tuned — this is where your squad goes for glory.';
 
   @override
-  String get welcomeTitle => 'Dreaming Ball';
+  String get welcomeTitle => 'Boundless';
 
   @override
   String get welcomeSubtitle => 'Find games, join the pitch, climb the ranks.';

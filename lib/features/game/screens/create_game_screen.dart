@@ -143,7 +143,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
         action: outOfGames
             ? SnackBarAction(
                 label: 'Plans',
-                textColor: AppColors.orange,
+                textColor: AppColors.gold,
                 onPressed: () => context.pushNamed('agent-plans'),
               )
             : null,
@@ -154,8 +154,6 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Game published! Players can now join.'),
-        backgroundColor: AppColors.orange,
-        behavior: SnackBarBehavior.floating,
       ),
     );
     context.safePop('home');
@@ -433,7 +431,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
       final v = grad
           ? ShaderMask(
               shaderCallback: (b) => const LinearGradient(
-                      colors: [AppColors.pink, AppColors.orange])
+                      colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
                   .createShader(b),
               child: Text(value,
                   style: GoogleFonts.spaceGrotesk(
@@ -463,10 +461,10 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(colors: [
-          AppColors.pink.withValues(alpha: 0.05),
-          AppColors.orange.withValues(alpha: 0.05),
+          AppColors.goldDeep.withValues(alpha: 0.05),
+          AppColors.gold.withValues(alpha: 0.05),
         ]),
-        border: Border.all(color: AppColors.orange.withValues(alpha: 0.25)),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,7 +474,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                   fontSize: 15, fontWeight: FontWeight.w700, color: primary)),
           const SizedBox(height: 8),
           row('Each player pays:', 'RM ${_playerPrice.toStringAsFixed(2)}',
-              color: AppColors.orange),
+              color: AppColors.gold),
           row('Total collected:',
               'RM ${(_cost + _commission).toStringAsFixed(2)}'),
           row('Pitch owner gets:', 'RM ${_cost.toStringAsFixed(2)}'),
@@ -544,9 +542,9 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: enabled
-              ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+              ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
               : null,
-          color: enabled ? null : const Color(0xFF444444),
+          color: enabled ? null : AppColors.darkTextMuted,
         ),
         child: Icon(icon, color: Colors.white, size: 20),
       ),

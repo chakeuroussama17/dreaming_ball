@@ -1,7 +1,7 @@
 ﻿class AppConstants {
   AppConstants._();
 
-  static const String appName = 'Dreaming Ball';
+  static const String appName = 'Boundless';
   static const int defaultSlots = 10;
   static const int maxSlots = 20;
 
