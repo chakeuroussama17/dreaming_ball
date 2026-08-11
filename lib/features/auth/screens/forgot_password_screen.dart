@@ -104,7 +104,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 72,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              gradient: LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+              gradient: LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
             ),
             child: const Icon(Icons.mark_email_read_outlined,
                 color: Colors.white, size: 36),

@@ -64,7 +64,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
-  # Generates the Android/iOS launcher icons from assets/images/logo.png.
+  # Generates the Android/iOS launcher icons from assets/images/newlogo.png.
   # Regenerate after changing the logo: dart run flutter_launcher_icons
   flutter_launcher_icons: ^0.14.1
 
@@ -73,17 +73,18 @@ flutter_launcher_icons:
   android: true
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/images/logo.png"
-  # Android adaptive icon (8.0+): logo on a white background.
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/logo.png"
+  image_path: "assets/images/newlogo.png"
+  # Android adaptive icon (8.0+): the crest on the club navy, so the icon keeps
+  # its own background instead of being punched out onto white.
+  adaptive_icon_background: "#131C2E"
+  adaptive_icon_foreground: "assets/images/newlogo.png"
   min_sdk_android: 21
   # Web: generates web/favicon.png + web/icons/* from the logo (browser tab).
   web:
     generate: true
-    image_path: "assets/images/logo.png"
-    background_color: "#0A0A0F"
-    theme_color: "#0A0A0F"
+    image_path: "assets/images/newlogo.png"
+    background_color: "#0A0F1A"
+    theme_color: "#C9A961"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -109,14 +109,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.gold,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () {
                   Navigator.pop(ctx);
                   context.pushNamed('stats-entry', pathParameters: {'id': widget.id});
                 },
-                child: const Text('Continue', style: TextStyle(color: Colors.white)),
+                child: const Text('Continue', style: TextStyle(color: AppColors.navyDeep)),
               ),
             ],
           );
@@ -163,17 +163,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               margin: const EdgeInsets.fromLTRB(20, 4, 20, 4),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.08),
+                color: AppColors.gold.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.schedule, size: 16, color: AppColors.orange),
+                  const Icon(Icons.schedule, size: 16, color: AppColors.gold),
                   const SizedBox(width: 8),
                   Text('Game starts in $_countdown',
                       style: GoogleFonts.spaceGrotesk(
-                          fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.orange)),
+                          fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.gold)),
                 ],
               ),
             ),
@@ -199,7 +199,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   }),
                   child: Text('Mark All Present',
                       style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600, color: AppColors.orange)),
+                          fontWeight: FontWeight.w600, color: AppColors.gold)),
                 ),
                 TextButton(
                   onPressed: () => setState(() {
@@ -291,9 +291,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: enough
-                  ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+                  ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
                   : null,
-              color: enough ? null : const Color(0xFF444444),
+              color: enough ? null : AppColors.darkTextMuted,
               borderRadius: BorderRadius.circular(14),
             ),
             child: ElevatedButton(
@@ -320,7 +320,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF22C55E),
+            color: AppColors.success,
             borderRadius: BorderRadius.circular(99),
           ),
           child: Row(

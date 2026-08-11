@@ -78,7 +78,7 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: LinearGradient(
-                                colors: [AppColors.pink, AppColors.orange]),
+                                colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                           ),
                           child: const Icon(Icons.add,
                               color: Colors.white, size: 20),
@@ -109,7 +109,7 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
               Expanded(
                 child: async.when(
                   loading: () => const Center(
-                      child: CircularProgressIndicator(color: AppColors.orange)),
+                      child: CircularProgressIndicator(color: AppColors.gold)),
                   error: (_, _) => Center(
                     child: Text('Could not load tournaments',
                         style:
@@ -129,7 +129,7 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
                       return _empty(secondary);
                     }
                     return RefreshIndicator(
-                      color: AppColors.orange,
+                      color: AppColors.gold,
                       onRefresh: () async =>
                           ref.refresh(tournamentsProvider.future),
                       child: ListView.separated(
@@ -214,8 +214,8 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
                   : DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(colors: [
-                          AppColors.pink.withValues(alpha: 0.25),
-                          AppColors.orange.withValues(alpha: 0.25),
+                          AppColors.goldDeep.withValues(alpha: 0.25),
+                          AppColors.gold.withValues(alpha: 0.25),
                         ]),
                       ),
                       child: const Center(

@@ -178,7 +178,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         '📍 ${game.location}\n'
         '💰 $price per player\n'
         '👥 ${game.filledSlots}/${game.totalSlots} joined\n\n'
-        'Join us on Dreaming Ball 👇\n${AppLinks.gameUrl(game.id)}';
+        'Join us on Boundless 👇\n${AppLinks.gameUrl(game.id)}';
     await ShareUtils.shareViaWhatsApp(msg);
   }
 
@@ -335,7 +335,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       _stat(Icons.schedule, 'Kick-off', kickoff, isDark, primary, secondary, border, surface),
                       _stat(Icons.timer_outlined, 'Duration', '60 min', isDark, primary, secondary, border, surface),
                       _stat(Icons.people_outline, 'Players', '$filled / $total', isDark, primary, secondary, border, surface, valueColor: isFull ? AppColors.tierElite : null),
-                      _stat(Icons.payments_outlined, 'Price', 'RM ${price.toStringAsFixed(0)}', isDark, primary, secondary, border, surface, valueColor: AppColors.orange),
+                      _stat(Icons.payments_outlined, 'Price', 'RM ${price.toStringAsFixed(0)}', isDark, primary, secondary, border, surface, valueColor: AppColors.gold),
                     ],
                   ),
                 ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
@@ -348,17 +348,17 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.orange.withValues(alpha: 0.12),
-                        border: Border.all(color: AppColors.orange.withValues(alpha: 0.35)),
+                        color: AppColors.gold.withValues(alpha: 0.12),
+                        border: Border.all(color: AppColors.gold.withValues(alpha: 0.35)),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(children: [
-                        const Icon(Icons.info_outline, color: AppColors.orange, size: 18),
+                        const Icon(Icons.info_outline, color: AppColors.gold, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "This game is full. Join the waitlist and we'll notify you if a slot opens.",
-                            style: GoogleFonts.inter(fontSize: 13, color: AppColors.orange),
+                            style: GoogleFonts.inter(fontSize: 13, color: AppColors.gold),
                           ),
                         ),
                       ]),
@@ -395,7 +395,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                               (agentRating != null && agentRating.count > 0)
                                   ? Row(children: [
                                       const Icon(Icons.star_rounded,
-                                          size: 14, color: Color(0xFFFBBF24)),
+                                          size: 14, color: AppColors.warning),
                                       const SizedBox(width: 3),
                                       Text(
                                           '${agentRating.avg.toStringAsFixed(1)} (${agentRating.count})',
@@ -411,13 +411,13 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppColors.cyan.withValues(alpha: 0.12),
-                            border: Border.all(color: AppColors.cyan.withValues(alpha: 0.3)),
+                            color: AppColors.ice.withValues(alpha: 0.12),
+                            border: Border.all(color: AppColors.ice.withValues(alpha: 0.3)),
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Text('✓  Verified Agent',
                               style: GoogleFonts.inter(
-                                  fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.cyan)),
+                                  fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.ice)),
                         ),
                       ],
                     ),
@@ -439,7 +439,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                     padding: EdgeInsets.all(24),
                     child: Center(
                         child: CircularProgressIndicator(
-                            color: AppColors.orange, strokeWidth: 2.5)),
+                            color: AppColors.gold, strokeWidth: 2.5)),
                   ),
                 )
               else if (_squad.isEmpty)
@@ -505,7 +505,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                                 style: GoogleFonts.inter(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.orange)),
+                                    color: AppColors.gold)),
                           ],
                         ],
                       ),
@@ -519,7 +519,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                     onTap: () {},
                     child: Text('View all $filled players →',
                         style: GoogleFonts.inter(
-                            fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.orange)),
+                            fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.gold)),
                   ),
                 ),
               ),
@@ -567,7 +567,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                     style: GoogleFonts.spaceGrotesk(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.orange)),
+                        color: AppColors.gold)),
                 Text(
                     pendingCount > 0
                         ? '$pendingCount payment${pendingCount == 1 ? '' : 's'} to confirm above'
@@ -583,12 +583,13 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                 onPressed: () => context.pushNamed('live-match',
                     pathParameters: {'id': id}),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orange,
+                    backgroundColor: AppColors.gold,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14))),
                 child: Text('Live Match',
                     style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.w700, color: Colors.white)),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.navyDeep)),
               ),
             ),
         ],
@@ -606,7 +607,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                 style: GoogleFonts.spaceGrotesk(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.orange)),
+                    color: AppColors.gold)),
             Text(isFree ? _t.priceFree : _t.perPlayer,
                 style: GoogleFonts.inter(fontSize: 12, color: secondary)),
           ],
@@ -647,7 +648,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                    colors: [AppColors.pink, AppColors.orange]),
+                    colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: ElevatedButton(
@@ -704,31 +705,31 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: AppColors.cyan.withValues(alpha: 0.15),
+          color: AppColors.ice.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(99),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.check_circle, size: 12, color: AppColors.cyan),
+          const Icon(Icons.check_circle, size: 12, color: AppColors.ice),
           const SizedBox(width: 3),
           Text('Paid',
               style: GoogleFonts.inter(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.cyan)),
+                  color: AppColors.ice)),
         ]),
       );
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.orange.withValues(alpha: 0.15),
+        color: AppColors.gold.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(99),
       ),
       child: Text('Pending',
           style: GoogleFonts.inter(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: AppColors.orange)),
+              color: AppColors.gold)),
     );
   }
 
@@ -743,7 +744,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             width: 18,
             height: 18,
             child: CircularProgressIndicator(
-                strokeWidth: 2.5, color: AppColors.orange),
+                strokeWidth: 2.5, color: AppColors.gold),
           ),
         ),
       );
@@ -753,7 +754,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       children: [
         _actionBtn(Icons.close, AppColors.tierElite, () => _rejectPayment(p)),
         const SizedBox(width: 8),
-        _actionBtn(Icons.check, AppColors.cyan, () => _confirmPayment(p)),
+        _actionBtn(Icons.check, AppColors.ice, () => _confirmPayment(p)),
       ],
     );
   }
@@ -779,7 +780,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         gradient: gradient
-            ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+            ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
             : null,
         color: gradient ? null : Colors.black54,
         borderRadius: BorderRadius.circular(100),
@@ -817,7 +818,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.orange),
+          Icon(icon, size: 18, color: AppColors.gold),
           const SizedBox(width: 8),
           Expanded(
             child: Column(

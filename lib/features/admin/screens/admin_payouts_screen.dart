@@ -40,7 +40,7 @@ class AdminPayoutsScreen extends ConsumerWidget {
       body: async.when(
         loading: () => const Center(
             child: CircularProgressIndicator(
-                color: AppColors.orange, strokeWidth: 2.5)),
+                color: AppColors.gold, strokeWidth: 2.5)),
         error: (_, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -69,7 +69,7 @@ class AdminPayoutsScreen extends ConsumerWidget {
           final owed = toPay.fold<double>(0, (s, r) => s + r.agentPayout);
 
           return RefreshIndicator(
-            color: AppColors.orange,
+            color: AppColors.gold,
             onRefresh: () async => ref.invalidate(adminPayoutsProvider),
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -79,11 +79,11 @@ class AdminPayoutsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      AppColors.pink.withValues(alpha: 0.10),
-                      AppColors.orange.withValues(alpha: 0.10),
+                      AppColors.goldDeep.withValues(alpha: 0.10),
+                      AppColors.gold.withValues(alpha: 0.10),
                     ]),
                     border: Border.all(
-                        color: AppColors.orange.withValues(alpha: 0.25)),
+                        color: AppColors.gold.withValues(alpha: 0.25)),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -100,7 +100,7 @@ class AdminPayoutsScreen extends ConsumerWidget {
                                 style: GoogleFonts.spaceGrotesk(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
-                                    color: AppColors.orange)),
+                                    color: AppColors.gold)),
                           ],
                         ),
                       ),
@@ -196,7 +196,7 @@ class _PayoutCard extends ConsumerWidget {
         color: surface,
         border: Border.all(
             color: highlight
-                ? AppColors.orange.withValues(alpha: 0.4)
+                ? AppColors.gold.withValues(alpha: 0.4)
                 : border),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -231,8 +231,8 @@ class _PayoutCard extends ConsumerWidget {
                       : Icons.hourglass_bottom,
                   size: 16,
                   color: row.allPaid
-                      ? const Color(0xFF22C55E)
-                      : AppColors.orange),
+                      ? AppColors.success
+                      : AppColors.gold),
               const SizedBox(width: 6),
               Text('${row.paidCount}/${row.numPlayers} paid',
                   style: GoogleFonts.inter(
@@ -263,7 +263,7 @@ class _PayoutCard extends ConsumerWidget {
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.orange)),
+                            color: AppColors.gold)),
                     Text('field + commission',
                         style: GoogleFonts.inter(
                             fontSize: 10, color: secondary)),
@@ -281,7 +281,7 @@ class _PayoutCard extends ConsumerWidget {
                       style: GoogleFonts.spaceGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF22C55E))),
+                          color: AppColors.success)),
                 ],
               ),
             ],
@@ -291,7 +291,7 @@ class _PayoutCard extends ConsumerWidget {
           if (row.paidOut)
             Row(
               children: [
-                const Icon(Icons.verified, size: 16, color: Color(0xFF22C55E)),
+                const Icon(Icons.verified, size: 16, color: AppColors.success),
                 const SizedBox(width: 6),
                 Text(
                     row.paidOutAt == null
@@ -300,7 +300,7 @@ class _PayoutCard extends ConsumerWidget {
                     style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF22C55E))),
+                        color: AppColors.success)),
                 const Spacer(),
                 TextButton(
                   onPressed: () => _setPaid(context, ref, false),
@@ -318,9 +318,9 @@ class _PayoutCard extends ConsumerWidget {
                 decoration: BoxDecoration(
                   gradient: row.allPaid
                       ? const LinearGradient(
-                          colors: [AppColors.pink, AppColors.orange])
+                          colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
                       : null,
-                  color: row.allPaid ? null : const Color(0xFF444444),
+                  color: row.allPaid ? null : AppColors.darkTextMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ElevatedButton(
@@ -353,7 +353,7 @@ class _PayoutCard extends ConsumerWidget {
   Widget _statusChip() {
     final (label, color) = switch (row.status) {
       'live' => ('Live', AppColors.tierElite),
-      'completed' => ('Finished', const Color(0xFF22C55E)),
+      'completed' => ('Finished', AppColors.success),
       _ => ('Scheduled', const Color(0xFF3B82F6)),
     };
     return Container(
@@ -393,7 +393,7 @@ class _PayoutCard extends ConsumerWidget {
               const SizedBox(height: 4),
               Text('RM ${row.agentPayout.toStringAsFixed(2)}',
                   style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.orange)),
+                      fontSize: 13, color: AppColors.gold)),
               const SizedBox(height: 16),
               for (final m in const [
                 ('TNG eWallet', 'tng'),
@@ -408,7 +408,7 @@ class _PayoutCard extends ConsumerWidget {
                           fontWeight: FontWeight.w600,
                           color: primary)),
                   trailing: const Icon(Icons.chevron_right,
-                      color: AppColors.orange),
+                      color: AppColors.gold),
                   onTap: () {
                     Navigator.pop(ctx);
                     _setPaid(context, ref, true, method: m.$2);
@@ -429,7 +429,7 @@ class _PayoutCard extends ConsumerWidget {
       ref.invalidate(adminPayoutsProvider);
       if (context.mounted && paid) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: const Color(0xFF22C55E),
+            backgroundColor: AppColors.success,
             content: Text('${row.agentName} marked as paid out')));
       }
     } catch (_) {

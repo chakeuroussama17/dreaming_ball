@@ -185,13 +185,13 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.orange.withValues(alpha: 0.08),
+                    color: AppColors.gold.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
                       const Icon(Icons.info_outline,
-                          size: 18, color: AppColors.orange),
+                          size: 18, color: AppColors.gold),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -199,7 +199,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           '${game.contact.isNotEmpty ? ' on ${game.contact}' : ''} '
                           'to arrange payment.',
                           style: GoogleFonts.inter(
-                              fontSize: 12, color: AppColors.orange),
+                              fontSize: 12, color: AppColors.gold),
                         ),
                       ),
                     ],
@@ -210,14 +210,14 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.cyan.withValues(alpha: 0.08),
+                  color: AppColors.ice.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Icon(Icons.lock_clock_outlined,
-                        size: 18, color: AppColors.cyan),
+                        size: 18, color: AppColors.ice),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -225,7 +225,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         'agent confirms once your payment arrives — you\'ll get '
                         'a notification when you\'re officially in.',
                         style: GoogleFonts.inter(
-                            fontSize: 12, height: 1.5, color: AppColors.cyan),
+                            fontSize: 12, height: 1.5, color: AppColors.ice),
                       ),
                     ),
                   ],
@@ -261,10 +261,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             height: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.orange.withValues(alpha: 0.12),
+              color: AppColors.gold.withValues(alpha: 0.12),
             ),
             child: const Icon(Icons.hourglass_top,
-                color: AppColors.orange, size: 36),
+                color: AppColors.gold, size: 36),
           ).animate().scale(
               duration: 400.ms,
               curve: Curves.elasticOut,
@@ -318,7 +318,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               gradient:
-                  LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                  LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
             ),
             child: const Icon(Icons.check, color: Colors.white, size: 38),
           ).animate().scale(
@@ -394,7 +394,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient:
-              const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+              const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
           borderRadius: BorderRadius.circular(14),
         ),
         child: ElevatedButton(

@@ -19,7 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _slides = [
     _SlideData(
       imagePath: 'assets/images/slide 1.png',
-      glowColor: Color(0x1FFF3CAC),
+      glowColor: Color(0x33C9A961),
       heading1: "The dream didn't end",
       heading2: 'on the street.',
       subtitle: 'Find real games near you. Join in seconds.\nThe pitch is still yours.',
@@ -27,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _SlideData(
       imagePath: 'assets/images/slide 2.png',
-      glowColor: Color(0x1FF97316),
+      glowColor: Color(0x33F0D89B),
       heading1: 'Every goal you score',
       heading2: 'means something.',
       subtitle: 'Earn XP. Climb from Bronze to Legend.\nYour stats. Your name. Your legacy.',
@@ -35,7 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _SlideData(
       imagePath: 'assets/images/slide 3.png',
-      glowColor: Color(0x1A22D3EE),
+      glowColor: Color(0x2E8FB9E8),
       heading1: 'Run the game.',
       heading2: 'Organize. Referee. Earn.',
       subtitle: 'Agents create games, manage players\nand get paid automatically.',

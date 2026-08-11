@@ -71,7 +71,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                               color: primary)),
-                      Text('Dreaming Ball',
+                      Text('Boundless',
                           style: GoogleFonts.inter(
                               fontSize: 13, color: secondary)),
                     ],
@@ -112,7 +112,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(s.$3, size: 20, color: AppColors.orange),
+                            Icon(s.$3, size: 20, color: AppColors.gold),
                             Text(s.$2,
                                 style: GoogleFonts.spaceGrotesk(
                                     fontSize: 22,
@@ -212,10 +212,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.orange.withValues(alpha: 0.12),
+                  color: AppColors.gold.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: AppColors.orange, size: 22),
+                child: Icon(icon, color: AppColors.gold, size: 22),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -241,7 +241,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                        colors: [AppColors.pink, AppColors.orange]),
+                        colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.all(Radius.circular(99)),
                   ),

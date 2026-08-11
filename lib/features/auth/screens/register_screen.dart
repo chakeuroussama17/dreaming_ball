@@ -326,7 +326,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _heading('Create Account', isDark),
-            _subheading('Join the Dreaming Ball community'),
+            _subheading('Join the Boundless community'),
             const SizedBox(height: 28),
 
             CustomInput(
@@ -444,7 +444,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   title: 'Player',
                   desc: 'Join games & rank up',
                   isSelected: _role == 'player',
-                  accentColor: AppColors.orange,
+                  accentColor: AppColors.gold,
                   onTap: () => setState(() => _role = 'player'),
                 ),
               ),
@@ -455,7 +455,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   title: 'Agent',
                   desc: 'Organize & earn',
                   isSelected: _role == 'agent',
-                  accentColor: AppColors.pink,
+                  accentColor: AppColors.goldDeep,
                   onTap: () => setState(() => _role = 'agent'),
                 ),
               ),
@@ -577,7 +577,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.orange.withValues(alpha: 0.08),
+              color: AppColors.gold.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -588,7 +588,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   child: Text(
                     'Everyone starts at Beginner. Play games to earn XP and climb to Bronze, Silver, Gold and beyond.',
                     style: GoogleFonts.inter(
-                        fontSize: 12, height: 1.5, color: AppColors.orange),
+                        fontSize: 12, height: 1.5, color: AppColors.gold),
                   ),
                 ),
               ],
@@ -898,7 +898,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.orange),
+          borderSide: const BorderSide(color: AppColors.gold),
         ),
       ),
       hint: Text(hint,

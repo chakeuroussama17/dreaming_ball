@@ -59,6 +59,11 @@ extension TierExtension on PlayerTier {
   }
 }
 
+/// A tier shown as a struck metal pill.
+///
+/// The fill is a tint of the tier colour rather than the raw metal, so the
+/// label stays legible; the depth comes from the bevelled rim (bright top,
+/// dark bottom), a coloured glow, and a sheen across the top half.
 class TierBadge extends StatelessWidget {
   final PlayerTier tier;
 
@@ -68,19 +73,70 @@ class TierBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = tier.color;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: c.withValues(alpha: 0.15),
-        border: Border.all(color: c.withValues(alpha: 0.25)),
         borderRadius: BorderRadius.circular(100),
-      ),
-      child: Text(
-        '${tier.emoji} ${tier.label}',
-        style: GoogleFonts.spaceGrotesk(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: c,
+        gradient: LinearGradient(
+          colors: [
+            c.withValues(alpha: 0.28),
+            c.withValues(alpha: 0.12),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        border: Border.all(color: c.withValues(alpha: 0.45)),
+        boxShadow: [
+          BoxShadow(
+            color: c.withValues(alpha: 0.30),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // Sheen across the top half of the pill.
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: FractionallySizedBox(
+                  heightFactor: 0.5,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.22),
+                          Colors.white.withValues(alpha: 0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            child: Text(
+              '${tier.emoji} ${tier.label}',
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: c,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.45),
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

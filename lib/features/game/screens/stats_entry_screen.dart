@@ -95,14 +95,14 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.orange,
+                backgroundColor: AppColors.gold,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () {
                 Navigator.pop(ctx);
                 _finalize();
               },
-              child: const Text('Submit', style: TextStyle(color: Colors.white)),
+              child: const Text('Submit', style: TextStyle(color: AppColors.navyDeep)),
             ),
           ],
         ),
@@ -160,18 +160,18 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.orange.withValues(alpha: 0.08),
+              color: AppColors.gold.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.schedule, size: 16, color: AppColors.orange),
+                const Icon(Icons.schedule, size: 16, color: AppColors.gold),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Stats must be entered within 3 hours of game end. Players can dispute during this window.',
-                    style: GoogleFonts.inter(fontSize: 12, height: 1.4, color: AppColors.orange),
+                    style: GoogleFonts.inter(fontSize: 12, height: 1.4, color: AppColors.gold),
                   ),
                 ),
               ],
@@ -192,8 +192,8 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
             ? Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withValues(alpha: 0.1),
-                  border: Border.all(color: const Color(0xFF22C55E).withValues(alpha: 0.3)),
+                  color: AppColors.success.withValues(alpha: 0.1),
+                  border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Column(
@@ -201,13 +201,13 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 18),
+                        const Icon(Icons.check_circle, color: AppColors.success, size: 18),
                         const SizedBox(width: 8),
                         Text('Stats submitted!',
                             style: GoogleFonts.spaceGrotesk(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF22C55E))),
+                                color: AppColors.success)),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -216,7 +216,7 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
                     Text(
                       'Window closes at $_closesAt · ${_remaining.inHours}h ${_remaining.inMinutes % 60}m left',
                       style: GoogleFonts.inter(
-                          fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.orange),
+                          fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gold),
                     ),
                   ],
                 ),
@@ -226,7 +226,7 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
                 height: 52,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                    gradient: const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: ElevatedButton(
@@ -300,7 +300,7 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
                   padding: const EdgeInsets.only(right: 8),
                   child: Icon(filled ? Icons.star : Icons.star_border,
                       size: 28,
-                      color: filled ? AppColors.orange : secondary.withValues(alpha: 0.5)),
+                      color: filled ? AppColors.gold : secondary.withValues(alpha: 0.5)),
                 ),
               );
             }),
@@ -322,14 +322,14 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.orange),
+                borderSide: const BorderSide(color: AppColors.gold),
               ),
             ),
           ),
           const SizedBox(height: 8),
           Text('Est. XP: +${p.estXp}',
               style: GoogleFonts.inter(
-                  fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.orange)),
+                  fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.gold)),
         ],
       ),
     );
@@ -362,9 +362,9 @@ class _StatsEntryScreenState extends State<StatsEntryScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: enabled
-              ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+              ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
               : null,
-          color: enabled ? null : const Color(0xFF444444),
+          color: enabled ? null : AppColors.darkTextMuted,
         ),
         child: Icon(icon, color: Colors.white, size: 18),
       ),

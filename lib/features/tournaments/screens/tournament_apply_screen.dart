@@ -333,9 +333,9 @@ class _TournamentApplyScreenState extends ConsumerState<TournamentApplyScreen> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.orange.withValues(alpha: 0.08) : surface,
+          color: selected ? AppColors.gold.withValues(alpha: 0.08) : surface,
           border: Border.all(
-              color: selected ? AppColors.orange : border,
+              color: selected ? AppColors.gold : border,
               width: selected ? 1.5 : 1),
           borderRadius: BorderRadius.circular(14),
         ),
@@ -346,7 +346,7 @@ class _TournamentApplyScreenState extends ConsumerState<TournamentApplyScreen> {
                 style: GoogleFonts.spaceGrotesk(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: selected ? AppColors.orange : primary)),
+                    color: selected ? AppColors.gold : primary)),
             const SizedBox(height: 6),
             Text(desc,
                 style: GoogleFonts.inter(
@@ -366,9 +366,9 @@ class _TournamentApplyScreenState extends ConsumerState<TournamentApplyScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: enabled
-              ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+              ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
               : null,
-          color: enabled ? null : const Color(0xFF444444),
+          color: enabled ? null : AppColors.darkTextMuted,
         ),
         child: Icon(icon, color: Colors.white, size: 20),
       ),

@@ -119,8 +119,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Profile updated!'),
-        backgroundColor: AppColors.orange,
-        behavior: SnackBarBehavior.floating,
       ),
     );
     context.safePop('profile');
@@ -220,7 +218,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: AppColors.orange,
+                color: AppColors.gold,
               ),
             ),
           ),
@@ -274,7 +272,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             height: 28,
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [AppColors.pink, AppColors.orange],
+                                colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
                               ),
                               shape: BoxShape.circle,
                               border: Border.all(color: bg, width: 2),
@@ -294,7 +292,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.orange,
+                        color: AppColors.gold,
                       ),
                     ),
                   ),
@@ -401,18 +399,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     duration: const Duration(milliseconds: 200),
                     decoration: BoxDecoration(
                       color: active
-                          ? AppColors.orange.withValues(alpha: 0.1)
+                          ? AppColors.gold.withValues(alpha: 0.1)
                           : surface,
                       gradient: active
                           ? LinearGradient(
                               colors: [
-                                AppColors.pink.withValues(alpha: 0.12),
-                                AppColors.orange.withValues(alpha: 0.12),
+                                AppColors.goldDeep.withValues(alpha: 0.12),
+                                AppColors.gold.withValues(alpha: 0.12),
                               ],
                             )
                           : null,
                       border: Border.all(
-                        color: active ? AppColors.orange : border,
+                        color: active ? AppColors.gold : border,
                         width: active ? 1.5 : 1,
                       ),
                       borderRadius: BorderRadius.circular(14),
@@ -427,7 +425,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: active ? AppColors.orange : primary,
+                            color: active ? AppColors.gold : primary,
                           ),
                         ),
                       ],

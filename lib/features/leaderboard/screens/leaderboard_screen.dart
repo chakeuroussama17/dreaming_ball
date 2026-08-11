@@ -105,7 +105,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               child: asyncEntries.when(
                 loading: () => const Center(
                     child: CircularProgressIndicator(
-                        color: AppColors.orange, strokeWidth: 2.5)),
+                        color: AppColors.gold, strokeWidth: 2.5)),
                 error: (_, _) => Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -117,14 +117,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                       OutlinedButton(
                         onPressed: () => ref.invalidate(leaderboardProvider),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.orange),
+                          side: const BorderSide(color: AppColors.gold),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                         ),
                         child: Text('Retry',
                             style: GoogleFonts.spaceGrotesk(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.orange)),
+                                color: AppColors.gold)),
                       ),
                     ],
                   ),
@@ -396,7 +396,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [AppColors.pink, AppColors.orange],
+                                colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
                               ),
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -475,7 +475,7 @@ class _Podium extends StatelessWidget {
               avatarRadius: 32,
               blockHeight: 70,
               blockGradient: const LinearGradient(
-                colors: [AppColors.pink, AppColors.orange],
+                colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
               ),
               showCrown: true,
             ),
@@ -548,7 +548,7 @@ class _PodiumPlayer extends StatelessWidget {
           style: GoogleFonts.spaceGrotesk(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: AppColors.orange,
+            color: AppColors.gold,
           ),
         ),
         const SizedBox(height: 8),
@@ -595,9 +595,9 @@ class _LeaderRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: highlight
           ? BoxDecoration(
-              color: AppColors.orange.withValues(alpha: 0.08),
+              color: AppColors.gold.withValues(alpha: 0.08),
               border: const Border(
-                left: BorderSide(color: AppColors.orange, width: 3),
+                left: BorderSide(color: AppColors.gold, width: 3),
               ),
               borderRadius: BorderRadius.circular(10),
             )
@@ -647,7 +647,7 @@ class _LeaderRow extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.orange,
+                          color: AppColors.gold,
                         ),
                       ),
                     ],
@@ -682,7 +682,7 @@ class _LeaderRow extends StatelessWidget {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: AppColors.orange,
+              color: AppColors.gold,
             ),
           ),
         ],
@@ -716,8 +716,8 @@ class _PinnedYouRow extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.orange.withValues(alpha: 0.06),
-        border: Border.all(color: AppColors.orange.withValues(alpha: 0.2)),
+        color: AppColors.gold.withValues(alpha: 0.06),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -732,7 +732,7 @@ class _PinnedYouRow extends StatelessWidget {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.orange,
+                    color: AppColors.gold,
                   ),
                 ),
               ),
@@ -764,7 +764,7 @@ class _PinnedYouRow extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.orange,
+                        color: AppColors.gold,
                       ),
                     ),
                   ],
@@ -775,7 +775,7 @@ class _PinnedYouRow extends StatelessWidget {
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.orange,
+                  color: AppColors.gold,
                 ),
               ),
             ],

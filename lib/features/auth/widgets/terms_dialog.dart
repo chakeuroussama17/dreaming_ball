@@ -100,7 +100,7 @@ class _TermsDialogState extends State<_TermsDialog> {
                     children: [
                       Checkbox(
                         value: _checked,
-                        activeColor: AppColors.orange,
+                        activeColor: AppColors.gold,
                         onChanged: (v) =>
                             setState(() => _checked = v ?? false),
                       ),

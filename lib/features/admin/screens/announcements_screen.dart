@@ -37,7 +37,7 @@ class AnnouncementsScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: AppColors.orange),
+            icon: const Icon(Icons.add, color: AppColors.gold),
             onPressed: () => _editSheet(context, ref, null, primary, secondary,
                 border, surface),
           ),
@@ -119,7 +119,7 @@ class AnnouncementsScreen extends ConsumerWidget {
                       ),
                       Switch(
                         value: a.isActive,
-                        activeThumbColor: AppColors.orange,
+                        activeThumbColor: AppColors.gold,
                         onChanged: (_) async {
                           await ref
                               .read(announcementsProvider.notifier)
@@ -307,7 +307,7 @@ class AnnouncementsScreen extends ConsumerWidget {
                   const Spacer(),
                   Switch(
                     value: active,
-                    activeThumbColor: AppColors.orange,
+                    activeThumbColor: AppColors.gold,
                     onChanged: (v) => setSheet(() => active = v),
                   ),
                 ],
@@ -319,7 +319,7 @@ class AnnouncementsScreen extends ConsumerWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                        colors: [AppColors.pink, AppColors.orange]),
+                        colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: ElevatedButton(
@@ -361,7 +361,7 @@ class AnnouncementsScreen extends ConsumerWidget {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           backgroundColor:
-                              ok ? AppColors.orange : AppColors.tierElite,
+                              ok ? AppColors.gold : AppColors.tierElite,
                           content: Text(ok
                               ? 'Announcement published!'
                               : 'Could not save — check your connection')));
@@ -398,7 +398,7 @@ class AnnouncementsScreen extends ConsumerWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.orange),
+          borderSide: const BorderSide(color: AppColors.gold),
         ),
       ),
     );

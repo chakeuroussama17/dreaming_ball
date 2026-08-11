@@ -50,7 +50,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
       body: async.when(
         loading: () => const Center(
             child: CircularProgressIndicator(
-                color: AppColors.orange, strokeWidth: 2.5)),
+                color: AppColors.gold, strokeWidth: 2.5)),
         error: (_, _) => Center(
           child: Text("Couldn't load this game",
               style: GoogleFonts.inter(fontSize: 13, color: secondary)),
@@ -97,11 +97,11 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
-                  AppColors.pink.withValues(alpha: 0.08),
-                  AppColors.orange.withValues(alpha: 0.08),
+                  AppColors.goldDeep.withValues(alpha: 0.08),
+                  AppColors.gold.withValues(alpha: 0.08),
                 ]),
                 border:
-                    Border.all(color: AppColors.orange.withValues(alpha: 0.25)),
+                    Border.all(color: AppColors.gold.withValues(alpha: 0.25)),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -137,7 +137,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
                                 style: GoogleFonts.spaceGrotesk(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
-                                    color: AppColors.orange)),
+                                    color: AppColors.gold)),
                             Text(
                                 'field RM ${d.fieldCost.toStringAsFixed(2)} + commission RM ${d.commission.toStringAsFixed(2)}',
                                 style: GoogleFonts.inter(
@@ -151,13 +151,13 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
                   if (d.paidOut)
                     Row(children: [
                       const Icon(Icons.verified,
-                          size: 18, color: Color(0xFF22C55E)),
+                          size: 18, color: AppColors.success),
                       const SizedBox(width: 6),
                       Text('Paid out',
                           style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF22C55E))),
+                              color: AppColors.success)),
                     ])
                   else
                     SizedBox(
@@ -167,9 +167,9 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           gradient: d.allPaid
                               ? const LinearGradient(
-                                  colors: [AppColors.pink, AppColors.orange])
+                                  colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
                               : null,
-                          color: d.allPaid ? null : const Color(0xFF444444),
+                          color: d.allPaid ? null : AppColors.darkTextMuted,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ElevatedButton(
@@ -275,7 +275,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('$label copied')));
               },
-              child: Icon(Icons.copy, size: 16, color: AppColors.orange),
+              child: Icon(Icons.copy, size: 16, color: AppColors.gold),
             ),
         ],
       ),
@@ -315,7 +315,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: (p.paid ? const Color(0xFF22C55E) : AppColors.orange)
+              color: (p.paid ? AppColors.success : AppColors.gold)
                   .withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(99),
             ),
@@ -324,8 +324,8 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: p.paid
-                        ? const Color(0xFF22C55E)
-                        : AppColors.orange)),
+                        ? AppColors.success
+                        : AppColors.gold)),
           ),
         ],
       ),
@@ -335,7 +335,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
   Widget _statusChip(String status) {
     final (label, color) = switch (status) {
       'live' => ('Live', AppColors.tierElite),
-      'completed' => ('Finished', const Color(0xFF22C55E)),
+      'completed' => ('Finished', AppColors.success),
       _ => ('Scheduled', const Color(0xFF3B82F6)),
     };
     return Container(
@@ -386,7 +386,7 @@ class AdminPayoutDetailScreen extends ConsumerWidget {
                           fontWeight: FontWeight.w600,
                           color: primary)),
                   trailing:
-                      const Icon(Icons.chevron_right, color: AppColors.orange),
+                      const Icon(Icons.chevron_right, color: AppColors.gold),
                   onTap: () async {
                     Navigator.pop(ctx);
                     try {

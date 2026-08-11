@@ -42,10 +42,10 @@ extension BadgeTypeX on BadgeType {
   String get dbValue => name;
 
   List<Color> get gradient => switch (this) {
-        BadgeType.tournament => const [AppColors.pink, AppColors.orange],
-        BadgeType.promo => const [AppColors.orange, Color(0xFFFBBF24)],
-        BadgeType.news => const [Color(0xFF06B6D4), AppColors.cyan],
-        BadgeType.update => const [Color(0xFF8B5CF6), AppColors.pink],
+        BadgeType.tournament => const [AppColors.goldActionStart, AppColors.goldActionEnd],
+        BadgeType.promo => const [AppColors.gold, AppColors.goldLight],
+        BadgeType.news => const [Color(0xFF4A7BA7), AppColors.ice],
+        BadgeType.update => const [Color(0xFF5A6780), Color(0xFF8B97AC)],
       };
 }
 
@@ -206,10 +206,10 @@ extension AdminAgentStatusX on AdminAgentStatus {
       };
 
   Color get color => switch (this) {
-        AdminAgentStatus.pending => const Color(0xFFFBBF24),
-        AdminAgentStatus.approved => const Color(0xFF22C55E),
+        AdminAgentStatus.pending => AppColors.warning,
+        AdminAgentStatus.approved => AppColors.success,
         AdminAgentStatus.rejected => AppColors.tierElite,
-        AdminAgentStatus.suspended => AppColors.orange,
+        AdminAgentStatus.suspended => AppColors.gold,
       };
 }
 

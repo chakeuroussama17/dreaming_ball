@@ -61,7 +61,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'カップ戦、トーナメント表、賞品が登場予定。お楽しみに——ここはあなたのチームが栄光をつかむ場所です。';
 
   @override
-  String get welcomeTitle => 'Dreaming Ball';
+  String get welcomeTitle => 'Boundless';
 
   @override
   String get welcomeSubtitle => '試合を見つけて、ピッチに参加し、ランクを上げよう。';

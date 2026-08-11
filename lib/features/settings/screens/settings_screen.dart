@@ -82,7 +82,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           _sectionLabel('About', secondary),
           const SizedBox(height: 10),
-          _tile(Icons.info_outline, 'Dreaming Ball v1.0.0', primary, secondary,
+          _tile(Icons.info_outline, 'Boundless v1.0.0', primary, secondary,
               border, surface, null),
 
           const SizedBox(height: 24),
@@ -158,7 +158,7 @@ class SettingsScreen extends ConsumerWidget {
                 title: Text(_langName(l, loc.languageCode),
                     style: GoogleFonts.inter(fontSize: 15, color: primary)),
                 trailing: loc.languageCode == current
-                    ? const Icon(Icons.check, color: AppColors.orange)
+                    ? const Icon(Icons.check, color: AppColors.gold)
                     : null,
                 onTap: () {
                   ref.read(localeProvider.notifier).set(loc);
@@ -215,7 +215,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: AppColors.orange),
+              Icon(icon, size: 20, color: AppColors.gold),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(label,

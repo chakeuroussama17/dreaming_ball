@@ -60,7 +60,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tournamentsBlurb => '杯赛、对阵和奖品即将上线。敬请期待——这里是你的队伍争夺荣耀的舞台。';
 
   @override
-  String get welcomeTitle => 'Dreaming Ball';
+  String get welcomeTitle => 'Boundless';
 
   @override
   String get welcomeSubtitle => '寻找比赛，加入球场，提升排名。';

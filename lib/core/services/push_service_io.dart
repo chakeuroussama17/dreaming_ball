@@ -18,7 +18,7 @@ Future<void> _bgHandler(RemoteMessage message) async {
 final _fln = FlutterLocalNotificationsPlugin();
 const _channel = AndroidNotificationChannel(
   'dreaming_ball_default',
-  'Dreaming Ball',
+  'Boundless',
   description: 'Game reminders, payments and updates',
   importance: Importance.high,
 );

@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
           message: {
             token,
             notification: {
-              title: note.title ?? "Dreaming Ball",
+              title: note.title ?? "Boundless",
               body: note.body ?? "",
             },
             data: { type: note.type ?? "system" },

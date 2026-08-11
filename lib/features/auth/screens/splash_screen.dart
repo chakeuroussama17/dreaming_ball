@@ -62,66 +62,97 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBg,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Radial glow + logo placeholder
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 220,
-                  height: 220,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [Color(0x1FFF3CAC), Colors.transparent],
+      body: DecoratedBox(
+        // Navy vignette so the crest sits in a pool of light rather than on a
+        // flat black field.
+        decoration: const BoxDecoration(gradient: AppColors.backdropGlow),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Gold halo + the club crest
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 240,
+                    height: 240,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.gold.withValues(alpha: 0.22),
+                          Colors.transparent,
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.gold.withValues(alpha: 0.30),
+                          blurRadius: 32,
+                          offset: const Offset(0, 12),
+                        ),
+                        const BoxShadow(
+                          color: Color(0x99000000),
+                          blurRadius: 18,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Image.asset(
+                        'assets/images/newlogo.png',
+                        width: 132,
+                        height: 132,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ],
+              ).animate().fadeIn(duration: 600.ms).scale(
+                    begin: const Offset(0.88, 0.88),
+                    end: const Offset(1, 1),
+                    duration: 700.ms,
+                    curve: Curves.easeOutBack,
+                  ),
+
+              const SizedBox(height: 28),
+
+              // "Boundless" — struck in gold foil
+              ShaderMask(
+                shaderCallback: (bounds) =>
+                    AppColors.brandGradient.createShader(bounds),
+                child: Text(
+                  'Boundless',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 1,
                   ),
                 ),
-              ],
-            ).animate().fadeIn(duration: 600.ms),
+              )
+                  .animate()
+                  .fadeIn(delay: 400.ms, duration: 500.ms)
+                  .slideY(begin: 0.3, end: 0, delay: 400.ms, duration: 500.ms),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 10),
 
-            // "Dreaming Ball" — gradient text
-            ShaderMask(
-              shaderCallback: (bounds) =>
-                  AppColors.brandGradient.createShader(bounds),
-              child: Text(
-                'Dreaming Ball',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
+              Text(
+                'Chase Yours.',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: AppColors.darkTextSecondary,
+                  letterSpacing: 2.5,
                 ),
-              ),
-            )
-                .animate()
-                .fadeIn(delay: 400.ms, duration: 500.ms)
-                .slideY(begin: 0.3, end: 0, delay: 400.ms, duration: 500.ms),
-
-            const SizedBox(height: 8),
-
-            Text(
-              'Chase Yours.',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: const Color(0xFF444444),
-                letterSpacing: 0.5,
-              ),
-            ).animate().fadeIn(delay: 700.ms, duration: 400.ms),
-          ],
+              ).animate().fadeIn(delay: 700.ms, duration: 400.ms),
+            ],
+          ),
         ),
       ),
     );

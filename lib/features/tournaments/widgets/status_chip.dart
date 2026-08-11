@@ -12,7 +12,7 @@ class TournamentStatusChip extends StatelessWidget {
   ({String label, Color color, bool pulse}) get _style => switch (status) {
         'pending_approval' => (
             label: 'Pending Approval',
-            color: const Color(0xFFFBBF24),
+            color: AppColors.warning,
             pulse: false
           ),
         'approved' => (
@@ -27,14 +27,14 @@ class TournamentStatusChip extends StatelessWidget {
           ),
         'bracket_generated' => (
             label: 'Bracket Ready',
-            color: AppColors.orange,
+            color: AppColors.gold,
             pulse: false
           ),
         'in_progress' =>
           (label: 'LIVE', color: AppColors.tierElite, pulse: true),
         'completed' => (
             label: 'Completed',
-            color: const Color(0xFF22C55E),
+            color: AppColors.success,
             pulse: false
           ),
         'rejected' => (

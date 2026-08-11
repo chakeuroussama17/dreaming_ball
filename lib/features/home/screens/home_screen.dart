@@ -144,13 +144,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           OutlinedButton(
             onPressed: () => ref.read(gamesProvider.notifier).load(),
             style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: AppColors.orange),
+              side: const BorderSide(color: AppColors.gold),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
             child: Text('Retry',
                 style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.w700, color: AppColors.orange)),
+                    fontWeight: FontWeight.w700, color: AppColors.gold)),
           ),
         ],
       ),
@@ -180,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(pending ? Icons.hourglass_top : Icons.lock_outline,
-                size: 44, color: AppColors.orange),
+                size: 44, color: AppColors.gold),
             const SizedBox(height: 14),
             Text(
               pending ? 'Verification under review' : 'Verify to create games',
@@ -203,7 +203,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                        colors: [AppColors.pink, AppColors.orange]),
+                        colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: ElevatedButton(
@@ -298,7 +298,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: bg,
       body: SafeArea(
         child: RefreshIndicator(
-          color: AppColors.orange,
+          color: AppColors.gold,
           onRefresh: () async {
             ref.invalidate(announcementsRemoteProvider);
             ref.invalidate(topPlayersProvider);
@@ -325,7 +325,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: ShaderMask(
                         shaderCallback: (b) => AppColors.brandGradient.createShader(b),
                         child: Text(
-                          'Dreaming Ball',
+                          'Boundless',
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
@@ -350,7 +350,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             width: 8,
                             height: 8,
                             decoration: const BoxDecoration(
-                              color: AppColors.orange,
+                              color: AppColors.gold,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -415,9 +415,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 color: hasLive
                                     ? AppColors.tierElite
                                     : hasUpcomingMine
-                                        ? AppColors.orange
+                                        ? AppColors.gold
                                         // Finished — review window open
-                                        : const Color(0xFF22C55E),
+                                        : AppColors.success,
                                 shape: BoxShape.circle),
                           )
                               .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -441,12 +441,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ...myLiveGames.map((g) {
                         // red = live, orange = pre-match (agent), green =
                         // finished & review window open (3h to comment/fix).
-                        const green = Color(0xFF22C55E);
+                        const green = AppColors.success;
                         final accent = g.live
                             ? AppColors.tierElite
                             : g.ended
                                 ? green
-                                : AppColors.orange;
+                                : AppColors.gold;
                         final label = g.live
                             ? ((isAgent && g.mine)
                                 ? l.manageLive
@@ -504,16 +504,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         colors: g.live
                                             ? const [
                                                 AppColors.tierElite,
-                                                AppColors.pink
+                                                AppColors.goldDeep
                                               ]
                                             : g.ended
                                                 ? const [
-                                                    Color(0xFF22C55E),
-                                                    AppColors.cyan
+                                                    AppColors.success,
+                                                    AppColors.ice
                                                   ]
                                                 : const [
-                                                    AppColors.pink,
-                                                    AppColors.orange
+                                                    AppColors.goldDeep,
+                                                    AppColors.gold
                                                   ]),
                                     borderRadius: BorderRadius.circular(99),
                                   ),
@@ -582,7 +582,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Row(
                     children: [
                       const Icon(Icons.location_on,
-                          size: 18, color: AppColors.orange),
+                          size: 18, color: AppColors.gold),
                       const SizedBox(width: 6),
                       Text(
                         l.nearYou,
@@ -650,7 +650,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.orange,
+                        color: AppColors.gold,
                       ),
                     ),
                   ],
@@ -724,7 +724,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.orange,
+                          color: AppColors.gold,
                         ),
                       ),
                     ),
@@ -792,8 +792,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   gradient: canCreate
                       ? AppColors.brandGradient
                       : LinearGradient(colors: [
-                          AppColors.pink.withValues(alpha: 0.4),
-                          AppColors.orange.withValues(alpha: 0.4),
+                          AppColors.goldDeep.withValues(alpha: 0.4),
+                          AppColors.gold.withValues(alpha: 0.4),
                         ]),
                 ),
                 child: FloatingActionButton(
@@ -1035,7 +1035,7 @@ class _HomeGameCard extends StatelessWidget {
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [AppColors.pink, AppColors.orange],
+                            colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
                           ),
                           borderRadius: BorderRadius.circular(100),
                         ),
@@ -1087,7 +1087,7 @@ class _HomeGameCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.star_rounded,
-                              size: 12, color: Color(0xFFFBBF24)),
+                              size: 12, color: AppColors.warning),
                           const SizedBox(width: 2),
                           Text(
                             rating!.avg.toStringAsFixed(1),
@@ -1158,8 +1158,8 @@ class _HomeGameCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: isFull
-                                  ? [AppColors.tierElite, AppColors.pink]
-                                  : [AppColors.orange, AppColors.cyan],
+                                  ? [AppColors.tierElite, AppColors.goldDeep]
+                                  : [AppColors.goldLight, AppColors.gold],
                             ),
                           ),
                         ),
@@ -1183,7 +1183,7 @@ class _HomeGameCard extends StatelessWidget {
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.orange,
+                          color: AppColors.gold,
                         ),
                       ),
                       Builder(builder: (_) {
@@ -1200,11 +1200,11 @@ class _HomeGameCard extends StatelessWidget {
                                 ? null
                                 : LinearGradient(
                                     colors: data.live
-                                        ? [AppColors.tierElite, AppColors.pink]
-                                        : [AppColors.pink, AppColors.orange],
+                                        ? [AppColors.tierElite, AppColors.goldDeep]
+                                        : [AppColors.goldActionStart, AppColors.goldActionEnd],
                                   ),
                             color: joined
-                                ? AppColors.cyan.withValues(alpha: 0.15)
+                                ? AppColors.ice.withValues(alpha: 0.15)
                                 : (isFull && !data.live)
                                     ? secondary.withValues(alpha: 0.12)
                                     : null,
@@ -1215,7 +1215,7 @@ class _HomeGameCard extends StatelessWidget {
                             children: [
                               if (joined) ...[
                                 const Icon(Icons.check_circle,
-                                    size: 13, color: AppColors.cyan),
+                                    size: 13, color: AppColors.ice),
                                 const SizedBox(width: 4),
                               ],
                               Text(
@@ -1228,7 +1228,7 @@ class _HomeGameCard extends StatelessWidget {
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: joined
-                                      ? AppColors.cyan
+                                      ? AppColors.ice
                                       : (isFull && !data.live)
                                           ? secondary
                                           : Colors.white,
@@ -1300,7 +1300,7 @@ class _PlayerCard extends StatelessWidget {
                     height: 22,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [AppColors.pink, AppColors.orange],
+                        colors: [AppColors.goldActionStart, AppColors.goldActionEnd],
                       ),
                       shape: BoxShape.circle,
                       border: Border.all(color: cardBg, width: 2),
@@ -1344,7 +1344,7 @@ class _PlayerCard extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.orange,
+                color: AppColors.gold,
               ),
             ),
           ],

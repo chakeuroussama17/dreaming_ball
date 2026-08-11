@@ -61,7 +61,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Кубки, сетки и призы уже в пути. Следите за обновлениями — здесь ваша команда поборется за славу.';
 
   @override
-  String get welcomeTitle => 'Dreaming Ball';
+  String get welcomeTitle => 'Boundless';
 
   @override
   String get welcomeSubtitle =>

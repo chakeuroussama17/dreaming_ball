@@ -54,9 +54,9 @@ class BracketViewScreen extends ConsumerWidget {
       ),
       body: t == null
           ? const Center(
-              child: CircularProgressIndicator(color: AppColors.orange))
+              child: CircularProgressIndicator(color: AppColors.gold))
           : RefreshIndicator(
-              color: AppColors.orange,
+              color: AppColors.gold,
               onRefresh: () async => ref.invalidate(tournamentMatchesProvider(id)),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -84,15 +84,15 @@ class BracketViewScreen extends ConsumerWidget {
                   child: OutlinedButton.icon(
                     onPressed: () => _share(context, shot),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.orange),
+                      side: const BorderSide(color: AppColors.gold),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                     ),
-                    icon: const Icon(Icons.download, color: AppColors.orange),
+                    icon: const Icon(Icons.download, color: AppColors.gold),
                     label: Text('Download / Share Bracket',
                         style: GoogleFonts.spaceGrotesk(
                             fontWeight: FontWeight.w700,
-                            color: AppColors.orange)),
+                            color: AppColors.gold)),
                   ),
                 ),
               ),
@@ -154,14 +154,14 @@ class BracketViewScreen extends ConsumerWidget {
                         fontWeight: winner ? FontWeight.w800 : FontWeight.w500,
                         color: name == null
                             ? secondary
-                            : (winner ? AppColors.orange : primary))),
+                            : (winner ? AppColors.gold : primary))),
               ),
               const SizedBox(width: 6),
               Text(score?.toString() ?? '–',
                   style: GoogleFonts.spaceGrotesk(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: winner ? AppColors.orange : secondary)),
+                      color: winner ? AppColors.gold : secondary)),
             ],
           ),
         );
@@ -241,7 +241,7 @@ class BracketViewScreen extends ConsumerWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                    colors: [AppColors.pink, AppColors.orange]),
+                    colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: ElevatedButton(
@@ -264,13 +264,13 @@ class BracketViewScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.orange.withValues(alpha: 0.08),
+              color: AppColors.gold.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               'Knockout stage unlocks once all group matches are complete — top 2 of each group advance.',
               style: GoogleFonts.inter(
-                  fontSize: 12, height: 1.4, color: AppColors.orange),
+                  fontSize: 12, height: 1.4, color: AppColors.gold),
             ),
           ),
       ],

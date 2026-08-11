@@ -82,8 +82,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final card = '⚽ $_name — $_position · ${_tier.label}\n'
         'Overall $_overall · $_goals goals · $_assists assists · '
         '$_games games · $_xp XP\n'
-        'My Dreaming Ball player card 🔥';
-    ShareUtils.shareText(card, subject: 'My Dreaming Ball player card');
+        'My Boundless player card 🔥';
+    ShareUtils.shareText(card, subject: 'My Boundless player card');
   }
 
   List<PlayerStat> get _stats => [
@@ -308,7 +308,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                      colors: [AppColors.pink, AppColors.orange]),
+                                      colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                                   borderRadius: BorderRadius.circular(99),
                                 ),
                                 child: Text('Agent',
@@ -330,7 +330,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             // ── Tabs ──────────────────────────────────────────────────────
             TabBar(
               controller: _tabController,
-              indicatorColor: AppColors.orange,
+              indicatorColor: AppColors.gold,
               indicatorWeight: 2.5,
               labelColor: primary,
               unselectedLabelColor: secondary,
@@ -410,19 +410,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           child: OutlinedButton.icon(
             onPressed: _sharePlayerCard,
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.pink.withValues(alpha: 0.6)),
+              side: BorderSide(color: AppColors.goldDeep.withValues(alpha: 0.6)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
             icon: const Icon(Icons.share_outlined,
-                size: 18, color: AppColors.pink),
+                size: 18, color: AppColors.goldDeep),
             label: Text(
               'Share Player Card',
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: AppColors.pink,
+                color: AppColors.goldDeep,
               ),
             ),
           ),
@@ -535,7 +535,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     return gamesAsync.when(
       loading: () => const Center(
           child: CircularProgressIndicator(
-              color: AppColors.orange, strokeWidth: 2.5)),
+              color: AppColors.gold, strokeWidth: 2.5)),
       error: (_, _) => Center(
         child: Text("Couldn't load games — pull to retry",
             style: GoogleFonts.inter(fontSize: 13, color: secondary)),
@@ -575,11 +575,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.orange.withValues(alpha: 0.15),
+                    color: AppColors.gold.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(Icons.sports_soccer,
-                      color: AppColors.orange, size: 20),
+                      color: AppColors.gold, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -609,7 +609,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.orange,
+                    color: AppColors.gold,
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -657,14 +657,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           _verificationForm(primary, secondary, border, surface)
         else if (status == AgentVerification.pending)
           _infoBox(
-            color: const Color(0xFFFBBF24),
+            color: AppColors.warning,
             icon: Icons.hourglass_top,
             text:
                 'Submitted! An admin is reviewing your ID and bank details. You can play games meanwhile — creating games unlocks once approved.',
           )
         else
           _infoBox(
-            color: const Color(0xFF22C55E),
+            color: AppColors.success,
             icon: Icons.verified,
             text:
                 'You are a verified agent! The + button on the home screen is now unlocked — go create your first game.',
@@ -679,17 +679,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           child: OutlinedButton.icon(
             onPressed: () => context.pushNamed('agent-dashboard'),
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.orange.withValues(alpha: 0.6)),
+              side: BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
             ),
             icon: const Icon(Icons.dashboard_outlined,
-                size: 18, color: AppColors.orange),
+                size: 18, color: AppColors.gold),
             label: Text('Agent Dashboard',
                 style: GoogleFonts.spaceGrotesk(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.orange)),
+                    color: AppColors.gold)),
           ),
         ),
       ],
@@ -863,13 +863,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     late final String label;
     switch (status) {
       case AgentVerification.notSubmitted:
-        c = const Color(0xFF888888);
+        c = AppColors.darkTextSecondary;
         label = 'Not Submitted';
       case AgentVerification.pending:
-        c = const Color(0xFFFBBF24);
+        c = AppColors.warning;
         label = 'Under Review';
       case AgentVerification.approved:
-        c = const Color(0xFF22C55E);
+        c = AppColors.success;
         label = 'Verified Agent';
       case AgentVerification.rejected:
         c = AppColors.tierElite;
@@ -928,7 +928,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.orange),
+          borderSide: const BorderSide(color: AppColors.gold),
         ),
       ),
     );

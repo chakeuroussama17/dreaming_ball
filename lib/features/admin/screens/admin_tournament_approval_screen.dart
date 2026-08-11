@@ -40,7 +40,7 @@ class AdminTournamentApprovalScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.orange)),
+            child: CircularProgressIndicator(color: AppColors.gold)),
         error: (_, _) => Center(
           child: Text('Could not load',
               style: GoogleFonts.inter(fontSize: 14, color: secondary)),
@@ -53,7 +53,7 @@ class AdminTournamentApprovalScreen extends ConsumerWidget {
             );
           }
           return RefreshIndicator(
-            color: AppColors.orange,
+            color: AppColors.gold,
             onRefresh: () async => ref.refresh(pendingTournamentsProvider.future),
             child: ListView.separated(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
@@ -148,7 +148,7 @@ class AdminTournamentApprovalScreen extends ConsumerWidget {
                         child: ElevatedButton.icon(
                           onPressed: () => _approve(context, ref, t),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF22C55E),
+                            backgroundColor: AppColors.success,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
                           ),

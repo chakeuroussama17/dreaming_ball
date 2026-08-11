@@ -402,7 +402,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                         : _loadingRoster
                             ? const Center(
                                 child: CircularProgressIndicator(
-                                    color: AppColors.orange, strokeWidth: 2.5))
+                                    color: AppColors.gold, strokeWidth: 2.5))
                             : _players.isEmpty
                                 ? Center(
                                     child: Padding(
@@ -509,7 +509,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                     style: GoogleFonts.spaceGrotesk(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.orange))
+                        color: AppColors.gold))
                 : const SizedBox(),
           ),
         ],
@@ -576,7 +576,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.schedule, size: 48, color: AppColors.orange),
+              const Icon(Icons.schedule, size: 48, color: AppColors.gold),
               const SizedBox(height: 14),
               Text('Match hasn’t started yet',
                   style: GoogleFonts.spaceGrotesk(
@@ -606,19 +606,19 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
             margin: const EdgeInsets.fromLTRB(20, 8, 20, 4),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.orange.withValues(alpha: 0.08),
-              border: Border.all(color: AppColors.orange.withValues(alpha: 0.35)),
+              color: AppColors.gold.withValues(alpha: 0.08),
+              border: Border.all(color: AppColors.gold.withValues(alpha: 0.35)),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                const Icon(Icons.schedule, size: 18, color: AppColors.orange),
+                const Icon(Icons.schedule, size: 18, color: AppColors.gold),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Kick-off at ${game.kickoffLabel} — check attendance now; Start unlocks at kick-off time.',
                     style: GoogleFonts.inter(
-                        fontSize: 12, height: 1.4, color: AppColors.orange),
+                        fontSize: 12, height: 1.4, color: AppColors.gold),
                   ),
                 ),
               ],
@@ -650,7 +650,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                 }),
                 child: Text('Mark All',
                     style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600, color: AppColors.orange)),
+                        fontWeight: FontWeight.w600, color: AppColors.gold)),
               ),
             ],
           ),
@@ -855,9 +855,9 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: isYou ? AppColors.orange.withValues(alpha: 0.08) : surface,
+        color: isYou ? AppColors.gold.withValues(alpha: 0.08) : surface,
         border: isYou
-            ? const Border(left: BorderSide(color: AppColors.orange, width: 3))
+            ? const Border(left: BorderSide(color: AppColors.gold, width: 3))
             : Border.all(color: border),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -889,7 +889,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                                 style: GoogleFonts.inter(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.orange)),
+                                    color: AppColors.gold)),
                         ],
                       ),
                       Text('${p.position} · ${p.tier.label}',
@@ -957,7 +957,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                 p.goodBehavior == 1 ? Icons.thumb_up : Icons.thumb_down,
                 size: 20,
                 color: p.goodBehavior == 1
-                    ? const Color(0xFF22C55E)
+                    ? AppColors.success
                     : AppColors.tierElite,
               ),
             ),
@@ -1001,10 +1001,10 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: (gradient && enabled)
-              ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+              ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
               : null,
           color: gradient
-              ? (enabled ? null : const Color(0xFF444444))
+              ? (enabled ? null : AppColors.darkTextMuted)
               : Colors.white.withValues(alpha: enabled ? 0.12 : 0.04),
         ),
         child: Icon(icon,
@@ -1172,7 +1172,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                 height: 64,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(colors: [AppColors.pink, AppColors.orange]),
+                  gradient: LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                 ),
                 child: const Icon(Icons.check, color: Colors.white, size: 34),
               ).animate().scale(
@@ -1243,7 +1243,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                         style: GoogleFonts.spaceGrotesk(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.orange)),
+                            color: AppColors.gold)),
                   ],
                 ),
               );
@@ -1294,7 +1294,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
     if (_loadingReview) {
       return const Center(
           child: CircularProgressIndicator(
-              color: AppColors.orange, strokeWidth: 2.5));
+              color: AppColors.gold, strokeWidth: 2.5));
     }
     if (_finalStats.isEmpty) {
       return Center(
@@ -1327,11 +1327,11 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           margin: const EdgeInsets.fromLTRB(20, 8, 20, 4),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: (windowOpen ? AppColors.orange : const Color(0xFF22C55E))
+            color: (windowOpen ? AppColors.gold : AppColors.success)
                 .withValues(alpha: 0.08),
             border: Border.all(
                 color:
-                    (windowOpen ? AppColors.orange : const Color(0xFF22C55E))
+                    (windowOpen ? AppColors.gold : AppColors.success)
                         .withValues(alpha: 0.35)),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -1340,7 +1340,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
               Icon(windowOpen ? Icons.timer_outlined : Icons.verified_outlined,
                   size: 18,
                   color:
-                      windowOpen ? AppColors.orange : const Color(0xFF22C55E)),
+                      windowOpen ? AppColors.gold : AppColors.success),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -1353,8 +1353,8 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                       fontSize: 12,
                       height: 1.4,
                       color: windowOpen
-                          ? AppColors.orange
-                          : const Color(0xFF22C55E)),
+                          ? AppColors.gold
+                          : AppColors.success),
                 ),
               ),
             ],
@@ -1499,7 +1499,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.orange),
+                            const BorderSide(color: AppColors.gold),
                       ),
                     ),
                     onSubmitted: (_) => _postComment(),
@@ -1514,7 +1514,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                          colors: [AppColors.pink, AppColors.orange]),
+                          colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                     ),
                     child: _posting
                         ? const Padding(
@@ -1565,7 +1565,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                     style: GoogleFonts.inter(
                         fontSize: 11,
                         color: s.status == 'confirmed'
-                            ? AppColors.orange
+                            ? AppColors.gold
                             : secondary)),
               ],
             ),
@@ -1608,7 +1608,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
                 s.goodBehavior == 1 ? Icons.thumb_up : Icons.thumb_down,
                 size: 18,
                 color: s.goodBehavior == 1
-                    ? const Color(0xFF22C55E)
+                    ? AppColors.success
                     : AppColors.tierElite,
               ),
             ),
@@ -1648,9 +1648,9 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: enabled
-              ? const LinearGradient(colors: [AppColors.pink, AppColors.orange])
+              ? const LinearGradient(colors: [AppColors.goldActionStart, AppColors.goldActionEnd])
               : null,
-          color: enabled ? null : const Color(0xFF444444),
+          color: enabled ? null : AppColors.darkTextMuted,
           borderRadius: BorderRadius.circular(14),
         ),
         child: ElevatedButton(

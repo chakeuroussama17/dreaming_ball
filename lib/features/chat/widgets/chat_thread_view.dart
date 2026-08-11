@@ -77,7 +77,7 @@ class _ChatThreadViewState extends State<ChatThreadView> {
               if (snap.connectionState == ConnectionState.waiting &&
                   msgs.isEmpty) {
                 return const Center(
-                    child: CircularProgressIndicator(color: AppColors.orange));
+                    child: CircularProgressIndicator(color: AppColors.gold));
               }
               if (msgs.isEmpty) {
                 return Center(
@@ -116,7 +116,7 @@ class _ChatThreadViewState extends State<ChatThreadView> {
   Widget _bubble(SupportMessage m, ColorScheme scheme) {
     // "Mine" = authored by the current viewer.
     final mine = m.isAdmin == widget.asAdmin;
-    final bg = mine ? AppColors.orange : scheme.surfaceContainerHighest;
+    final bg = mine ? AppColors.gold : scheme.surfaceContainerHighest;
     final fg = mine ? Colors.white : scheme.onSurface;
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
@@ -180,8 +180,8 @@ class _ChatThreadViewState extends State<ChatThreadView> {
             const SizedBox(width: 8),
             IconButton.filled(
               onPressed: _sending ? null : _send,
-              style: IconButton.styleFrom(backgroundColor: AppColors.orange),
-              icon: const Icon(Icons.send_rounded, color: Colors.white),
+              style: IconButton.styleFrom(backgroundColor: AppColors.gold),
+              icon: const Icon(Icons.send_rounded, color: AppColors.navyDeep),
             ),
           ],
         ),

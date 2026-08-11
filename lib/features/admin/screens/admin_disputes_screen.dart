@@ -59,7 +59,7 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
         centerTitle: true,
         bottom: TabBar(
           controller: _tab,
-          indicatorColor: AppColors.orange,
+          indicatorColor: AppColors.gold,
           labelColor: primary,
           unselectedLabelColor: secondary,
           labelStyle:
@@ -94,7 +94,7 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
           children: [
             Icon(Icons.check_circle_outline,
                 size: 48,
-                color: const Color(0xFF22C55E).withValues(alpha: 0.8)),
+                color: AppColors.success.withValues(alpha: 0.8)),
             const SizedBox(height: 10),
             Text('No disputes — all good!',
                 style: GoogleFonts.spaceGrotesk(
@@ -165,7 +165,7 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                      colors: [AppColors.pink, AppColors.orange]),
+                      colors: [AppColors.goldActionStart, AppColors.goldActionEnd]),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ElevatedButton(
@@ -193,10 +193,10 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
     late final String label;
     switch (s) {
       case AdminDisputeStatus.open:
-        c = const Color(0xFFFBBF24);
+        c = AppColors.warning;
         label = 'Open';
       case AdminDisputeStatus.resolved:
-        c = const Color(0xFF22C55E);
+        c = AppColors.success;
         label = 'Resolved';
       case AdminDisputeStatus.escalated:
         c = AppColors.tierElite;
@@ -240,7 +240,7 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
             _row('Agent', d.agent, secondary, primary),
             _row('Stat', d.statType, secondary, primary),
             _row('Agent record', '${d.recorded}', secondary, primary),
-            _row('Player claim', '${d.claimed}', secondary, AppColors.orange),
+            _row('Player claim', '${d.claimed}', secondary, AppColors.gold),
             const SizedBox(height: 8),
             Text('Reason: "${d.reason}"',
                 style: GoogleFonts.inter(
@@ -248,13 +248,13 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
                     fontStyle: FontStyle.italic,
                     color: secondary)),
             const SizedBox(height: 18),
-            _action('Accept Player Claim', const Color(0xFF22C55E), () {
+            _action('Accept Player Claim', AppColors.success, () {
               ref.read(adminDisputesProvider.notifier).acceptPlayer(d.id);
               Navigator.pop(ctx);
               _snack('Player claim accepted');
             }),
             const SizedBox(height: 10),
-            _action('Keep Agent Record', AppColors.orange, () {
+            _action('Keep Agent Record', AppColors.gold, () {
               ref.read(adminDisputesProvider.notifier).keepAgent(d.id);
               Navigator.pop(ctx);
               _snack('Agent record kept');
@@ -325,5 +325,5 @@ class _AdminDisputesScreenState extends ConsumerState<AdminDisputesScreen>
   }
 
   void _snack(String msg) => ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppColors.orange));
+      SnackBar(content: Text(msg)));
 }

@@ -24,12 +24,12 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   }
 
   (IconData, Color) _style(String type) => switch (type) {
-        'game' => (Icons.sports_soccer, AppColors.orange),
-        'stats' => (Icons.emoji_events_outlined, AppColors.pink),
+        'game' => (Icons.sports_soccer, AppColors.gold),
+        'stats' => (Icons.emoji_events_outlined, AppColors.goldDeep),
         'dispute' => (Icons.flag_outlined, AppColors.tierElite),
-        'payment' => (Icons.payments_outlined, const Color(0xFF22C55E)),
-        'announcement' => (Icons.campaign_outlined, AppColors.cyan),
-        _ => (Icons.info_outline, AppColors.orange),
+        'payment' => (Icons.payments_outlined, AppColors.success),
+        'announcement' => (Icons.campaign_outlined, AppColors.ice),
+        _ => (Icons.info_outline, AppColors.gold),
       };
 
   @override
@@ -61,7 +61,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       body: async.when(
         loading: () => const Center(
             child: CircularProgressIndicator(
-                color: AppColors.orange, strokeWidth: 2.5)),
+                color: AppColors.gold, strokeWidth: 2.5)),
         error: (_, _) => Center(
           child: Text("Couldn't load notifications",
               style: GoogleFonts.inter(fontSize: 13, color: secondary)),
@@ -99,11 +99,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: !n.isRead
-                      ? AppColors.orange.withValues(alpha: 0.06)
+                      ? AppColors.gold.withValues(alpha: 0.06)
                       : surface,
                   border: Border.all(
                       color: !n.isRead
-                          ? AppColors.orange.withValues(alpha: 0.2)
+                          ? AppColors.gold.withValues(alpha: 0.2)
                           : border),
                   borderRadius: BorderRadius.circular(14),
                 ),
